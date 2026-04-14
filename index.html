@@ -216,6 +216,77 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 .sc.fade { border-top: 3px solid var(--red); background: rgba(239, 68, 68, 0.1); }
 .sc.even { border-top: 3px solid var(--text3); }
 
+/* --- MOBILE OPTIMIZATIONS --- */
+
+@media (max-width: 600px) {
+  /* 1. Fix Header Overflow: Stack Title and Stats */
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .header-stats {
+    margin-left: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2x2 grid for stats */
+    gap: 12px;
+    background: var(--surface2);
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  /* Make the Data button full width at the bottom of the header */
+  .header-stats > .hstat:last-child {
+    grid-column: span 2;
+    margin-left: 0 !important;
+    border-left: none !important;
+    padding-left: 0 !important;
+  }
+  
+  .header-stats .btn {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .header-title h1 { font-size: 1.1rem; }
+  .header-icon { font-size: 1.5rem; }
+
+  /* 2. Fix Tabs: Make them more touch-friendly */
+  .container {
+    padding: 12px; /* Reduce side padding so content uses more screen */
+  }
+
+  .tabs {
+    gap: 2px;
+    padding: 2px;
+    margin-bottom: 16px;
+    /* This ensures you can swipe left/right to see all tabs */
+    -webkit-overflow-scrolling: touch; 
+  }
+
+  .tab {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    min-width: 80px;
+  }
+
+  /* 3. Stat Cards: Stack them 1-per-row */
+  .stat-val { font-size: 1.6rem; }
+  
+  /* 4. Filter Bar: Stack inputs */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .fg select, .fg .btn {
+    width: 100%;
+  }
+}  
+  
 </style>
 </head>
 <body>
