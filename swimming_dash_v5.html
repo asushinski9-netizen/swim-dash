@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swimming Performance Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2236;
+  --surface3: #243049;
+  --accent: #3b82f6;
+  --accent2: #06b6d4;
+  --accent3: #8b5cf6;
+  --gold: #f59e0b;
+  --green: #10b981;
+  --red: #ef4444;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --border: #1e293b;
+}
+
+.split-detail-row {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.split-detail-row:hover {
+  background: var(--surface3);
+}
+
+.split-detail-row.active-coach {
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 3px solid var(--accent);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 28px;
+  display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+.header-icon { font-size: 2rem; }
+.header-title h1 {
+  font-size: 1.3rem; font-weight: 700;
+  background: linear-gradient(90deg, #60a5fa, #06b6d4);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.header-title p { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+.header-stats { margin-left: auto; display: flex; gap: 28px; }
+.hstat { text-align: center; }
+.hstat-val { font-size: 1.3rem; font-weight: 700; color: var(--accent2); }
+.hstat-label { font-size: 0.68rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* TABS */
+.container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+.tabs {
+  display: flex; gap: 4px; background: var(--surface);
+  border-radius: 12px; padding: 4px; margin-bottom: 24px;
+  border: 1px solid var(--border); overflow-x: auto;
+}
+.tab {
+  flex: 1; min-width: 90px; padding: 10px 14px; border: none;
+  background: transparent; color: var(--text2); font-size: 0.83rem;
+  font-weight: 500; border-radius: 8px; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap; text-align: center;
+}
+.tab:hover { background: var(--surface2); color: var(--text); }
+.tab.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: white; box-shadow: 0 2px 12px rgba(59,130,246,0.35);
+}
+
+/* PANELS */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* GRID */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 20px; }
+@media(max-width:1000px){ .grid4{grid-template-columns:repeat(2,1fr);} .grid3{grid-template-columns:1fr 1fr;} }
+@media(max-width:640px){ .grid2,.grid3,.grid4{grid-template-columns:1fr;} }
+
+/* CARDS */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+}
+.card-title {
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text3); font-weight: 600; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* STAT CARDS */
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-icon { font-size: 1.6rem; margin-bottom: 8px; }
+.stat-val { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-sub { font-size: 0.7rem; color: var(--text3); margin-top: 4px; }
+
+/* FILTERS */
+.filter-bar {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+}
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fl { font-size: 0.68rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+select, .btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 12px; border-radius: 8px;
+  font-size: 0.83rem; cursor: pointer; outline: none;
+  -webkit-appearance: none; appearance: none; min-width: 130px;
+  transition: border-color 0.2s;
+}
+select:focus { border-color: var(--accent); }
+.btn {
+  min-width: auto; background: linear-gradient(135deg,var(--accent),var(--accent2));
+  border: none; font-weight: 600; color: white; padding: 7px 18px;
+  border-radius: 8px; cursor: pointer; transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.85; }
+.btn.sec { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+
+/* TABLE */
+.tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.81rem; }
+thead { background: var(--surface2); }
+th {
+  padding: 11px 14px; text-align: left; font-size: 0.7rem;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3);
+  font-weight: 600; white-space: nowrap; cursor: pointer; user-select: none;
+}
+th:hover { color: var(--text); }
+td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text2); white-space: nowrap; }
+tr:hover td { background: var(--surface2); color: var(--text); }
+.tc { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 700;
+}
+.badge.S { background: rgba(59,130,246,0.2); color: #60a5fa; }
+.badge.L { background: rgba(6,182,212,0.2); color: #22d3ee; }
+.badge.pb { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: #1a0f00; font-size: 0.62rem; }
+.dpos { color: var(--green); font-weight: 600; }
+.dneg { color: var(--red); font-weight: 600; }
+
+/* PB GRID */
+.pb-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 14px; }
+.pb-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; transition: all 0.2s; cursor: default;
+}
+.pb-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.pb-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.pb-event { font-size: 0.95rem; font-weight: 700; }
+.pb-time { font-size: 1.55rem; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+.pb-info { font-size: 0.72rem; color: var(--text3); margin-top: 6px; }
+.pb-imp { font-size: 0.72rem; color: var(--green); margin-top: 4px; font-weight: 600; }
+
+/* SPLIT CHIPS */
+.split-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.sc {
+  background: var(--surface3); border-radius: 8px; padding: 5px 10px;
+  font-size: 0.76rem; text-align: center;
+}
+.sc-lbl { font-size: 0.62rem; color: var(--text3); display: block; }
+.sc-val { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* PROGRESS */
+.prog-bar { height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.prog-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,var(--accent),var(--accent2)); transition: width 1s ease; }
+
+/* SECTION HEADER */
+.sec-hdr { font-size: 0.85rem; font-weight: 700; color: var(--text2); margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
+.sec-hdr::after { content:''; flex: 1; height: 1px; background: var(--border); }
+
+/* TREND INDICATOR */
+.trend { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; }
+.trend.up { color: var(--green); }
+.trend.dn { color: var(--red); }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 48px 20px; color: var(--text3); }
+.empty-icon { font-size: 3rem; margin-bottom: 12px; }
+
+/* TOOLTIP CUSTOM */
+.chart-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.cl-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text2); }
+.cl-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* Enhanced Split Colors */
+.sc.fast { border-top: 3px solid var(--green); background: rgba(16, 185, 129, 0.1); }
+.sc.fade { border-top: 3px solid var(--red); background: rgba(239, 68, 68, 0.1); }
+.sc.even { border-top: 3px solid var(--text3); }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🏊</div>
+  <div class="header-title">
+    <h1>Swimming Performance Dashboard</h1>
+    <p>Personal race history, PBs &amp; split analysis</p>
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><div class="hstat-val" id="hTotalRaces">—</div><div class="hstat-label">Races</div></div>
+    <div class="hstat"><div class="hstat-val" id="hEvents">—</div><div class="hstat-label">Events</div></div>
+    <div class="hstat"><div class="hstat-val" id="hMeets">—</div><div class="hstat-label">Meets</div></div>
+    <div class="hstat"><div class="hstat-val" id="hSpan">—</div><div class="hstat-label">Months</div></div>
+    <div class="hstat" style="margin-left: 15px; border-left: 1px solid var(--border); padding-left: 15px;">
+      <button class="btn sec" onclick="document.getElementById('dataModal').style.display='flex'">⚙️ Data</button>
+    </div>
+
+    <div id="dataModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
+      <div class="card" style="width: 400px; max-width: 90%; background: var(--bg);">
+        <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+          <h2 style="font-size:1.2rem;">⚙️ Data Manager</h2>
+          <button class="btn sec" style="min-width:auto; padding: 4px 8px;" onclick="document.getElementById('dataModal').style.display='none'">✕</button>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label class="fl">1. Upload Swim Data (my_swims.json)</label>
+          <input type="file" id="uploadRaw" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+          <label class="fl">2. Upload QT Data (county_qt.json)</label>
+          <input type="file" id="uploadQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
+        </div>
+
+        <button class="btn" style="width:100%" onclick="saveDataToBrowser()">💾 Save to Browser</button>
+        <button class="btn sec" style="width:100%; margin-top:10px; border-color:var(--red); color:var(--red);" onclick="if(confirm('Delete all stored data?')) { localStorage.clear(); window.location.reload(); }"> 🗑️ Reset Dashboard</button> 
+        
+        <div style="margin-top:15px; font-size:0.75rem; color:var(--text3); text-align:center;">
+          Data is saved securely in your browser's local storage.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('overview', this)">📊 Overview</button>
+    <button class="tab" onclick="showTab('progression', this)">📈 Progression</button>
+    <button class="tab" onclick="showTab('pbs', this)">🏆 Personal Bests</button>
+    <button class="tab" onclick="showTab('splits', this)">⚡ Splits</button>
+    <button class="tab" onclick="showTab('results', this)">📋 All Results</button>
+    <button class="tab" onclick="showTab('qualifying', this)">🎯 County Qualifying</button>
+  </div>
+
+  <div class="panel active" id="tab-overview">
+    <div class="grid4" id="overviewStats"></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">🏅 Recent Personal Bests</div>
+        <div id="recentPBs"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📅 Race Frequency by Month</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="freqChart"></canvas></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">🎯 Events Breakdown</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="eventPieChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📍 Venues Visited</div>
+        <div id="venueList"></div>
+      </div>
+    </div>
+  </div>
+
+   <div class="panel" id="tab-progression">
+    <div class="filter-bar">
+      <div class="fg">
+        <span class="fl">Event</span>
+        <select id="progEvent" onchange="renderProgression()">
+          <option value="">All Events</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Course</span>
+        <select id="progCourse" onchange="renderProgression()">
+          <option value="">Both</option>
+          <option value="S">Short Course</option>
+          <option value="L">Long Course</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Show PBs Only</span>
+        <select id="progPBOnly" onchange="renderProgression()">
+          <option value="0">All Swims</option>
+          <option value="1">PB Swims Only</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Compare PB To</span>
+        <select id="progCompare" onchange="renderProgression()">
+          <option value="first">First Swim</option>
+          <option value="latest">Latest Swim</option>
+          <option value="prevBest">Previous Best</option>
+          <option value="prevSwim">Previous Swim</option>
+        </select>
+      </div>
+<div class="fg" style="align-self: flex-end;">
+    <button class="btn sec" onclick="resetProgressionFilters()">Reset Filters</button>
+  </div>      
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">📈 Time Progression</div>
+      <div class="chart-wrap" style="height:340px"><canvas id="progChart"></canvas></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">📊 Improvement Summary</div>
+        <div id="improvSummary"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="compareCardTitle">🏁 Best vs First</div>
+        <div id="bestVsFirst"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-pbs">
+      <div class="filter-bar">
+  <div class="fg">
+    <span class="fl">Stroke</span>
+    <select id="pbStroke" onchange="renderPBs()">
+      <option value="">All Strokes</option>
+      <option value="Free">Freestyle</option>
+      <option value="Back">Backstroke</option>
+      <option value="Breast">Breaststroke</option>
+      <option value="Fly">Butterfly</option>
+      <option value="IM">Individual Medley</option>
+    </select>
+  </div>
+  <div class="fg">
+    <span class="fl">Course</span>
+    <select id="pbCourse" onchange="renderPBs()">
+      <option value="">All Courses</option>
+      <option value="S">Short Course (25m)</option>
+      <option value="L">Long Course (50m)</option>
+    </select>
+  </div>
+  <div class="fg">
+    <span class="fl">Compare PB To</span>
+    <select id="pbCompare" onchange="renderPBs()">
+      <option value="prevBest">Previous Best</option>
+      <option value="first">First Swim</option>
+      <option value="latest">Latest Swim</option>
+      <option value="prevSwim">Previous Swim</option>
+    </select>
+  </div>
+<div class="fg" style="align-self: flex-end;">
+      <button class="btn sec" onclick="resetPBFilters()">Reset Filters</button>
+    </div>  
+</div>
+    <div class="pb-grid" id="pbGrid"></div>
+  </div>
+
+  <div class="panel" id="tab-splits">
+    <div class="filter-bar">
+      <div class="fg">
+        <span class="fl">Event</span>
+        <select id="splitsEvent" onchange="renderSplits()">
+          <option value="">Select Event</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Course</span>
+        <select id="splitsCourse" onchange="renderSplits()">
+          <option value="">Both</option>
+          <option value="S">Short Course</option>
+          <option value="L">Long Course</option>
+        </select>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--accent3);">
+      <div class="card-title" style="color: var(--accent2)">🤖 AI Pacing Coach</div>
+      <div id="aiCoachingContent" style="font-size: 0.9rem; line-height: 1.5; color: var(--text2);">
+        Select an event to receive coaching feedback on your pacing strategy.
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title" id="splitChartTitle">⚡ Split Comparison</div>
+        <div class="chart-wrap" style="height:300px"><canvas id="splitBarChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Split Detail</div>
+        <div id="splitDetail"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Pacing Profile — All Swims</div>
+      <div class="chart-wrap" style="height:280px"><canvas id="paceChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-results">
+    <div class="filter-bar">
+      <div class="fg">
+        <span class="fl">Event</span>
+        <select id="resEvent" onchange="renderResults()">
+          <option value="">All Events</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Course</span>
+        <select id="resCourse" onchange="renderResults()">
+          <option value="">Both</option>
+          <option value="S">Short Course</option>
+          <option value="L">Long Course</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Venue</span>
+        <select id="resVenue" onchange="renderResults()">
+          <option value="">All Venues</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Year</span>
+        <select id="resYear" onchange="renderResults()">
+          <option value="">All Years</option>
+        </select>
+      </div>
+      <div class="fg" style="align-self: flex-end;">
+  <button class="btn sec" onclick="resetResultsFilters()">Reset Filters</button>
+</div>
+    </div>
+    <div class="tbl-wrap">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th onclick="sortResults('date')">Date ↕</th>
+            <th onclick="sortResults('event')">Event ↕</th>
+            <th onclick="sortResults('course')">Course ↕</th>
+            <th onclick="sortResults('time')">Time ↕</th>
+            <th>Δ Prev</th>
+            <th>PB?</th>
+            <th>Competition</th>
+            <th>Venue</th>
+            <th>Splits</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTbody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="resCount"></div>
+  </div>
+
+  <!-- COUNTY QUALIFYING PANEL -->
+  <div class="panel" id="tab-qualifying">
+    <div class="filter-bar">
+      <div class="fg">
+        <span class="fl">Gender</span>
+        <select id="qtGender" onchange="renderQualifying()">
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Age Group</span>
+        <select id="qtAge" onchange="renderQualifying()">
+          <option value="10+11">10+11</option>
+          <option value="12" selected>12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17+">17+</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Course</span>
+        <select id="qtCourse" onchange="renderQualifying()">
+          <option value="Short Course">Short Course (25m)</option>
+          <option value="Long Course">Long Course (50m)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Stroke</span>
+        <select id="qtStroke" onchange="renderQualifying()">
+          <option value="">All Strokes</option>
+          <option value="Free">Freestyle</option>
+          <option value="Back">Backstroke</option>
+          <option value="Breast">Breaststroke</option>
+          <option value="Fly">Butterfly</option>
+          <option value="IM">Individual Medley</option>
+        </select>
+      </div>
+    <div class="fg" style="align-self: flex-end;">
+        <button class="btn sec" onclick="resetQualifyingFilters()">Reset Filters</button>
+      </div>  
+    </div>
+
+    <div class="grid4" id="qtStats" style="margin-bottom:20px"></div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">🎯 PB vs Qualifying & Consideration Times</div>
+      <div style="height:380px;position:relative"><canvas id="qtBarChart"></canvas></div>
+      <div class="chart-legend" id="qtLegend" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Event-by-Event Status</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>PB</th>
+              <th>Qualify Time</th>
+              <th>Consideration Time</th>
+              <th>Gap to Qualify</th>
+              <th>Gap to Consider</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="qtTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><script>
+
+// ============================================================
+// DATA INITIALIZATION (LOCAL STORAGE)
+// ============================================================
+// Attempt to load data from browser storage, default to empty arrays if none exists
+let RAW = JSON.parse(localStorage.getItem('swimDash_RAW')) || [];
+let QT_DATA = JSON.parse(localStorage.getItem('swimDash_QT')) || [];
+let DATA = [];
+
+// Function to handle the file uploads from the Data Manager modal
+function saveDataToBrowser() {
+  const rawFile = document.getElementById('uploadRaw').files[0];
+  const qtFile = document.getElementById('uploadQT').files[0];
+  const promises = [];
+
+  const readFile = (file, storageKey) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          // Validation Check: Try to parse before saving
+          JSON.parse(e.target.result); 
+          localStorage.setItem(storageKey, e.target.result);
+          resolve();
+        } catch (err) {
+          reject(`Invalid JSON format in ${file.name}`);
+        }
+      };
+      reader.readAsText(file);
+    });
+  };
+
+  if (rawFile) promises.push(readFile(rawFile, 'swimDash_RAW'));
+  if (qtFile) promises.push(readFile(qtFile, 'swimDash_QT'));
+
+  if (promises.length === 0) return alert("Please select a file first.");
+
+  Promise.all(promises)
+    .then(() => {
+      alert("Success! Dashboard updating...");
+      window.location.reload();
+    })
+    .catch(err => alert("Error: " + err));
+}
+
+// Add this to allow clearing data easily
+function resetDashboard() {
+  if (confirm("Delete all stored race data from this browser?")) {
+    localStorage.clear();
+    window.location.reload();
+  }
+}
+
+// Add this function if you want a reset button
+function clearAllData() {
+  if (confirm("Are you sure? This will delete all race history from this browser.")) {
+    localStorage.clear();
+    window.location.reload();
+  }
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function timeToSec(t) {
+  if (!t) return Infinity;
+  const parts = t.split(':');
+  if (parts.length === 2) return parseInt(parts[0]) * 60 + parseFloat(parts[1]);
+  return parseFloat(parts[0]);
+}
+
+function secToTime(s) {
+  if (!isFinite(s)) return '—';
+  const m = Math.floor(s / 60);
+  const sec = (s - m * 60).toFixed(2).padStart(5, '0');
+  return m + ':' + sec;
+}
+
+function fmtDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function fmtDateShort(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+}
+
+// FIX 5: Add Individual Medley (IM) support
+function getStroke(event) {
+  if (event.includes('Free')) return 'Free';
+  if (event.includes('Back')) return 'Back';
+  if (event.includes('Breast')) return 'Breast';
+  if (event.includes('Fly')) return 'Fly';
+  if (event.includes('IM')) return 'IM';
+  return 'Other';
+}
+
+function getDistance(event) {
+  return parseInt(event.split(' ')[0]);
+}
+
+// Compute per-row metadata: isPB, deltaPrev, timeInSec
+function processData(raw) {
+  // Sort chronologically
+  const data = raw.map(r => ({ ...r, timeInSec: timeToSec(r.time) }))
+    .sort((a, b) => a.date.localeCompare(b.date) || a.event.localeCompare(b.event));
+
+  // Track running PB per event+course
+  const pbMap = {};
+  const prevMap = {};
+
+  data.forEach(r => {
+    const key = r.event + '|' + r.course;
+    const prev = pbMap[key];
+    r.isPB = !prev || r.timeInSec < prev;
+    if (r.isPB) pbMap[key] = r.timeInSec;
+
+    // Delta vs previous swim of same event+course
+    const prevTime = prevMap[key];
+    r.deltaPrev = prevTime !== undefined ? r.timeInSec - prevTime : null;
+    prevMap[key] = r.timeInSec;
+  });
+
+  return data;
+}
+
+//const DATA = processData(RAW);
+
+// Get unique sorted events
+function uniqueEvents() {
+  return [...new Set(DATA.map(r => r.event))].sort((a, b) => {
+    const da = getDistance(a), db = getDistance(b);
+    if (da !== db) return da - db;
+    return a.localeCompare(b);
+  });
+}
+
+function uniqueVenues() {
+  return [...new Set(DATA.map(r => r.venue).filter(v => v && v !== 'UNKNOWN'))].sort();
+}
+
+function uniqueYears() {
+  return [...new Set(DATA.map(r => r.date.slice(0, 4)))].sort();
+}
+
+// Compute PBs: for each event+course, return best row
+function getPBs() {
+  const map = {};
+  DATA.forEach(r => {
+    const key = r.event + '|' + r.course;
+    if (!map[key] || r.timeInSec < map[key].timeInSec) map[key] = r;
+  });
+  return Object.values(map).sort((a, b) => {
+    const da = getDistance(a.event), db = getDistance(b.event);
+    if (da !== db) return da - db;
+    return a.event.localeCompare(b.event) || a.course.localeCompare(b.course);
+  });
+}
+
+// First swim per event+course
+function getFirstSwims() {
+  const map = {};
+  DATA.forEach(r => {
+    const key = r.event + '|' + r.course;
+    if (!map[key]) map[key] = r;
+  });
+  return map;
+}
+// Latest swim per event+course
+function getLatestSwims() {
+  const map = {};
+  DATA.forEach(r => {
+    const key = r.event + '|' + r.course;
+    map[key] = r;
+  });
+  return map;
+}
+
+// COLORS
+const PALETTE = [
+  '#3b82f6','#06b6d4','#8b5cf6','#10b981','#f59e0b',
+  '#ef4444','#ec4899','#f97316','#14b8a6','#a855f7'
+];
+function colorForEvent(event) {
+  const events = uniqueEvents();
+  return PALETTE[events.indexOf(event) % PALETTE.length];
+};
+
+// Previous swim (the swim immediately before the current PB)
+function getPreviousSwims() {
+  const map = {};
+  const pbs = getPBs();
+  pbs.forEach(currentPB => {
+    const key = currentPB.event + '|' + currentPB.course;
+    const history = DATA.filter(r =>
+      r.event === currentPB.event &&
+      r.course === currentPB.course &&
+      r.date < currentPB.date
+    ).sort((a, b) => b.date.localeCompare(a.date));
+    if (history.length > 0) map[key] = history[0];
+  });
+  return map;
+}
+
+// The best time recorded before the current all-time PB
+function getPreviousBestSwims() {
+  const map = {};
+  const currentPBs = getPBs();
+  currentPBs.forEach(pb => {
+    const key = pb.event + '|' + pb.course;
+    const history = DATA.filter(r =>
+      r.event === pb.event &&
+      r.course === pb.course &&
+      r.date < pb.date
+    );
+    if (history.length > 0) {
+      map[key] = history.reduce((min, p) => p.timeInSec < min.timeInSec ? p : min, history[0]);
+    }
+  });
+  return map;
+}
+
+function resetProgressionFilters() {
+  document.getElementById('progEvent').selectedIndex = 0;
+  document.getElementById('progCourse').selectedIndex = 0;
+  document.getElementById('progPBOnly').selectedIndex = 0;
+  const compareEl = document.getElementById('progCompare');
+  if (compareEl) compareEl.selectedIndex = 0;
+  renderProgression();
+}
+
+function resetQualifyingFilters() {
+  document.getElementById('qtGender').selectedIndex = 0; // Boys
+  document.getElementById('qtAge').selectedIndex = 1;    // 12 (based on your default)
+  document.getElementById('qtCourse').selectedIndex = 0; // Short Course
+  document.getElementById('qtStroke').selectedIndex = 0; // All Strokes
+  renderQualifying();
+}
+
+// ============================================================
+// CHARTS REGISTRY (to destroy before re-render)
+// ============================================================
+const charts = {};
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+// ============================================================
+// POPULATE SELECTS
+// ============================================================
+function populateSelects() {
+  const allEvents = [...new Set(DATA.map(r => r.event))].sort((a,b) => getDistance(a) - getDistance(b));
+  const eventsWithSplits = [...new Set(DATA.filter(r => r.splits.length > 0).map(r => r.event))].sort((a,b) => getDistance(a) - getDistance(b));
+  const venues = [...new Set(DATA.map(r => r.venue))].sort();
+  const years = [...new Set(DATA.map(r => r.date.substring(0,4)))].sort((a,b) => b - a);
+
+  // Populate Progression Tab
+  document.getElementById('progEvent').innerHTML = allEvents.map(e => `<option value="${e}">${e}</option>`).join('');
+  
+  // Populate Splits Tab
+  const splitsSelect = document.getElementById('splitsEvent');
+  splitsSelect.innerHTML = eventsWithSplits.map(e => `<option value="${e}">${e}</option>`).join('');
+
+  // Populate Results Tab
+  document.getElementById('resEvent').innerHTML = '<option value="">All Events</option>' + allEvents.map(e => `<option value="${e}">${e}</option>`).join('');
+  document.getElementById('resVenue').innerHTML = '<option value="">All Venues</option>' + venues.map(v => `<option value="${v}">${v}</option>`).join('');
+  document.getElementById('resYear').innerHTML = '<option value="">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+}
+
+// ============================================================
+// OVERVIEW TAB
+// ============================================================
+function renderOverview() {
+  // Header stats
+  const meets = new Set(DATA.map(r => r.competition + r.date)).size;
+  const firstDate = new Date(DATA[0].date);
+  const lastDate = new Date(DATA[DATA.length - 1].date);
+  const months = Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24 * 30.5));
+
+  document.getElementById('hTotalRaces').textContent = DATA.length;
+  document.getElementById('hEvents').textContent = uniqueEvents().length;
+  document.getElementById('hMeets').textContent = meets;
+  document.getElementById('hSpan').textContent = months;
+
+  // Stat cards
+  const pbs = getPBs();
+  const pbsThisYear = DATA.filter(r => r.isPB && r.date >= '2025-01-01').length;
+  const withSplits = DATA.filter(r => r.splits.length > 0).length;
+  const events = uniqueEvents().length;
+
+  document.getElementById('overviewStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon">🏊</div>
+      <div class="stat-val" style="color:var(--accent2)">${DATA.length}</div>
+      <div class="stat-label">Total Races</div>
+      <div class="stat-sub">${DATA.filter(r=>r.course==='S').length} SC · ${DATA.filter(r=>r.course==='L').length} LC</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-val" style="color:var(--gold)">${pbs.length}</div>
+      <div class="stat-label">Current PBs</div>
+      <div class="stat-sub">${pbsThisYear} set in 2025+</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-val" style="color:var(--accent3)">${events}</div>
+      <div class="stat-label">Events</div>
+      <div class="stat-sub">Across ${uniqueVenues().length} venues</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-val" style="color:var(--green)">${withSplits}</div>
+      <div class="stat-label">Races with Splits</div>
+      <div class="stat-sub">${Math.round(withSplits/DATA.length*100)}% of total</div>
+    </div>
+  `;
+
+// Recent PBs (last 6 PB swims)
+  const recentPBs = DATA.filter(r => r.isPB).slice(-6).reverse();
+  const rpEl = document.getElementById('recentPBs');
+  if (recentPBs.length === 0) {
+    rpEl.innerHTML = '<div class="empty"><div class="empty-icon">🏅</div><p>No PBs yet</p></div>';
+  } else {
+    rpEl.innerHTML = recentPBs.map(r => {
+      const imp = r.deltaPrev !== null && r.deltaPrev < 0 ? Math.abs(r.deltaPrev) : null;
+      return `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <span style="font-weight:700;font-size:0.9rem">${r.event}</span>
+            <span class="badge ${r.course}" style="margin-left:6px">${r.course}</span>
+            <div style="font-size:0.72rem;color:var(--text3);margin-top:2px">${fmtDate(r.date)} · ${r.venue}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="tc" style="color:var(--gold);font-size:1.1rem">${r.time}</div>
+            ${imp ? `<div style="font-size:0.7rem;color:var(--green)">▼ ${imp.toFixed(2)}s faster than previous</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // Race frequency by month
+  const monthMap = {};
+  DATA.forEach(r => {
+    const ym = r.date.slice(0, 7);
+    monthMap[ym] = (monthMap[ym] || 0) + 1;
+  });
+  const months2 = Object.keys(monthMap).sort();
+  destroyChart('freqChart');
+  const freqCtx = document.getElementById('freqChart').getContext('2d');
+  charts['freqChart'] = new Chart(freqCtx, {
+    type: 'bar',
+    data: {
+      labels: months2.map(m => {
+        const [y, mo] = m.split('-');
+        return new Date(y, mo - 1).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+      }),
+      datasets: [{
+        label: 'Races',
+        data: months2.map(m => monthMap[m]),
+        backgroundColor: months2.map((_, i) => `hsl(${210 + i * 8},70%,55%)`),
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b', stepSize: 1 }, grid: { color: '#1e293b' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // Events pie/doughnut
+  const eventCount = {};
+  DATA.forEach(r => { eventCount[r.event] = (eventCount[r.event] || 0) + 1; });
+  const evKeys = Object.keys(eventCount).sort();
+  destroyChart('eventPieChart');
+  const pieCtx = document.getElementById('eventPieChart').getContext('2d');
+  charts['eventPieChart'] = new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+      labels: evKeys,
+      datasets: [{
+        data: evKeys.map(k => eventCount[k]),
+        backgroundColor: evKeys.map((_, i) => PALETTE[i % PALETTE.length]),
+        borderColor: '#111827',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12, padding: 8 }
+        }
+      },
+      cutout: '60%'
+    }
+  });
+
+  // Venues
+  const venueCount = {};
+  DATA.forEach(r => {
+    if (r.venue && r.venue !== 'UNKNOWN') venueCount[r.venue] = (venueCount[r.venue] || 0) + 1;
+  });
+  const vSorted = Object.entries(venueCount).sort((a, b) => b[1] - a[1]);
+  const maxV = vSorted[0]?.[1] || 1;
+  document.getElementById('venueList').innerHTML = vSorted.map(([v, c]) => `
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px">
+        <span style="color:var(--text)">${v}</span>
+        <span style="color:var(--text3)">${c} race${c > 1 ? 's' : ''}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${(c/maxV*100).toFixed(0)}%"></div></div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// PROGRESSION TAB
+// ============================================================
+function renderProgression() {
+  const eventFilter = document.getElementById('progEvent').value;
+  const courseFilter = document.getElementById('progCourse').value;
+  const pbOnly = document.getElementById('progPBOnly').value === '1';
+  
+  // NEW: Read the comparison mode
+  const compareEl = document.getElementById('progCompare');
+  const compareMode = compareEl ? compareEl.value : 'first';
+
+  let filtered = DATA.slice();
+  if (eventFilter) filtered = filtered.filter(r => r.event === eventFilter);
+  if (courseFilter) filtered = filtered.filter(r => r.course === courseFilter);
+  if (pbOnly) filtered = filtered.filter(r => r.isPB);
+
+  // Group by event+course for separate lines
+  const groups = {};
+  filtered.forEach(r => {
+    const key = r.event + ' (' + r.course + ')';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  });
+
+  const allKeys = Object.keys(groups).sort();
+  const datasets = allKeys.map((key, i) => {
+    const rows = groups[key];
+    const color = PALETTE[i % PALETTE.length];
+    return {
+      label: key,
+      data: rows.map(r => ({ x: new Date(r.date), y: r.timeInSec, row: r })),
+      borderColor: color,
+      backgroundColor: color + '33',
+      pointBackgroundColor: rows.map(r => r.isPB ? '#f59e0b' : color),
+      pointBorderColor: rows.map(r => r.isPB ? '#f59e0b' : color),
+      pointRadius: rows.map(r => r.isPB ? 7 : 5),
+      pointHoverRadius: 9,
+      tension: 0.3,
+      fill: false
+    };
+  });
+
+  destroyChart('progChart');
+  const canvas = document.getElementById('progChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  charts['progChart'] = new Chart(ctx, {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12, padding: 10 } },
+        tooltip: {
+          callbacks: {
+            title: items => {
+              const raw = items[0].raw;
+              return raw.row.event + ' (' + raw.row.course + ') — ' + fmtDate(raw.row.date);
+            },
+            label: items => {
+              const raw = items.raw;
+              const pb = raw.row.isPB ? ' ⭐ PB' : '';
+              const delta = raw.row.deltaPrev !== null
+                ? (raw.row.deltaPrev > 0 ? ' (+' : ' (') + raw.row.deltaPrev.toFixed(2) + 's)'
+                : '';
+              return ' ' + raw.row.time + delta + pb;
+            },
+            afterLabel: items => { return ' ' + items.raw.row.competition + '\n ' + items.raw.row.venue; }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'time',
+          time: { unit: 'month', displayFormats: { month: 'MMM yy' } },
+          ticks: { color: '#64748b', font: { size: 10 } },
+          grid: { color: '#1e293b' }
+        },
+        y: {
+          reverse: true,
+          ticks: { color: '#64748b', font: { size: 10 }, callback: v => secToTime(v) },
+          grid: { color: '#1e293b' }
+        }
+      }
+    }
+  });
+
+// Determine reference data based on filter
+let refSwims;
+let refLabel;
+
+if (compareMode === 'first') {
+  refSwims = getFirstSwims();
+  refLabel = 'First';
+} else if (compareMode === 'latest') {
+  refSwims = getLatestSwims();
+  refLabel = 'Latest';
+} else if (compareMode === 'prevBest') {
+  refSwims = getPreviousBestSwims();
+  refLabel = 'Prev Best';
+} else if (compareMode === 'prevSwim') {
+  refSwims = getPreviousSwims();
+  refLabel = 'Prev Swim';
+}
+
+// Update Card Title Dynamically
+const titleEl = document.getElementById('compareCardTitle');
+if (titleEl) titleEl.innerHTML = `🏁 Best vs ${refLabel}`;
+
+  const pbs = getPBs();
+  let improvHTML = '';
+  const eventsToShow = eventFilter
+    ? pbs.filter(p => p.event === eventFilter && (!courseFilter || p.course === courseFilter))
+    : pbs.filter(p => !courseFilter || p.course === courseFilter);
+
+  if (eventsToShow.length === 0) {
+    improvHTML = '<div class="empty"><div class="empty-icon">📊</div><p>No data for selection</p></div>';
+  } else {
+    eventsToShow.forEach(pb => {
+      const key = pb.event + '|' + pb.course;
+      const refSwim = refSwims[key];
+      if (!refSwim) return;
+      
+      const imp = refSwim.timeInSec - pb.timeInSec;
+      const impPct = (imp / refSwim.timeInSec * 100).toFixed(1);
+      const improved = imp > 0;
+      
+      const swims = DATA.filter(r => r.event === pb.event && r.course === pb.course).length;
+
+      let trendHTML = '';
+      if (swims === 1 || imp === 0) {
+        trendHTML = `<span style="color:var(--gold); font-weight:600;">—</span>`;
+      } else {
+        trendHTML = `<span class="${improved ? 'dpos' : 'dneg'}">${improved ? '▼' : '▲'} ${Math.abs(imp).toFixed(2)}s (${Math.abs(impPct)}%)</span>`;
+      }
+
+      improvHTML += `
+        <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-weight:700">${pb.event} <span class="badge ${pb.course}">${pb.course}</span></span>
+            ${trendHTML}
+          </div>
+          <div style="font-size:0.72rem;color:var(--text3)">
+            ${refLabel}: ${refSwim.time} (${fmtDateShort(refSwim.date)}) → Best: ${pb.time} (${fmtDateShort(pb.date)})
+          </div>
+          <div class="prog-bar" style="margin-top:5px">
+            <div class="prog-fill" style="width:${Math.min(Math.abs(parseFloat(impPct)) * 5, 100)}%"></div>
+          </div>
+        </div>`;
+    });
+  }
+  document.getElementById('improvSummary').innerHTML = improvHTML;
+
+  // Best vs Reference comparison table
+  let bvfHTML = '<div class="tbl-wrap"><table><thead><tr>' +
+    `<th>Event</th><th>C</th><th>${refLabel}</th><th>Best</th><th>Δ</th><th>Swims</th>` +
+    '</tr></thead><tbody>';
+
+  eventsToShow.forEach(pb => {
+    const key = pb.event + '|' + pb.course;
+    const refSwim = refSwims[key];
+    const swims = DATA.filter(r => r.event === pb.event && r.course === pb.course).length;
+    const imp = refSwim ? refSwim.timeInSec - pb.timeInSec : 0;
+    
+    let deltaCell = '';
+    if (swims === 1 || imp === 0) {
+      deltaCell = `<td style="color:var(--gold); font-weight:600;">—</td>`;
+    } else {
+      deltaCell = `<td class="${imp > 0 ? 'dpos' : 'dneg'}">${imp > 0 ? '▼' : '▲'}${Math.abs(imp).toFixed(2)}s</td>`;
+    }
+
+    bvfHTML += `<tr>
+      <td style="font-weight:600;color:var(--text)">${pb.event}</td>
+      <td><span class="badge ${pb.course}">${pb.course}</span></td>
+      <td class="tc">${refSwim ? refSwim.time : '—'}</td>
+      <td class="tc" style="color:var(--gold)">${pb.time}</td>
+      ${deltaCell}
+      <td style="color:var(--text3)">${swims}</td>
+    </tr>`;
+  });
+
+  bvfHTML += '</tbody></table></div>';
+  document.getElementById('bestVsFirst').innerHTML = bvfHTML;
+}
+
+// ============================================================
+// PERSONAL BESTS TAB
+// ============================================================
+function renderPBs() {
+  const courseFilter = document.getElementById('pbCourse').value;
+  const strokeFilter = document.getElementById('pbStroke').value;
+  const compareMode = document.getElementById('pbCompare').value;
+
+  let pbs = getPBs();
+  if (courseFilter) pbs = pbs.filter(p => p.course === courseFilter);
+  if (strokeFilter) pbs = pbs.filter(p => getStroke(p.event) === strokeFilter);
+
+  // Determine reference swims and label
+  let refSwims, refLabel;
+  if (compareMode === 'first') { refSwims = getFirstSwims(); refLabel = 'First'; }
+  else if (compareMode === 'latest') { refSwims = getLatestSwims(); refLabel = 'Latest'; }
+  else if (compareMode === 'prevSwim') { refSwims = getPreviousSwims(); refLabel = 'Prev Swim'; }
+  else { refSwims = getPreviousBestSwims(); refLabel = 'Prev Best'; }
+
+  const pbGrid = document.getElementById('pbGrid');
+  if (pbs.length === 0) {
+    pbGrid.innerHTML = '<div class="empty"><p>No PBs match filter</p></div>';
+    return;
+  }
+
+  pbGrid.innerHTML = pbs.map(pb => {
+    const key = pb.event + '|' + pb.course;
+    const ref = refSwims[key];
+    const imp = ref ? ref.timeInSec - pb.timeInSec : null;
+    const swims = DATA.filter(r => r.event === pb.event && r.course === pb.course).length;
+    
+    // Formatting improvement string
+    let impHTML = '';
+    if (imp !== null && imp > 0) {
+      impHTML = `<div class="pb-imp">▼ ${imp.toFixed(2)}s faster than ${refLabel} (${ref.time})</div>`;
+    } else if (imp !== null && imp < 0) {
+      impHTML = `<div class="pb-imp" style="color:var(--red)">▲ ${Math.abs(imp).toFixed(2)}s slower than ${refLabel} (${ref.time})</div>`;
+    } else {
+      impHTML = `<div class="pb-imp" style="color:var(--gold)">— Same as ${refLabel} / Debut</div>`;
+    }
+
+    return `
+      <div class="pb-card">
+        <div class="pb-top">
+          <div>
+            <div class="pb-event">${pb.event}</div>
+            <div style="margin-top:3px"><span class="badge ${pb.course}">${pb.course === 'S' ? 'SC' : 'LC'}</span></div>
+          </div>
+          <div style="text-align:right">
+            <div class="pb-time">${pb.time}</div>
+            <div style="font-size:0.7rem;color:var(--text3)">${swims} swims</div>
+          </div>
+        </div>
+        ${impHTML}
+        <div class="pb-info">📅 ${fmtDate(pb.date)} · 📍 ${pb.venue}</div>
+      </div>`;
+  }).join('');
+}
+
+// ============================================================
+// SPLITS TAB
+// ============================================================
+let currentEventFiltered = []; 
+let splitBarChart = null;
+let paceChart = null;
+
+function renderSplits() {
+  const eventFilter = document.getElementById('splitsEvent').value;
+  const courseFilter = document.getElementById('splitsCourse').value;
+  const splitDetail = document.getElementById('splitDetail');
+
+  if (!eventFilter) {
+    splitDetail.innerHTML = '<div class="empty">Select an event to begin analysis.</div>';
+    return;
+  }
+
+  // 1. Get the list of swims to display
+  let filtered = DATA.filter(r => r.splits.length > 0 && r.event === eventFilter);
+  if (courseFilter) {
+    filtered = filtered.filter(r => r.course === courseFilter);
+  }
+  
+  currentEventFiltered = filtered;
+
+  if (filtered.length === 0) {
+    splitDetail.innerHTML = '<div class="empty">No split data found for this selection.</div>';
+    return;
+  }
+
+  // 2. Initial render with the latest swim as default
+  const latest = filtered[filtered.length - 1];
+  
+  // FIND CONTEXTUAL PB (Matches the course of the 'latest' swim)
+  const contextualPB = [...DATA]
+    .filter(r => r.event === eventFilter && r.course === latest.course)
+    .sort((a,b) => a.timeInSec - b.timeInSec)[0] || latest;
+
+  renderSplitCharts(filtered, contextualPB);
+
+  let detailHTML = '';
+  filtered.slice().reverse().forEach((r, idx) => {
+    const actualIdx = filtered.length - 1 - idx;
+    const raceAvg = r.timeInSec / r.splits.length;
+
+    detailHTML += `
+      <div class="split-detail-row" id="split-row-${actualIdx}" onclick="analyzeSwim(${actualIdx})">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start">
+          <div>
+            <span style="font-weight:700; font-size:1.1rem">${r.time}</span>
+            <span class="badge ${r.course}">${r.course}</span>
+            ${r.isPB ? '<span class="badge pb">PB</span>' : ''}
+            <div style="font-size:0.75rem; color:var(--text3); margin-top:2px">
+              ${fmtDate(r.date)} • ${r.venue || 'Unknown Venue'}
+            </div>
+          </div>
+        </div>
+        <div class="split-row">
+          ${r.splits.map((s, i) => {
+            // Color coding logic
+            let colorClass = 'even';
+            if (s < raceAvg * 0.95) colorClass = 'fast';
+            if (s > raceAvg * 1.05) colorClass = 'fade';
+            return `<div class="sc ${colorClass}"><span class="sc-lbl">Lap ${i+1}</span><span class="sc-val">${secToTime(s)}</span></div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  });
+  
+  splitDetail.innerHTML = detailHTML;
+  analyzeSwim(filtered.length - 1);
+}
+
+function renderSplitCharts(filtered, truePB) {
+  const ctxBar = document.getElementById('splitBarChart').getContext('2d');
+  const ctxPace = document.getElementById('paceChart').getContext('2d');
+
+  if (splitBarChart) splitBarChart.destroy();
+  if (paceChart) paceChart.destroy();
+
+  const latest = filtered[filtered.length - 1];
+
+  // Bar Chart (Selected vs True PB)
+  splitBarChart = new Chart(ctxBar, {
+    type: 'bar',
+    data: {
+      labels: latest.splits.map((_, i) => `Lap ${i + 1}`),
+      datasets: [
+        { label: 'Current Selection', data: latest.splits, backgroundColor: '#3b82f6' },
+        { label: 'Personal Best', data: truePB.splits, backgroundColor: '#f59e0b' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { 
+        y: { 
+          beginAtZero: false, 
+          ticks: { callback: v => secToTime(v), color: '#94a3b8' }, 
+          grid: { color: '#1e293b' } 
+        },
+        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+      },
+      plugins: { 
+        legend: { labels: { color: '#94a3b8' }, position: 'bottom' },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${secToTime(ctx.raw)}` } }
+      }
+    }
+  });
+
+  // Pacing Profile
+  paceChart = new Chart(ctxPace, {
+    type: 'line',
+    data: {
+      labels: latest.splits.map((_, i) => `Lap ${i + 1}`),
+      datasets: filtered.map((r, idx) => ({
+        label: `${fmtDateShort(r.date)} (${r.time})`,
+        data: r.splits,
+        borderColor: r === truePB ? '#f59e0b' : `hsl(${210 + (idx * 20)}, 70%, 50%)`,
+        borderWidth: r === truePB ? 3 : 2,
+        pointRadius: 4,
+        pointBackgroundColor: r === truePB ? '#f59e0b' : '#3b82f6',
+        tension: 0.2
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { 
+        y: { ticks: { callback: v => secToTime(v), color: '#94a3b8' }, grid: { color: '#1e293b' } },
+        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+      },
+      plugins: { 
+        legend: { display: true, position: 'right', labels: { color: '#94a3b8', boxWidth: 10, font: { size: 9 } } }
+      }
+    }
+  });
+}
+
+function analyzeSwim(index) {
+  const swim = currentEventFiltered[index];
+  const aiContent = document.getElementById('aiCoachingContent');
+  
+  document.querySelectorAll('.split-detail-row').forEach(el => el.classList.remove('active-coach'));
+  const activeRow = document.getElementById(`split-row-${index}`);
+  if (activeRow) activeRow.classList.add('active-coach');
+
+  // Benchmark against the fastest time for this specific Event + Course
+  const courseSpecificPB = [...DATA]
+    .filter(r => r.event === swim.event && r.course === swim.course)
+    .sort((a,b) => a.timeInSec - b.timeInSec)[0] || swim;
+
+  // Update Bar Chart
+  splitBarChart.data.datasets[0].data = swim.splits;
+  splitBarChart.data.datasets[0].label = `Selected (${swim.course === 'S' ? 'SC' : 'LC'})`;
+  splitBarChart.data.datasets[1].data = courseSpecificPB.splits;
+  splitBarChart.data.datasets[1].label = `${swim.course === 'S' ? 'SC' : 'LC'} PB Bench`;
+  splitBarChart.update();
+
+  const legs = swim.splits;
+  if (legs.length < 2) {
+    aiContent.innerHTML = "Not enough split data to analyze for a 50m sprint.";
+    return;
+  }
+
+  // Calculate Deltas vs Benchmark
+  const isNewBest = swim.timeInSec <= courseSpecificPB.timeInSec;
+  const diff = (swim.timeInSec - courseSpecificPB.timeInSec).toFixed(2);
+  const lapDiffs = legs.map((s, i) => {
+    const pbLap = courseSpecificPB.splits[i] || s;
+    const d = (s - pbLap).toFixed(2);
+    return `<span style="color:${d > 0 ? 'var(--red)' : 'var(--green)'}">${d > 0 ? '+' + d : d}s</span>`;
+  });
+
+  // --- NEW COLOR-BASED COACHING LOGIC ---
+  const raceAvg = swim.timeInSec / legs.length;
+  const getColor = (s) => {
+    if (s < raceAvg * 0.95) return 'Green';
+    if (s > raceAvg * 1.05) return 'Red';
+    return 'White';
+  };
+
+  const courseName = swim.course === 'S' ? 'SC' : 'LC';
+  let adviceNotes = [];
+
+if (legs.length === 2) {
+    // 100m Race Analysis
+    const lap1Color = getColor(legs[0]);
+    const lap2Color = getColor(legs[1]);
+    const drop = (legs[1] - legs[0]).toFixed(2);
+
+    if (lap1Color === 'White' && lap2Color === 'White') {
+      adviceNotes.push(`<strong>The Perfect Pacer:</strong> You delivered a <strong>White-White</strong> 100m! This shows incredible control. By not over-sprinting the first 50m, you maintained elite efficiency through the finish.`);
+    } else if (lap1Color === 'Green' && lap2Color === 'Red') {
+      adviceNotes.push(`<strong>Aggressive Start:</strong> Your <strong>Green</strong> start gave you a huge lead, but the <strong>Red</strong> finish suggests you "hit the wall." Try to find 0.5s of patience in the first 25m to save for the final 15m.`);
+    } else if (lap1Color === 'White' && lap2Color === 'Green') {
+      adviceNotes.push(`<strong>Negative Split!</strong> Finishing with a <strong>Green</strong> lap in a 100m is rare. It means you have massive untapped power. You can afford to attack the first lap much harder next time.`);
+    } else if (lap1Color === 'Red') {
+      adviceNotes.push(`<strong>Slow Breakout:</strong> A <strong>Red</strong> start in a 100m usually means a slow reaction time or short underwaters. Focus on your explosive power off the block.`);
+    } else {
+      adviceNotes.push(`Solid 100m effort. Your ${drop}s differential is within a healthy range for ${courseName} swimming.`);
+    }
+  
+
+  } else {
+    // 200m+ Race Analysis
+    const startColor = getColor(legs[0]);
+    const endColor = getColor(legs[legs.length - 1]);
+    const midColors = legs.slice(1, -1).map(getColor);
+
+    // 1. Analyze Start
+    if (startColor !== 'Green') {
+      adviceNotes.push(`Your start was <strong>${startColor}</strong>. You missed out on the "free speed" of the dive. Aim for a Green first lap by attacking the breakout.`);
+    }
+
+    // 2. Analyze Middle
+    if (midColors.includes('Red')) {
+      adviceNotes.push("You have <strong>Red (fading)</strong> laps in the middle of your race. Focus on distance-per-stroke to avoid pace drop-offs in the 'engine room' of the race.");
+    } else if (midColors.includes('Green')) {
+      adviceNotes.push("You surged to a <strong>Green (fast)</strong> pace mid-race. Surging burns excessive energy; try to smooth this out to a steady White pace.");
+    } else {
+      adviceNotes.push("Excellent steady <strong>White</strong> pacing through the middle laps. You held your rhythm perfectly.");
+    }
+
+    // 3. Analyze Finish
+    if (endColor === 'Green') {
+      adviceNotes.push("Fantastic <strong>Green</strong> sprint finish! You had plenty of gas left in the tank to bring it home.");
+    } else if (endColor === 'White') {
+      adviceNotes.push("You held a solid <strong>White</strong> pace to the wall. To level up, try increasing your kick rate in the final 15m to turn this into a Green finish.");
+    } else {
+      adviceNotes.push("Your final lap faded to <strong>Red</strong>. Try holding back just 2% more energy in the first half so you can finish strong.");
+    }
+  }
+
+  // Combine notes into bullet points
+  const adviceHTML = `<ul style="margin-left: 16px; margin-top: 4px; padding-left: 4px;">
+    ${adviceNotes.map(note => `<li style="margin-bottom: 6px;">${note}</li>`).join('')}
+  </ul>`;
+
+  // Final UI Update
+  aiContent.innerHTML = `
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+      <div>
+        <div style="margin-bottom:8px; font-weight:700">Vs. ${courseName} PB</div>
+        <div style="font-size:1.2rem; color:${diff <= 0 ? 'var(--green)' : 'var(--text)'}">
+          ${diff <= 0 ? '✨ NEW BEST' : diff + 's off PB'}
+        </div>
+      </div>
+      <div>
+        <div style="margin-bottom:8px; font-weight:700">Lap Deltas (vs PB)</div>
+        <div style="display:flex; gap:8px; font-size:0.8rem; flex-wrap:wrap;">${lapDiffs.join(' | ')}</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border); margin-top:12px; padding-top:12px; color:var(--text2); font-size:0.9rem">
+      💡 <strong>Coach Notes:</strong>
+      ${adviceHTML}
+    </div>
+  `;
+
+}
+// ============================================================
+// ALL RESULTS TAB
+// ============================================================
+let sortCol = 'date';
+let sortDir = 1;
+
+function sortResults(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  renderResults();
+}
+
+function resetResultsFilters() {
+  document.getElementById('resEvent').value = '';
+  document.getElementById('resCourse').value = '';
+  document.getElementById('resVenue').value = '';
+  document.getElementById('resYear').value = '';
+  renderResults();
+}
+
+function resetPBFilters() {
+  document.getElementById('pbStroke').selectedIndex = 0;
+  document.getElementById('pbCourse').selectedIndex = 0;
+  const compareEl = document.getElementById('pbCompare');
+  if (compareEl) compareEl.selectedIndex = 0;
+  renderPBs();
+}
+
+function renderResults() {
+  const eventFilter = document.getElementById('resEvent').value;
+  const courseFilter = document.getElementById('resCourse').value;
+  const venueFilter = document.getElementById('resVenue').value;
+  const yearFilter = document.getElementById('resYear').value;
+
+  let filtered = DATA.slice();
+  if (eventFilter) filtered = filtered.filter(r => r.event === eventFilter);
+  if (courseFilter) filtered = filtered.filter(r => r.course === courseFilter);
+  if (venueFilter) filtered = filtered.filter(r => r.venue === venueFilter);
+  if (yearFilter) filtered = filtered.filter(r => r.date.startsWith(yearFilter));
+
+  // Sort
+// FIX 2: Sort integer distance first, then stroke
+  filtered.sort((a, b) => {
+    let av, bv;
+    if (sortCol === 'date') { av = a.date; bv = b.date; }
+    else if (sortCol === 'event') { 
+      const distA = getDistance(a.event);
+      const distB = getDistance(b.event);
+      if (distA !== distB) return (distA - distB) * sortDir;
+      av = a.event; bv = b.event; 
+    }
+    else if (sortCol === 'course') { av = a.course; bv = b.course; }
+    else if (sortCol === 'time') { av = a.timeInSec; bv = b.timeInSec; }
+    else { av = a[sortCol]; bv = b[sortCol]; }
+    
+    if (av < bv) return -1 * sortDir;
+    if (av > bv) return 1 * sortDir;
+    return 0;
+  });
+
+  const tbody = document.getElementById('resultsTbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text3)">
+      No results match the current filters</td></tr>`;
+    document.getElementById('resCount').textContent = '';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    const deltaStr = r.deltaPrev !== null
+      ? `<span class="${r.deltaPrev < 0 ? 'dpos' : 'dneg'}">${r.deltaPrev < 0 ? '▼' : '▲'}${Math.abs(r.deltaPrev).toFixed(2)}s</span>`
+      : '<span style="color:var(--text3)">—</span>';
+
+    const pbStr = r.isPB
+      ? '<span class="badge pb">PB</span>'
+      : '<span style="color:var(--text3)">—</span>';
+
+    let splitsStr = '—';
+    if (r.splits.length > 0) {
+      splitsStr = r.splits.map(s => secToTime(s)).join(' | ');
+    }
+
+    return `<tr>
+      <td style="color:var(--text)">${fmtDate(r.date)}</td>
+      <td style="font-weight:600;color:var(--text)">${r.event}</td>
+      <td><span class="badge ${r.course}">${r.course}</span></td>
+      <td class="tc" style="color:var(--gold)">${r.time}</td>
+      <td>${deltaStr}</td>
+      <td>${pbStr}</td>
+      <td style="color:var(--text2);max-width:220px;overflow:hidden;text-overflow:ellipsis">${r.competition || '—'}</td>
+      <td style="color:var(--text2)">${r.venue || '—'}</td>
+      <td style="color:var(--text3);font-size:0.75rem;font-variant-numeric:tabular-nums">${splitsStr}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('resCount').textContent =
+    `Showing ${filtered.length} of ${DATA.length} results`;
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function showTab(name, target) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (target) target.classList.add('active');
+
+  if (name === 'overview') renderOverview();
+  else if (name === 'progression') renderProgression();
+  else if (name === 'pbs') renderPBs();
+  else if (name === 'splits') renderSplits();
+  else if (name === 'results') renderResults();
+  else if (name === 'qualifying') renderQualifying();
+}
+
+// ============================================================
+// RENDER QUALIFYING TAB
+// ============================================================
+function renderQualifying() {
+  const gender  = document.getElementById('qtGender').value;
+  const age     = document.getElementById('qtAge').value;
+  const course  = document.getElementById('qtCourse').value;
+  const stroke  = document.getElementById('qtStroke').value;
+
+  // Filter QT rows — exclude rows where both times are null (event not offered for age group)
+  let qtRows = QT_DATA.filter(r =>
+    r.gender === gender && r.age === age && r.course === course &&
+    !(r.qualify === null && r.consider === null)
+  );
+  if (stroke) qtRows = qtRows.filter(r => r.event.includes(stroke));
+
+  // Get swimmer's PBs for matching course
+  const dashCourse = course === 'Short Course' ? 'S' : 'L';
+  const pbMap = {};
+  DATA.forEach(r => {
+    if (r.course !== dashCourse) return;
+    const key = r.event;
+    if (!pbMap[key] || r.timeInSec < pbMap[key].timeInSec) pbMap[key] = r;
+  });
+
+  // Build matched rows: qt event name must match dashboard event name
+  const matched = qtRows.map(qt => {
+    const pb = pbMap[qt.event] || null;
+    const pbSec = pb ? pb.timeInSec : null;
+    const gapQ  = pbSec !== null ? pbSec - qt.qualify  : null;
+    const gapC  = pbSec !== null ? pbSec - qt.consider : null;
+    let status = 'No PB';
+    if (pbSec !== null) {
+      if (pbSec <= qt.qualify)  status = 'Qualified';
+      else if (pbSec <= qt.consider) status = 'Consideration';
+      else status = 'Outside';
+    }
+    return { ...qt, pb, pbSec, gapQ, gapC, status };
+  }).sort((a,b) => {
+    const strokeOrder = ['Free','Back','Breast','Fly','IM'];
+    const strokeA = strokeOrder.indexOf(getStroke(a.event));
+    const strokeB = strokeOrder.indexOf(getStroke(b.event));
+    if (strokeA !== strokeB) return strokeA - strokeB;
+    return parseInt(a.event) - parseInt(b.event);
+  });
+
+  // Stat cards
+  const qualified    = matched.filter(r => r.status === 'Qualified').length;
+  const consideration = matched.filter(r => r.status === 'Consideration').length;
+  const outside  = matched.filter(r => r.status === 'Outside').length;
+  const noPB     = matched.filter(r => r.status === 'No PB').length;
+
+  document.getElementById('qtStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-val" style="color:var(--green)">${qualified}</div>
+      <div class="stat-label">Qualified</div>
+      <div class="stat-sub">Direct entry</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔶</div>
+      <div class="stat-val" style="color:var(--gold)">${consideration}</div>
+      <div class="stat-label">Consideration</div>
+      <div class="stat-sub">May be selected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-val" style="color:var(--red)">${outside}</div>
+      <div class="stat-label">Outside times</div>
+      <div class="stat-sub">Below consideration</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">—</div>
+      <div class="stat-val" style="color:var(--text3)">${noPB}</div>
+      <div class="stat-label">No PB recorded</div>
+      <div class="stat-sub">Event not swum</div>
+    </div>
+  `;
+
+  // Bar chart
+  const labels    = matched.map(r => r.event);
+  const pbData    = matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null);
+  const qualData  = matched.map(r => parseFloat(r.qualify.toFixed(2)));
+  const consData  = matched.map(r => parseFloat(r.consider.toFixed(2)));
+
+  // Color each PB bar by status
+  const pbColors = matched.map(r => {
+    if (r.status === 'Qualified')     return 'rgba(16,185,129,0.85)';
+    if (r.status === 'Consideration') return 'rgba(245,158,11,0.85)';
+    if (r.status === 'Outside')       return 'rgba(239,68,68,0.85)';
+    return 'rgba(100,116,139,0.4)';
+  });
+
+  destroyChart('qtBarChart');
+  const ctx = document.getElementById('qtBarChart').getContext('2d');
+  charts['qtBarChart'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Swimmer's PB",
+          data: pbData,
+          backgroundColor: pbColors,
+          borderColor: pbColors.map(c => c.replace('0.85','1').replace('0.4','0.8')),
+          borderWidth: 1,
+          borderRadius: 4,
+          order: 1
+        },
+        {
+          label: 'Qualify time',
+          data: qualData,
+          type: 'line',
+          borderColor: '#10b981',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderDash: [6,3],
+          pointRadius: 4,
+          pointBackgroundColor: '#10b981',
+          order: 0,
+          tension: 0
+        },
+        {
+          label: 'Consideration time',
+          data: consData,
+          type: 'line',
+          borderColor: '#f59e0b',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderDash: [4,4],
+          pointRadius: 4,
+          pointBackgroundColor: '#f59e0b',
+          order: 0,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => {
+              const r = matched[item.dataIndex];
+              if (item.dataset.label === "Swimmer's PB") {
+                if (r.pbSec === null) return " No PB recorded";
+                return ` PB: ${secToTime(r.pbSec)} (${r.status})`;
+              }
+              if (item.dataset.label === 'Qualify time') return ` Qualify: ${secToTime(r.qualify)}`;
+              return ` Consideration: ${secToTime(r.consider)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        y: {
+          ticks: {
+            color: '#94a3b8',
+            callback: v => secToTime(v)
+          },
+          grid: { color: '#1e293b' }
+        }
+      }
+    }
+  });
+
+  // Custom legend
+  document.getElementById('qtLegend').innerHTML = `
+    <div class="cl-item"><div class="cl-dot" style="background:#10b981;border-radius:2px;width:24px;height:3px;border-top:2px dashed #10b981;background:none"></div> Qualify time</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#f59e0b;border-radius:2px;width:24px;height:3px;border-top:2px dashed #f59e0b;background:none"></div> Consideration time</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(16,185,129,0.85);border-radius:2px"></div> PB — Qualified</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(245,158,11,0.85);border-radius:2px"></div> PB — Consideration</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(239,68,68,0.85);border-radius:2px"></div> PB — Outside</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(100,116,139,0.4);border-radius:2px"></div> No PB</div>
+  `;
+
+  // Table
+  const tbody = document.getElementById('qtTableBody');
+  if (!matched.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = matched.map(r => {
+    const pbStr = r.pbSec !== null
+      ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
+      : '<span style="color:var(--text3)">—</span>';
+
+    const gapQStr = r.gapQ !== null
+      ? `<span class="${r.gapQ <= 0 ? 'dpos' : 'dneg'}">${r.gapQ <= 0 ? '▼' : '▲'}${Math.abs(r.gapQ).toFixed(2)}s</span>`
+      : '<span style="color:var(--text3)">—</span>';
+
+    const gapCStr = r.gapC !== null
+      ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
+      : '<span style="color:var(--text3)">—</span>';
+
+    const statusColor = r.status === 'Qualified' ? '#10b981'
+      : r.status === 'Consideration' ? '#f59e0b'
+      : r.status === 'Outside' ? '#ef4444'
+      : '#64748b';
+
+    const statusIcon = r.status === 'Qualified' ? '✅'
+      : r.status === 'Consideration' ? '🔶'
+      : r.status === 'Outside' ? '❌' : '—';
+
+    return `<tr>
+      <td style="font-weight:600;color:var(--text)">${r.event}</td>
+      <td>${pbStr}${r.pb ? `<span style="font-size:0.7rem;color:var(--text3);display:block">${fmtDate(r.pb.date)}</span>` : ''}</td>
+      <td class="tc">${secToTime(r.qualify)}</td>
+      <td class="tc">${secToTime(r.consider)}</td>
+      <td>${gapQStr}</td>
+      <td>${gapCStr}</td>
+      <td><span style="color:${statusColor};font-weight:600">${statusIcon} ${r.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  if (RAW.length === 0) {
+    // Show the modal automatically if no data exists yet
+    document.getElementById('dataModal').style.display = 'flex';
+    document.getElementById('hTotalRaces').textContent = "0";
+    return; 
+  }
+
+  // Process the raw data into the format the dashboard uses
+  DATA = processData(RAW);
+
+  populateSelects();
+  renderOverview();
+  renderProgression();
+  renderSplits();
+  renderResults();
+  if (QT_DATA.length > 0) {
+    renderQualifying();
+    } else {
+      document.getElementById('qtTableBody').innerHTML = `
+        <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text3)">
+          No Qualifying Time data found. Upload "county_qt.json" in the Data Manager.
+        </td></tr>`;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+</script>
+</body>
+</html>
