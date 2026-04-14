@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <title>Swimming Performance Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -39,6 +39,11 @@
 .split-detail-row.active-coach {
   background: rgba(59, 130, 246, 0.1);
   border-left: 3px solid var(--accent);
+}
+
+.split-detail-row.active {
+  background: var(--surface2) !important;
+  border-left: 3px solid var(--accent) !important;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -217,76 +222,181 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 .sc.even { border-top: 3px solid var(--text3); }
 
 /* --- MOBILE OPTIMIZATIONS --- */
-
-@media (max-width: 600px) {
-  /* 1. Fix Header Overflow: Stack Title and Stats */
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px 16px;
-    gap: 12px;
-  }
-
-  .header-stats {
-    margin-left: 0;
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2x2 grid for stats */
-    gap: 12px;
-    background: var(--surface2);
-    padding: 12px;
-    border-radius: 12px;
-  }
-
-  /* Make the Data button full width at the bottom of the header */
-  .header-stats > .hstat:last-child {
-    grid-column: span 2;
-    margin-left: 0 !important;
-    border-left: none !important;
-    padding-left: 0 !important;
-  }
-  
-  .header-stats .btn {
-    width: 100%;
-    margin-top: 4px;
-  }
-
-  .header-title h1 { font-size: 1.1rem; }
-  .header-icon { font-size: 1.5rem; }
-
-  /* 2. Fix Tabs: Make them more touch-friendly */
+@media (max-width: 500px) {
+  /* 1. Global Container: Reclaim side padding for small screens */
   .container {
-    padding: 12px; /* Reduce side padding so content uses more screen */
+    padding: 12px 8px !important;
+    overflow-x: hidden; /* Hard stop on horizontal scrolling */
   }
 
-  .tabs {
-    gap: 2px;
-    padding: 2px;
-    margin-bottom: 16px;
-    /* This ensures you can swipe left/right to see all tabs */
-    -webkit-overflow-scrolling: touch; 
+  /* 2. Header & Title */
+  .header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 15px !important;
+  }
+  .header-icon { font-size: 1.8rem !important; }
+  .header-title h1 { font-size: 1.1rem !important; }
+
+  /* 3. Header Stats & Data Button Fix */
+  .header-stats {
+    margin-left: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .header-stats .hstat {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 0 4px !important;
+    border: none !important; /* Strips the inline desktop border */
+  }
+  .hstat-val { font-size: 1.1rem !important; }
+  .hstat-label { font-size: 0.65rem !important; }
+
+  /* Target the Data Button container explicitly to override inline padding */
+  .header-stats > .hstat:last-child {
+    flex: 0 0 100% !important;
+    padding: 15px 0 0 0 !important; 
+    margin-top: 10px !important;
+    border-top: 1px solid var(--border) !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+  .header-stats .btn.sec {
+    width: 180px !important;
+    height: 40px !important;
+    border-radius: 20px !important;
   }
 
-  .tab {
-    padding: 8px 10px;
-    font-size: 0.75rem;
-    min-width: 80px;
+  /* 4. Tabs */
+  .tabs { flex-wrap: wrap !important; background: transparent !important; }
+  .tab { 
+    flex: 1 1 45% !important; 
+    font-size: 0.8rem !important; 
+    padding: 10px 5px !important; 
+    background: var(--surface2);
+    border: 1px solid var(--border);
   }
+  .tab:last-child { flex: 1 1 100% !important; }
 
-  /* 3. Stat Cards: Stack them 1-per-row */
-  .stat-val { font-size: 1.6rem; }
-  
-  /* 4. Filter Bar: Stack inputs */
+  /* 5. Overview Stats Grid */
+  #tab-overview .grid4 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  #tab-overview .stat-card {
+    padding: 12px 5px !important;
+    min-height: 85px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  #tab-overview .stat-val { font-size: 1.3rem !important; }
+  #tab-overview .stat-label { font-size: 0.65rem !important; }
+  #tab-overview .stat-icon { font-size: 1.1rem !important; }
+
+  /* 6. Filter Bars */
   .filter-bar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; 
+    gap: 8px !important;
+    padding: 10px 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+  .fg {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+  .fg select, .fg input {
+    width: 100% !important;
+    height: 36px !important;
+    padding: 0 8px !important;
+    font-size: 0.8rem !important;
+    border-radius: 8px !important;
+    background: var(--surface2) !important;
+    border: 1px solid var(--border) !important;
+  }
+  .fg label, .fl {
+    font-size: 0.6rem !important;
+    color: var(--text3) !important;
+    margin-left: 2px !important;
+  }
+  
+  /* Fix: Make the WRAPPER of the reset button span 2 columns */
+  .filter-bar .fg:last-child {
+    grid-column: 1 / span 2 !important;
+  }
+  .filter-bar .btn {
+    height: 36px !important;
+    font-size: 0.8rem !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    background: var(--surface3) !important;
+  }
+
+  /* 7. Progression Tab Data - Scroll Killers */
+  #tab-progression .grid2 {
+    display: flex !important;
+    flex-direction: column !important; 
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  /* Shrink the Best vs First Table to fit the iPhone screen */
+  #bestVsFirst table {
+    font-size: 0.65rem !important;
+  }
+  #bestVsFirst th, #bestVsFirst td {
+    padding: 8px 4px !important; /* Tightens the 6 columns significantly */
+  }
+  #bestVsFirst .badge {
+    padding: 2px 4px !important;
+    font-size: 0.55rem !important;
+  }
+  #bestVsFirst .tc {
+    font-size: 0.75rem !important; /* Slightly smaller time font */
+  }
+
+  /* Shrink the Chart Heights so they don't consume the entire viewport */
+  .chart-wrap {
+    height: 240px !important;
+  }  
+}
+
+.split-detail-row.active {
+  background: var(--surface2) !important;
+  border-left: 3px solid var(--accent) !important;
+}
+
+/* Center align and scale County Qualifying metrics */
+  #tab-qualifying .grid4, 
+  #tab-qualifying .grid5 { /* Supports both 4 or 5 metric layouts */
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; 
+    gap: 10px !important;
+  }
+
+  #tab-qualifying .stat-card {
+    padding: 12px 5px !important;
+    text-align: center;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    justify-content: center;
   }
-  
-  .fg select, .fg .btn {
-    width: 100%;
+
+  #tab-qualifying .stat-val {
+    font-size: 1.4rem !important; /* Slightly smaller for 5 cards */
   }
-}  
-  
+
 </style>
 </head>
 <body>
@@ -303,7 +413,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="hstat"><div class="hstat-val" id="hMeets">—</div><div class="hstat-label">Meets</div></div>
     <div class="hstat"><div class="hstat-val" id="hSpan">—</div><div class="hstat-label">Months</div></div>
     <div class="hstat" style="margin-left: 15px; border-left: 1px solid var(--border); padding-left: 15px;">
-      <button class="btn sec" onclick="document.getElementById('dataModal').style.display='flex'">⚙️ Data</button>
+      <button class="nav-btn" onclick="showModal()" style="color: var(--accent); display: none;">Data</button>
     </div>
 
     <div id="dataModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
@@ -1362,6 +1472,8 @@ function renderSplits() {
   
   splitDetail.innerHTML = detailHTML;
   analyzeSwim(filtered.length - 1);
+  splitDetail.innerHTML = detailHTML;
+  if (filtered.length > 0) analyzeSwim(filtered.length - 1);
 }
 
 function renderSplitCharts(filtered, truePB) {
@@ -1428,128 +1540,128 @@ function renderSplitCharts(filtered, truePB) {
       }
     }
   });
+  
 }
 
 function analyzeSwim(index) {
-  const swim = currentEventFiltered[index];
+  const event = document.getElementById('splitsEvent').value;
+  const course = document.getElementById('splitsCourse').value;
+  if (!event) return;
+
+  const filtered = DATA.filter(r => r.event === event && (course === '' || r.course === course) && r.splits.length > 0);
+  const swim = filtered[index];
   const aiContent = document.getElementById('aiCoachingContent');
-  
-  document.querySelectorAll('.split-detail-row').forEach(el => el.classList.remove('active-coach'));
-  const activeRow = document.getElementById(`split-row-${index}`);
-  if (activeRow) activeRow.classList.add('active-coach');
 
-  // Benchmark against the fastest time for this specific Event + Course
-  const courseSpecificPB = [...DATA]
-    .filter(r => r.event === swim.event && r.course === swim.course)
-    .sort((a,b) => a.timeInSec - b.timeInSec)[0] || swim;
+  // 1. Highlight selected row
+  document.querySelectorAll('.split-detail-row').forEach(row => row.classList.remove('active'));
+  const targetRow = document.getElementById(`split-row-${index}`);
+  if (targetRow) targetRow.classList.add('active');
 
-  // Update Bar Chart
-  splitBarChart.data.datasets[0].data = swim.splits;
-  splitBarChart.data.datasets[0].label = `Selected (${swim.course === 'S' ? 'SC' : 'LC'})`;
-  splitBarChart.data.datasets[1].data = courseSpecificPB.splits;
-  splitBarChart.data.datasets[1].label = `${swim.course === 'S' ? 'SC' : 'LC'} PB Bench`;
+  // 2. Find Previous PB
+  const history = DATA.filter(r => 
+    r.event === swim.event && 
+    r.course === swim.course && 
+    r.date < swim.date && 
+    r.splits.length > 0
+  );
+
+  let prevPB = null;
+  if (history.length > 0) {
+    prevPB = history.reduce((min, p) => p.timeInSec < min.timeInSec ? p : min, history[0]);
+  }
+
+  const benchmarkSwim = prevPB || swim; 
+  splitBarChart.data.datasets[1].data = benchmarkSwim.splits;
+  splitBarChart.data.datasets[1].label = prevPB ? `Prev PB (${benchmarkSwim.time})` : `First Swim (${swim.time})`;
   splitBarChart.update();
 
   const legs = swim.splits;
-  if (legs.length < 2) {
-    aiContent.innerHTML = "Not enough split data to analyze for a 50m sprint.";
-    return;
-  }
+  const raceAvg = swim.timeInSec / legs.length;
+  const isDebut = !prevPB;
 
-  // Calculate Deltas vs Benchmark
-  const isNewBest = swim.timeInSec <= courseSpecificPB.timeInSec;
-  const diff = (swim.timeInSec - courseSpecificPB.timeInSec).toFixed(2);
-  const lapDiffs = legs.map((s, i) => {
-    const pbLap = courseSpecificPB.splits[i] || s;
-    const d = (s - pbLap).toFixed(2);
-    return `<span style="color:${d > 0 ? 'var(--red)' : 'var(--green)'}">${d > 0 ? '+' + d : d}s</span>`;
+  // 3. Ultra-Compact Grid Cards (Fixed width to prevent stretching)
+  const lapCards = legs.map((s, i) => {
+    let displayValue = '';
+    let textColor = '';
+    let subLabel = isDebut ? 'Time' : 'Diff';
+
+    if (isDebut) {
+      displayValue = s.toFixed(2);
+      if (s < raceAvg * 0.95) textColor = 'var(--green)';
+      else if (s > raceAvg * 1.05) textColor = 'var(--red)';
+      else textColor = 'var(--text2)';
+    } else {
+      const benchLap = benchmarkSwim.splits[i] || s;
+      const d = (s - benchLap).toFixed(2);
+      textColor = d > 0 ? 'var(--red)' : (d < 0 ? 'var(--green)' : 'var(--text2)');
+      const sign = d > 0 ? '+' : (d < 0 ? '' : '±');
+      displayValue = `${sign}${d}`;
+    }
+    
+    return `
+      <div style="background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px 2px; text-align:center; width:65px;">
+        <div style="font-size:0.55rem; color:var(--text3); text-transform:uppercase; font-weight:700;">L${i+1}</div>
+        <div style="color:${textColor}; font-weight:800; font-family:monospace; font-size:0.85rem; margin:2px 0;">${displayValue}</div>
+        <div style="font-size:0.45rem; color:var(--text3); opacity:0.6;">${subLabel}</div>
+      </div>
+    `;
   });
 
-  // --- NEW COLOR-BASED COACHING LOGIC ---
-  const raceAvg = swim.timeInSec / legs.length;
-  const getColor = (s) => {
-    if (s < raceAvg * 0.95) return 'Green';
-    if (s > raceAvg * 1.05) return 'Red';
-    return 'White';
-  };
+  // 4. Coaching Notes
+  const adviceNotes = [];
+  let fastLaps = [], slowLaps = [];
+  legs.forEach((s, i) => {
+    if (s < raceAvg * 0.95) fastLaps.push(i+1);
+    if (s > raceAvg * 1.05) slowLaps.push(i+1);
+  });
 
-  const courseName = swim.course === 'S' ? 'SC' : 'LC';
-  let adviceNotes = [];
-
-if (legs.length === 2) {
-    // 100m Race Analysis
-    const lap1Color = getColor(legs[0]);
-    const lap2Color = getColor(legs[1]);
-    const drop = (legs[1] - legs[0]).toFixed(2);
-
-    if (lap1Color === 'White' && lap2Color === 'White') {
-      adviceNotes.push(`<strong>The Perfect Pacer:</strong> You delivered a <strong>White-White</strong> 100m! This shows incredible control. By not over-sprinting the first 50m, you maintained elite efficiency through the finish.`);
-    } else if (lap1Color === 'Green' && lap2Color === 'Red') {
-      adviceNotes.push(`<strong>Aggressive Start:</strong> Your <strong>Green</strong> start gave you a huge lead, but the <strong>Red</strong> finish suggests you "hit the wall." Try to find 0.5s of patience in the first 25m to save for the final 15m.`);
-    } else if (lap1Color === 'White' && lap2Color === 'Green') {
-      adviceNotes.push(`<strong>Negative Split!</strong> Finishing with a <strong>Green</strong> lap in a 100m is rare. It means you have massive untapped power. You can afford to attack the first lap much harder next time.`);
-    } else if (lap1Color === 'Red') {
-      adviceNotes.push(`<strong>Slow Breakout:</strong> A <strong>Red</strong> start in a 100m usually means a slow reaction time or short underwaters. Focus on your explosive power off the block.`);
-    } else {
-      adviceNotes.push(`Solid 100m effort. Your ${drop}s differential is within a healthy range for ${courseName} swimming.`);
-    }
-  
-
-  } else {
-    // 200m+ Race Analysis
-    const startColor = getColor(legs[0]);
-    const endColor = getColor(legs[legs.length - 1]);
-    const midColors = legs.slice(1, -1).map(getColor);
-
-    // 1. Analyze Start
-    if (startColor !== 'Green') {
-      adviceNotes.push(`Your start was <strong>${startColor}</strong>. You missed out on the "free speed" of the dive. Aim for a Green first lap by attacking the breakout.`);
-    }
-
-    // 2. Analyze Middle
-    if (midColors.includes('Red')) {
-      adviceNotes.push("You have <strong>Red (fading)</strong> laps in the middle of your race. Focus on distance-per-stroke to avoid pace drop-offs in the 'engine room' of the race.");
-    } else if (midColors.includes('Green')) {
-      adviceNotes.push("You surged to a <strong>Green (fast)</strong> pace mid-race. Surging burns excessive energy; try to smooth this out to a steady White pace.");
-    } else {
-      adviceNotes.push("Excellent steady <strong>White</strong> pacing through the middle laps. You held your rhythm perfectly.");
-    }
-
-    // 3. Analyze Finish
-    if (endColor === 'Green') {
-      adviceNotes.push("Fantastic <strong>Green</strong> sprint finish! You had plenty of gas left in the tank to bring it home.");
-    } else if (endColor === 'White') {
-      adviceNotes.push("You held a solid <strong>White</strong> pace to the wall. To level up, try increasing your kick rate in the final 15m to turn this into a Green finish.");
-    } else {
-      adviceNotes.push("Your final lap faded to <strong>Red</strong>. Try holding back just 2% more energy in the first half so you can finish strong.");
+  if (legs.length > 1) {
+    if (fastLaps.length > 0) adviceNotes.push(`<strong>Pacing:</strong> Fast output on Lap(s) ${fastLaps.join(', ')}.`);
+    if (slowLaps.length > 0) adviceNotes.push(`<strong>Fatigue:</strong> Drop-off on Lap(s) ${slowLaps.join(', ')}.`);
+    
+    let paceSum = 0;
+    for(let i=1; i<legs.length; i++) paceSum += legs[i];
+    let midPaceAvg = paceSum / (legs.length - 1);
+    let finishDiff = legs[legs.length-1] - midPaceAvg;
+    
+    if(legs.length > 2) {
+      if(finishDiff > 0.8) adviceNotes.push(`<strong>Finish:</strong> Heavy drop-off (+${finishDiff.toFixed(2)}s).`);
+      else if(finishDiff < -0.2) adviceNotes.push(`<strong>Finish:</strong> Strong negative split finish!`);
     }
   }
 
-  // Combine notes into bullet points
-  const adviceHTML = `<ul style="margin-left: 16px; margin-top: 4px; padding-left: 4px;">
-    ${adviceNotes.map(note => `<li style="margin-bottom: 6px;">${note}</li>`).join('')}
-  </ul>`;
+  // 5. Header Rendering
+  const courseDisplay = swim.course === 'S' ? 'SC' : (swim.course === 'L' ? 'LC' : swim.course);
+  let statusLabel = isDebut ? 
+    `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>` :
+    (swim.timeInSec < prevPB.timeInSec ? 
+      `<span class="badge pb" style="background:var(--green); color:white; font-size:0.65rem;">⭐ NEW BEST</span>` : 
+      `<span class="badge" style="background:var(--surface3); color:var(--text2); font-size:0.65rem;">ABOVE PB</span>`);
 
-  // Final UI Update
   aiContent.innerHTML = `
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
-      <div>
-        <div style="margin-bottom:8px; font-weight:700">Vs. ${courseName} PB</div>
-        <div style="font-size:1.2rem; color:${diff <= 0 ? 'var(--green)' : 'var(--text)'}">
-          ${diff <= 0 ? '✨ NEW BEST' : diff + 's off PB'}
-        </div>
+    <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      ${statusLabel} 
+      <strong style="color:var(--text); font-size:1.05rem;">${swim.event} ${courseDisplay}</strong>
+      <span style="color:var(--text3); font-size:0.85rem;">${fmtDate(swim.date)}</span>
+      <div style="font-size:0.85rem; color:var(--text2); width:100%; margin-top:2px;">${swim.competition}</div>
+    </div>
+
+    <div style="background:var(--surface2); padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border);">
+      <div style="font-size:0.6rem; text-transform:uppercase; color:var(--text3); margin-bottom:8px; letter-spacing:0.05em; font-weight:600;">
+        ${isDebut ? 'Actual Splits' : 'Lap Deltas vs PB'}
       </div>
-      <div>
-        <div style="margin-bottom:8px; font-weight:700">Lap Deltas (vs PB)</div>
-        <div style="display:flex; gap:8px; font-size:0.8rem; flex-wrap:wrap;">${lapDiffs.join(' | ')}</div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, 65px); gap:6px; justify-content: start;">
+        ${lapCards.join('')}
       </div>
     </div>
-    <div style="border-top:1px solid var(--border); margin-top:12px; padding-top:12px; color:var(--text2); font-size:0.9rem">
-      💡 <strong>Coach Notes:</strong>
-      ${adviceHTML}
+    
+    <div style="background:var(--surface2); border-left:4px solid var(--accent); padding:12px; border-radius:0 8px 8px 0;">
+      <div style="font-size:0.75rem; font-weight:700; color:var(--text3); margin-bottom:6px; text-transform:uppercase;">Coach Notes</div>
+      <ul style="margin:0; padding-left:18px; font-size:0.85rem; color:var(--text2); line-height:1.4;">
+        ${adviceNotes.length ? adviceNotes.map(n => `<li style="margin-bottom:4px;">${n}</li>`).join('') : '<li>Steady pace maintained.</li>'}
+      </ul>
     </div>
   `;
-
 }
 // ============================================================
 // ALL RESULTS TAB
@@ -1890,30 +2002,44 @@ function renderQualifying() {
 // ============================================================
 // INIT
 // ============================================================
-function init() {
-  if (RAW.length === 0) {
-    // Show the modal automatically if no data exists yet
-    document.getElementById('dataModal').style.display = 'flex';
-    document.getElementById('hTotalRaces').textContent = "0";
-    return; 
-  }
+async function init() {
+  const raceDataUrl = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json';
+  const qtDataUrl = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/county_qt.json';
 
-  // Process the raw data into the format the dashboard uses
-  DATA = processData(RAW);
+  try {
+    // 1. Fetch both files simultaneously
+    const [raceRes, qtRes] = await Promise.all([
+      fetch(raceDataUrl),
+      fetch(qtDataUrl)
+    ]);
 
-  populateSelects();
-  renderOverview();
-  renderProgression();
-  renderSplits();
-  renderResults();
-  if (QT_DATA.length > 0) {
+    // 2. Parse the JSON
+    const raceJson = await raceRes.json();
+    const qtJson = await qtRes.json();
+
+    // 3. Assign to your global variables
+    // Note: Assuming your race JSON is an array of race objects
+    RAW = raceJson; 
+    QT_DATA = qtJson;
+
+    // 4. Process and Render (Existing Logic)
+    DATA = processData(RAW);
+    
+    populateSelects();
+    renderOverview();
+    renderProgression();
+    renderSplits();
+    renderResults();
     renderQualifying();
-    } else {
-      document.getElementById('qtTableBody').innerHTML = `
-        <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text3)">
-          No Qualifying Time data found. Upload "county_qt.json" in the Data Manager.
-        </td></tr>`;
-    }
+
+    // Hide the data modal since data is now loaded automatically
+    document.getElementById('dataModal').style.display = 'none';
+
+  } catch (err) {
+    console.error("Error loading GitHub data:", err);
+    // If GitHub fails, show the modal so you can still upload manually
+    document.getElementById('dataModal').style.display = 'flex';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
