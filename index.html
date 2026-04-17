@@ -32,18 +32,16 @@
   border-left: 3px solid transparent;
 }
 
-.split-detail-row:hover {
-  background: var(--surface3);
+.split-detail-row:hover { background: var(--surface3); }
+
+.split-detail-row.active {
+  background: var(--surface2) !important;
+  border-left: 3px solid var(--accent) !important;
 }
 
 .split-detail-row.active-coach {
   background: rgba(59, 130, 246, 0.1);
   border-left: 3px solid var(--accent);
-}
-
-.split-detail-row.active {
-  background: var(--surface2) !important;
-  border-left: 3px solid var(--accent) !important;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -368,22 +366,13 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   /* Shrink the Chart Heights so they don't consume the entire viewport */
   .chart-wrap {
     height: 240px !important;
-  }  
-}
-
-.split-detail-row.active {
-  background: var(--surface2) !important;
-  border-left: 3px solid var(--accent) !important;
-}
-
-/* Center align and scale County Qualifying metrics */
-  #tab-qualifying .grid4, 
-  #tab-qualifying .grid5 { /* Supports both 4 or 5 metric layouts */
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important; 
-    gap: 10px !important;
   }
 
+  /* County Qualifying metrics: 2-column on mobile */
+  #tab-qualifying .grid4 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
   #tab-qualifying .stat-card {
     padding: 12px 5px !important;
     text-align: center;
@@ -392,10 +381,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     align-items: center;
     justify-content: center;
   }
-
   #tab-qualifying .stat-val {
-    font-size: 1.4rem !important; /* Slightly smaller for 5 cards */
+    font-size: 1.4rem !important;
   }
+}
+
 
 </style>
 </head>
@@ -413,7 +403,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="hstat"><div class="hstat-val" id="hMeets">—</div><div class="hstat-label">Meets</div></div>
     <div class="hstat"><div class="hstat-val" id="hSpan">—</div><div class="hstat-label">Months</div></div>
     <div class="hstat" style="margin-left: 15px; border-left: 1px solid var(--border); padding-left: 15px;">
-      <button class="nav-btn" onclick="showModal()" style="color: var(--accent); display: none;">Data</button>
+      <button class="btn sec" onclick="showDataModal()" style="padding: 6px 14px; font-size: 0.78rem;">⚙️ Data</button>
     </div>
 
     <div id="dataModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
@@ -437,7 +427,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         <button class="btn sec" style="width:100%; margin-top:10px; border-color:var(--red); color:var(--red);" onclick="if(confirm('Delete all stored data?')) { localStorage.clear(); window.location.reload(); }"> 🗑️ Reset Dashboard</button> 
         
         <div style="margin-top:15px; font-size:0.75rem; color:var(--text3); text-align:center;">
-          Data is saved securely in your browser's local storage.
+          Data is stored in your browser's local storage on this device only.
         </div>
       </div>
     </div>
@@ -736,60 +726,59 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 </div><script>
 
 // ============================================================
-// DATA INITIALIZATION (LOCAL STORAGE)
+// CONFIGURATION
 // ============================================================
-// Attempt to load data from browser storage, default to empty arrays if none exists
+const RACE_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json';
+const QT_DATA_URL   = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/county_qt.json';
+
+// ============================================================
+// DATA
+// ============================================================
 let RAW = JSON.parse(localStorage.getItem('swimDash_RAW')) || [];
 let QT_DATA = JSON.parse(localStorage.getItem('swimDash_QT')) || [];
 let DATA = [];
 
-// Function to handle the file uploads from the Data Manager modal
+// Cache for expensive computed lookups — invalidated on each data load
+const cache = {};
+function invalidateCache() { Object.keys(cache).forEach(k => delete cache[k]); }
+
+// ============================================================
+// DATA MANAGER MODAL
+// ============================================================
+function showDataModal() {
+  document.getElementById('dataModal').style.display = 'flex';
+}
+
 function saveDataToBrowser() {
   const rawFile = document.getElementById('uploadRaw').files[0];
-  const qtFile = document.getElementById('uploadQT').files[0];
+  const qtFile  = document.getElementById('uploadQT').files[0];
   const promises = [];
 
-  const readFile = (file, storageKey) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          // Validation Check: Try to parse before saving
-          JSON.parse(e.target.result); 
-          localStorage.setItem(storageKey, e.target.result);
-          resolve();
-        } catch (err) {
-          reject(`Invalid JSON format in ${file.name}`);
-        }
-      };
-      reader.readAsText(file);
-    });
-  };
+  const readFile = (file, storageKey) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        JSON.parse(e.target.result);
+        localStorage.setItem(storageKey, e.target.result);
+        resolve();
+      } catch {
+        reject(`Invalid JSON in ${file.name}`);
+      }
+    };
+    reader.readAsText(file);
+  });
 
   if (rawFile) promises.push(readFile(rawFile, 'swimDash_RAW'));
-  if (qtFile) promises.push(readFile(qtFile, 'swimDash_QT'));
-
-  if (promises.length === 0) return alert("Please select a file first.");
+  if (qtFile)  promises.push(readFile(qtFile,  'swimDash_QT'));
+  if (promises.length === 0) return alert('Please select at least one file.');
 
   Promise.all(promises)
-    .then(() => {
-      alert("Success! Dashboard updating...");
-      window.location.reload();
-    })
-    .catch(err => alert("Error: " + err));
+    .then(() => { alert('Saved! Reloading…'); window.location.reload(); })
+    .catch(err => alert('Error: ' + err));
 }
 
-// Add this to allow clearing data easily
 function resetDashboard() {
-  if (confirm("Delete all stored race data from this browser?")) {
-    localStorage.clear();
-    window.location.reload();
-  }
-}
-
-// Add this function if you want a reset button
-function clearAllData() {
-  if (confirm("Are you sure? This will delete all race history from this browser.")) {
+  if (confirm('Delete all stored race data from this browser?')) {
     localStorage.clear();
     window.location.reload();
   }
@@ -806,23 +795,26 @@ function timeToSec(t) {
 }
 
 function secToTime(s) {
-  if (!isFinite(s)) return '—';
+  if (!isFinite(s) || s === null) return '—';
   const m = Math.floor(s / 60);
   const sec = (s - m * 60).toFixed(2).padStart(5, '0');
-  return m + ':' + sec;
+  return m > 0 ? m + ':' + sec : (s - m * 60).toFixed(2);
+}
+
+function parseLocalDate(d) {
+  const [y, m, day] = d.split('-').map(Number);
+  return new Date(y, m - 1, day);
 }
 
 function fmtDate(d) {
-  const dt = new Date(d);
-  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return parseLocalDate(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function fmtDateShort(d) {
-  const dt = new Date(d);
-  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+  return parseLocalDate(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
 }
 
-// FIX 5: Add Individual Medley (IM) support
+// Returns stroke category from event name string
 function getStroke(event) {
   if (event.includes('Free')) return 'Free';
   if (event.includes('Back')) return 'Back';
@@ -861,9 +853,6 @@ function processData(raw) {
   return data;
 }
 
-//const DATA = processData(RAW);
-
-// Get unique sorted events
 function uniqueEvents() {
   return [...new Set(DATA.map(r => r.event))].sort((a, b) => {
     const da = getDistance(a), db = getDistance(b);
@@ -880,83 +869,95 @@ function uniqueYears() {
   return [...new Set(DATA.map(r => r.date.slice(0, 4)))].sort();
 }
 
-// Compute PBs: for each event+course, return best row
+// ============================================================
+// POPULATE SELECTS
+// ============================================================
+
+const PALETTE = [
+  '#3b82f6','#06b6d4','#8b5cf6','#10b981','#f59e0b',
+  '#ef4444','#ec4899','#f97316','#14b8a6','#a855f7'
+];
+
+// ============================================================
+// MEMOISED DATA LOOKUPS
+// Cache is invalidated on each data reload via invalidateCache()
+// ============================================================
 function getPBs() {
+  if (cache.pbs) return cache.pbs;
   const map = {};
   DATA.forEach(r => {
     const key = r.event + '|' + r.course;
     if (!map[key] || r.timeInSec < map[key].timeInSec) map[key] = r;
   });
-  return Object.values(map).sort((a, b) => {
+  cache.pbs = Object.values(map).sort((a, b) => {
     const da = getDistance(a.event), db = getDistance(b.event);
     if (da !== db) return da - db;
     return a.event.localeCompare(b.event) || a.course.localeCompare(b.course);
   });
+  return cache.pbs;
 }
 
-// First swim per event+course
 function getFirstSwims() {
+  if (cache.firstSwims) return cache.firstSwims;
   const map = {};
-  DATA.forEach(r => {
-    const key = r.event + '|' + r.course;
-    if (!map[key]) map[key] = r;
-  });
+  DATA.forEach(r => { const key = r.event + '|' + r.course; if (!map[key]) map[key] = r; });
+  cache.firstSwims = map;
   return map;
 }
-// Latest swim per event+course
+
 function getLatestSwims() {
+  if (cache.latestSwims) return cache.latestSwims;
   const map = {};
-  DATA.forEach(r => {
-    const key = r.event + '|' + r.course;
-    map[key] = r;
-  });
+  DATA.forEach(r => { map[r.event + '|' + r.course] = r; });
+  cache.latestSwims = map;
   return map;
 }
 
-// COLORS
-const PALETTE = [
-  '#3b82f6','#06b6d4','#8b5cf6','#10b981','#f59e0b',
-  '#ef4444','#ec4899','#f97316','#14b8a6','#a855f7'
-];
-function colorForEvent(event) {
-  const events = uniqueEvents();
-  return PALETTE[events.indexOf(event) % PALETTE.length];
-};
-
-// Previous swim (the swim immediately before the current PB)
 function getPreviousSwims() {
+  if (cache.previousSwims) return cache.previousSwims;
   const map = {};
-  const pbs = getPBs();
-  pbs.forEach(currentPB => {
-    const key = currentPB.event + '|' + currentPB.course;
+  getPBs().forEach(pb => {
+    const key = pb.event + '|' + pb.course;
     const history = DATA.filter(r =>
-      r.event === currentPB.event &&
-      r.course === currentPB.course &&
-      r.date < currentPB.date
+      r.event === pb.event && r.course === pb.course && r.date < pb.date
     ).sort((a, b) => b.date.localeCompare(a.date));
     if (history.length > 0) map[key] = history[0];
   });
+  cache.previousSwims = map;
   return map;
 }
 
-// The best time recorded before the current all-time PB
 function getPreviousBestSwims() {
+  if (cache.previousBestSwims) return cache.previousBestSwims;
   const map = {};
-  const currentPBs = getPBs();
-  currentPBs.forEach(pb => {
+  getPBs().forEach(pb => {
     const key = pb.event + '|' + pb.course;
     const history = DATA.filter(r =>
-      r.event === pb.event &&
-      r.course === pb.course &&
-      r.date < pb.date
+      r.event === pb.event && r.course === pb.course && r.date < pb.date
     );
     if (history.length > 0) {
       map[key] = history.reduce((min, p) => p.timeInSec < min.timeInSec ? p : min, history[0]);
     }
   });
+  cache.previousBestSwims = map;
   return map;
 }
 
+// Pre-computed swim count per event|course — avoids O(n²) in render loops
+function getSwimCounts() {
+  if (cache.swimCounts) return cache.swimCounts;
+  const counts = {};
+  DATA.forEach(r => {
+    const key = r.event + '|' + r.course;
+    counts[key] = (counts[key] || 0) + 1;
+  });
+  cache.swimCounts = counts;
+  return counts;
+}
+
+// ============================================================
+// FILTER RESET HELPERS
+// ============================================================
 function resetProgressionFilters() {
   document.getElementById('progEvent').selectedIndex = 0;
   document.getElementById('progCourse').selectedIndex = 0;
@@ -967,15 +968,15 @@ function resetProgressionFilters() {
 }
 
 function resetQualifyingFilters() {
-  document.getElementById('qtGender').selectedIndex = 0; // Boys
-  document.getElementById('qtAge').selectedIndex = 1;    // 12 (based on your default)
-  document.getElementById('qtCourse').selectedIndex = 0; // Short Course
-  document.getElementById('qtStroke').selectedIndex = 0; // All Strokes
+  document.getElementById('qtGender').selectedIndex = 0;
+  document.getElementById('qtAge').selectedIndex = 1;
+  document.getElementById('qtCourse').selectedIndex = 0;
+  document.getElementById('qtStroke').selectedIndex = 0;
   renderQualifying();
 }
 
 // ============================================================
-// CHARTS REGISTRY (to destroy before re-render)
+// CHARTS REGISTRY
 // ============================================================
 const charts = {};
 function destroyChart(id) {
@@ -985,23 +986,27 @@ function destroyChart(id) {
 // ============================================================
 // POPULATE SELECTS
 // ============================================================
+
 function populateSelects() {
-  const allEvents = [...new Set(DATA.map(r => r.event))].sort((a,b) => getDistance(a) - getDistance(b));
-  const eventsWithSplits = [...new Set(DATA.filter(r => r.splits.length > 0).map(r => r.event))].sort((a,b) => getDistance(a) - getDistance(b));
-  const venues = [...new Set(DATA.map(r => r.venue))].sort();
-  const years = [...new Set(DATA.map(r => r.date.substring(0,4)))].sort((a,b) => b - a);
+  const allEvents = [...new Set(DATA.map(r => r.event))].sort((a, b) => getDistance(a) - getDistance(b));
+  const eventsWithSplits = [...new Set(DATA.filter(r => r.splits.length > 0).map(r => r.event))].sort((a, b) => getDistance(a) - getDistance(b));
+  const venues = [...new Set(DATA.map(r => r.venue).filter(v => v && v !== 'UNKNOWN'))].sort();
+  const years  = [...new Set(DATA.map(r => r.date.substring(0, 4)))].sort((a, b) => b - a);
 
-  // Populate Progression Tab
-  document.getElementById('progEvent').innerHTML = allEvents.map(e => `<option value="${e}">${e}</option>`).join('');
-  
-  // Populate Splits Tab
-  const splitsSelect = document.getElementById('splitsEvent');
-  splitsSelect.innerHTML = eventsWithSplits.map(e => `<option value="${e}">${e}</option>`).join('');
+  document.getElementById('progEvent').innerHTML =
+    '<option value="">All Events</option>' + allEvents.map(e => `<option value="${e}">${e}</option>`).join('');
 
-  // Populate Results Tab
-  document.getElementById('resEvent').innerHTML = '<option value="">All Events</option>' + allEvents.map(e => `<option value="${e}">${e}</option>`).join('');
-  document.getElementById('resVenue').innerHTML = '<option value="">All Venues</option>' + venues.map(v => `<option value="${v}">${v}</option>`).join('');
-  document.getElementById('resYear').innerHTML = '<option value="">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+  document.getElementById('splitsEvent').innerHTML =
+    '<option value="">Select Event</option>' + eventsWithSplits.map(e => `<option value="${e}">${e}</option>`).join('');
+
+  document.getElementById('resEvent').innerHTML =
+    '<option value="">All Events</option>' + allEvents.map(e => `<option value="${e}">${e}</option>`).join('');
+
+  document.getElementById('resVenue').innerHTML =
+    '<option value="">All Venues</option>' + venues.map(v => `<option value="${v}">${v}</option>`).join('');
+
+  document.getElementById('resYear').innerHTML =
+    '<option value="">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
 }
 
 // ============================================================
@@ -1010,8 +1015,8 @@ function populateSelects() {
 function renderOverview() {
   // Header stats
   const meets = new Set(DATA.map(r => r.competition + r.date)).size;
-  const firstDate = new Date(DATA[0].date);
-  const lastDate = new Date(DATA[DATA.length - 1].date);
+  const firstDate = parseLocalDate(DATA[0].date);
+  const lastDate  = parseLocalDate(DATA[DATA.length - 1].date);
   const months = Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24 * 30.5));
 
   document.getElementById('hTotalRaces').textContent = DATA.length;
@@ -1164,7 +1169,6 @@ function renderProgression() {
   const courseFilter = document.getElementById('progCourse').value;
   const pbOnly = document.getElementById('progPBOnly').value === '1';
   
-  // NEW: Read the comparison mode
   const compareEl = document.getElementById('progCompare');
   const compareMode = compareEl ? compareEl.value : 'first';
 
@@ -1267,6 +1271,7 @@ const titleEl = document.getElementById('compareCardTitle');
 if (titleEl) titleEl.innerHTML = `🏁 Best vs ${refLabel}`;
 
   const pbs = getPBs();
+  const swimCounts = getSwimCounts();
   let improvHTML = '';
   const eventsToShow = eventFilter
     ? pbs.filter(p => p.event === eventFilter && (!courseFilter || p.course === courseFilter))
@@ -1279,13 +1284,12 @@ if (titleEl) titleEl.innerHTML = `🏁 Best vs ${refLabel}`;
       const key = pb.event + '|' + pb.course;
       const refSwim = refSwims[key];
       if (!refSwim) return;
-      
+
       const imp = refSwim.timeInSec - pb.timeInSec;
       const impPct = (imp / refSwim.timeInSec * 100).toFixed(1);
       const improved = imp > 0;
-      
-      const swims = DATA.filter(r => r.event === pb.event && r.course === pb.course).length;
 
+      const swims = swimCounts[pb.event + '|' + pb.course] || 1;
       let trendHTML = '';
       if (swims === 1 || imp === 0) {
         trendHTML = `<span style="color:var(--gold); font-weight:600;">—</span>`;
@@ -1318,9 +1322,9 @@ if (titleEl) titleEl.innerHTML = `🏁 Best vs ${refLabel}`;
   eventsToShow.forEach(pb => {
     const key = pb.event + '|' + pb.course;
     const refSwim = refSwims[key];
-    const swims = DATA.filter(r => r.event === pb.event && r.course === pb.course).length;
+    const swims = swimCounts[pb.event + '|' + pb.course] || 1;
     const imp = refSwim ? refSwim.timeInSec - pb.timeInSec : 0;
-    
+
     let deltaCell = '';
     if (swims === 1 || imp === 0) {
       deltaCell = `<td style="color:var(--gold); font-weight:600;">—</td>`;
@@ -1362,6 +1366,7 @@ function renderPBs() {
   else { refSwims = getPreviousBestSwims(); refLabel = 'Prev Best'; }
 
   const pbGrid = document.getElementById('pbGrid');
+  const swimCounts = getSwimCounts();
   if (pbs.length === 0) {
     pbGrid.innerHTML = '<div class="empty"><p>No PBs match filter</p></div>';
     return;
@@ -1371,9 +1376,7 @@ function renderPBs() {
     const key = pb.event + '|' + pb.course;
     const ref = refSwims[key];
     const imp = ref ? ref.timeInSec - pb.timeInSec : null;
-    const swims = DATA.filter(r => r.event === pb.event && r.course === pb.course).length;
-    
-    // Formatting improvement string
+    const swims = swimCounts[pb.event + '|' + pb.course] || 1;
     let impHTML = '';
     if (imp !== null && imp > 0) {
       impHTML = `<div class="pb-imp">▼ ${imp.toFixed(2)}s faster than ${refLabel} (${ref.time})</div>`;
@@ -1431,20 +1434,18 @@ function renderSplits() {
     return;
   }
 
-  // 2. Initial render with the latest swim as default
   const latest = filtered[filtered.length - 1];
-  
-  // FIND CONTEXTUAL PB (Matches the course of the 'latest' swim)
+
   const contextualPB = [...DATA]
     .filter(r => r.event === eventFilter && r.course === latest.course)
-    .sort((a,b) => a.timeInSec - b.timeInSec)[0] || latest;
+    .sort((a, b) => a.timeInSec - b.timeInSec)[0] || latest;
 
   renderSplitCharts(filtered, contextualPB);
 
   let detailHTML = '';
   filtered.slice().reverse().forEach((r, idx) => {
     const actualIdx = filtered.length - 1 - idx;
-    const raceAvg = r.timeInSec / r.splits.length;
+    const legAvg = r.splits.reduce((a, b) => a + b, 0) / r.splits.length;
 
     detailHTML += `
       <div class="split-detail-row" id="split-row-${actualIdx}" onclick="analyzeSwim(${actualIdx})">
@@ -1459,21 +1460,18 @@ function renderSplits() {
           </div>
         </div>
         <div class="split-row">
-          ${r.splits.map((s, i) => {
-            // Color coding logic
+          ${r.splits.map((leg, i) => {
             let colorClass = 'even';
-            if (s < raceAvg * 0.95) colorClass = 'fast';
-            if (s > raceAvg * 1.05) colorClass = 'fade';
-            return `<div class="sc ${colorClass}"><span class="sc-lbl">Lap ${i+1}</span><span class="sc-val">${secToTime(s)}</span></div>`;
+            if (leg < legAvg * 0.95) colorClass = 'fast';
+            if (leg > legAvg * 1.05) colorClass = 'fade';
+            return `<div class="sc ${colorClass}"><span class="sc-lbl">Lap ${i+1}</span><span class="sc-val">${secToTime(leg)}</span></div>`;
           }).join('')}
         </div>
       </div>`;
   });
-  
+
   splitDetail.innerHTML = detailHTML;
   analyzeSwim(filtered.length - 1);
-  splitDetail.innerHTML = detailHTML;
-  if (filtered.length > 0) analyzeSwim(filtered.length - 1);
 }
 
 function renderSplitCharts(filtered, truePB) {
@@ -1513,7 +1511,7 @@ function renderSplitCharts(filtered, truePB) {
     }
   });
 
-  // Pacing Profile
+  // Pacing Profile — splits are individual lap times, plotted directly
   paceChart = new Chart(ctxPace, {
     type: 'line',
     data: {
@@ -1544,42 +1542,43 @@ function renderSplitCharts(filtered, truePB) {
 }
 
 function analyzeSwim(index) {
-  const event = document.getElementById('splitsEvent').value;
-  const course = document.getElementById('splitsCourse').value;
-  if (!event) return;
+  const swim = currentEventFiltered[index];
+  if (!swim) return;
 
-  const filtered = DATA.filter(r => r.event === event && (course === '' || r.course === course) && r.splits.length > 0);
-  const swim = filtered[index];
   const aiContent = document.getElementById('aiCoachingContent');
 
-  // 1. Highlight selected row
+  // Highlight selected row
   document.querySelectorAll('.split-detail-row').forEach(row => row.classList.remove('active'));
   const targetRow = document.getElementById(`split-row-${index}`);
   if (targetRow) targetRow.classList.add('active');
 
-  // 2. Find Previous PB
-  const history = DATA.filter(r => 
-    r.event === swim.event && 
-    r.course === swim.course && 
-    r.date < swim.date && 
+  // Find previous PB with splits before this swim's date
+  const history = DATA.filter(r =>
+    r.event === swim.event &&
+    r.course === swim.course &&
+    r.date < swim.date &&
     r.splits.length > 0
   );
-
   let prevPB = null;
   if (history.length > 0) {
     prevPB = history.reduce((min, p) => p.timeInSec < min.timeInSec ? p : min, history[0]);
   }
 
-  const benchmarkSwim = prevPB || swim; 
-  splitBarChart.data.datasets[1].data = benchmarkSwim.splits;
-  splitBarChart.data.datasets[1].label = prevPB ? `Prev PB (${benchmarkSwim.time})` : `First Swim (${swim.time})`;
+  const benchmarkSwim = prevPB || swim;
+
+  // Update both datasets: [0] = selected swim, [1] = benchmark
+  splitBarChart.data.labels = swim.splits.map((_, i) => `Lap ${i + 1}`);
+  splitBarChart.data.datasets[0].data  = swim.splits;
+  splitBarChart.data.datasets[0].label = `Selected (${swim.time})`;
+  splitBarChart.data.datasets[1].data  = benchmarkSwim.splits;
+  splitBarChart.data.datasets[1].label = prevPB ? `Prev PB (${benchmarkSwim.time})` : `Only swim (${swim.time})`;
   splitBarChart.update();
 
+  // Derive per-lap average from the actual split (leg) times
   const legs = swim.splits;
-  const raceAvg = swim.timeInSec / legs.length;
+  const legAvg = legs.reduce((a, b) => a + b, 0) / legs.length;
   const isDebut = !prevPB;
 
-  // 3. Ultra-Compact Grid Cards (Fixed width to prevent stretching)
   const lapCards = legs.map((s, i) => {
     let displayValue = '';
     let textColor = '';
@@ -1587,12 +1586,12 @@ function analyzeSwim(index) {
 
     if (isDebut) {
       displayValue = s.toFixed(2);
-      if (s < raceAvg * 0.95) textColor = 'var(--green)';
-      else if (s > raceAvg * 1.05) textColor = 'var(--red)';
+      if (s < legAvg * 0.95) textColor = 'var(--green)';
+      else if (s > legAvg * 1.05) textColor = 'var(--red)';
       else textColor = 'var(--text2)';
     } else {
-      const benchLap = benchmarkSwim.splits[i] || s;
-      const d = (s - benchLap).toFixed(2);
+      const benchLeg = benchmarkSwim.splits[i] !== undefined ? benchmarkSwim.splits[i] : s;
+      const d = (s - benchLeg).toFixed(2);
       textColor = d > 0 ? 'var(--red)' : (d < 0 ? 'var(--green)' : 'var(--text2)');
       const sign = d > 0 ? '+' : (d < 0 ? '' : '±');
       displayValue = `${sign}${d}`;
@@ -1607,31 +1606,28 @@ function analyzeSwim(index) {
     `;
   });
 
-  // 4. Coaching Notes
   const adviceNotes = [];
-  let fastLaps = [], slowLaps = [];
+  const fastLaps = [], slowLaps = [];
   legs.forEach((s, i) => {
-    if (s < raceAvg * 0.95) fastLaps.push(i+1);
-    if (s > raceAvg * 1.05) slowLaps.push(i+1);
+    if (s < legAvg * 0.95) fastLaps.push(i + 1);
+    if (s > legAvg * 1.05) slowLaps.push(i + 1);
   });
 
   if (legs.length > 1) {
     if (fastLaps.length > 0) adviceNotes.push(`<strong>Pacing:</strong> Fast output on Lap(s) ${fastLaps.join(', ')}.`);
     if (slowLaps.length > 0) adviceNotes.push(`<strong>Fatigue:</strong> Drop-off on Lap(s) ${slowLaps.join(', ')}.`);
-    
-    let paceSum = 0;
-    for(let i=1; i<legs.length; i++) paceSum += legs[i];
-    let midPaceAvg = paceSum / (legs.length - 1);
-    let finishDiff = legs[legs.length-1] - midPaceAvg;
-    
-    if(legs.length > 2) {
-      if(finishDiff > 0.8) adviceNotes.push(`<strong>Finish:</strong> Heavy drop-off (+${finishDiff.toFixed(2)}s).`);
-      else if(finishDiff < -0.2) adviceNotes.push(`<strong>Finish:</strong> Strong negative split finish!`);
+
+    const midPaceAvg = legs.slice(1).reduce((a, b) => a + b, 0) / (legs.length - 1);
+    const finishDiff = legs[legs.length - 1] - midPaceAvg;
+
+    if (legs.length > 2) {
+      if (finishDiff > 0.8)  adviceNotes.push(`<strong>Finish:</strong> Heavy drop-off (+${finishDiff.toFixed(2)}s).`);
+      else if (finishDiff < -0.2) adviceNotes.push(`<strong>Finish:</strong> Strong negative split finish!`);
     }
   }
 
-  // 5. Header Rendering
-  const courseDisplay = swim.course === 'S' ? 'SC' : (swim.course === 'L' ? 'LC' : swim.course);
+  // Header rendering
+  const courseDisplay = swim.course === 'S' ? 'SC' : 'LC';
   let statusLabel = isDebut ? 
     `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>` :
     (swim.timeInSec < prevPB.timeInSec ? 
@@ -1703,8 +1699,6 @@ function renderResults() {
   if (venueFilter) filtered = filtered.filter(r => r.venue === venueFilter);
   if (yearFilter) filtered = filtered.filter(r => r.date.startsWith(yearFilter));
 
-  // Sort
-// FIX 2: Sort integer distance first, then stroke
   filtered.sort((a, b) => {
     let av, bv;
     if (sortCol === 'date') { av = a.date; bv = b.date; }
@@ -1765,23 +1759,62 @@ function renderResults() {
 // ============================================================
 // TAB SWITCHING
 // ============================================================
+const renderedTabs = new Set();
+
 function showTab(name, target) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (target) target.classList.add('active');
 
-  if (name === 'overview') renderOverview();
+  if (name === 'overview')    renderOverview();
   else if (name === 'progression') renderProgression();
-  else if (name === 'pbs') renderPBs();
+  else if (name === 'pbs')    renderPBs();
   else if (name === 'splits') renderSplits();
   else if (name === 'results') renderResults();
   else if (name === 'qualifying') renderQualifying();
 }
 
 // ============================================================
-// RENDER QUALIFYING TAB
+// INIT
 // ============================================================
+async function init() {
+  try {
+    const [raceRes, qtRes] = await Promise.all([
+      fetch(RACE_DATA_URL),
+      fetch(QT_DATA_URL)
+    ]);
+
+    if (!raceRes.ok || !qtRes.ok) throw new Error('Fetch failed');
+
+    RAW     = await raceRes.json();
+    QT_DATA = await qtRes.json();
+
+    // Persist fetched data to localStorage as a local cache
+    localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+    localStorage.setItem('swimDash_QT',  JSON.stringify(QT_DATA));
+
+  } catch (err) {
+    console.warn('Remote fetch failed, falling back to localStorage:', err);
+    RAW     = JSON.parse(localStorage.getItem('swimDash_RAW')) || [];
+    QT_DATA = JSON.parse(localStorage.getItem('swimDash_QT'))  || [];
+
+    if (RAW.length === 0) {
+      // No data anywhere — show modal so user can upload manually
+      document.getElementById('dataModal').style.display = 'flex';
+      return;
+    }
+  }
+
+  invalidateCache();
+  DATA = processData(RAW);
+
+  populateSelects();
+  renderOverview();   // Overview is the default active tab
+  renderResults();    // Pre-render results for faster first switch
+}
+
+document.addEventListener('DOMContentLoaded', init);
 function renderQualifying() {
   const gender  = document.getElementById('qtGender').value;
   const age     = document.getElementById('qtAge').value;
@@ -1858,11 +1891,11 @@ function renderQualifying() {
     </div>
   `;
 
-  // Bar chart
-  const labels    = matched.map(r => r.event);
-  const pbData    = matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null);
-  const qualData  = matched.map(r => parseFloat(r.qualify.toFixed(2)));
-  const consData  = matched.map(r => parseFloat(r.consider.toFixed(2)));
+  // Bar chart datasets
+  const labels   = matched.map(r => r.event);
+  const pbData   = matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null);
+  const qualData = matched.map(r => r.qualify !== null ? parseFloat(r.qualify.toFixed(2)) : null);
+  const consData = matched.map(r => r.consider !== null ? parseFloat(r.consider.toFixed(2)) : null);
 
   // Color each PB bar by status
   const pbColors = matched.map(r => {
@@ -1998,51 +2031,6 @@ function renderQualifying() {
     </tr>`;
   }).join('');
 }
-
-// ============================================================
-// INIT
-// ============================================================
-async function init() {
-  const raceDataUrl = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json';
-  const qtDataUrl = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/county_qt.json';
-
-  try {
-    // 1. Fetch both files simultaneously
-    const [raceRes, qtRes] = await Promise.all([
-      fetch(raceDataUrl),
-      fetch(qtDataUrl)
-    ]);
-
-    // 2. Parse the JSON
-    const raceJson = await raceRes.json();
-    const qtJson = await qtRes.json();
-
-    // 3. Assign to your global variables
-    // Note: Assuming your race JSON is an array of race objects
-    RAW = raceJson; 
-    QT_DATA = qtJson;
-
-    // 4. Process and Render (Existing Logic)
-    DATA = processData(RAW);
-    
-    populateSelects();
-    renderOverview();
-    renderProgression();
-    renderSplits();
-    renderResults();
-    renderQualifying();
-
-    // Hide the data modal since data is now loaded automatically
-    document.getElementById('dataModal').style.display = 'none';
-
-  } catch (err) {
-    console.error("Error loading GitHub data:", err);
-    // If GitHub fails, show the modal so you can still upload manually
-    document.getElementById('dataModal').style.display = 'flex';
-  }
-}
-
-document.addEventListener('DOMContentLoaded', init);
 
 </script>
 </body>
