@@ -2,7 +2,7 @@
 
 ## File
 Single HTML file: swimming_dash_vN.html  
-Current version: v6  
+Current version: v7 
 ~2000 lines total
 
 ## Script section layout (in order)
@@ -30,7 +30,7 @@ Current version: v6
 - DATA: processed swim array (sorted chronologically)
 - currentEventFiltered[]: swims shown in Splits tab (used by analyzeSwim)
 - splitBarChart, paceChart: Chart instances (module-level, not in charts{} registry)
-- sortCol, sortDir: Results tab sort state
+- sortCol, sortDir: Results tab sort state (reflected in header via updateSortHeaders())
 - cache{}: memoisation store, cleared by invalidateCache()
 
 ## Tab IDs
@@ -41,6 +41,9 @@ tab-overview, tab-progression, tab-pbs, tab-splits, tab-results, tab-qualifying
 --accent (#3b82f6), --accent2 (#06b6d4), --accent3 (#8b5cf6)
 --gold (#f59e0b), --green (#10b981), --red (#ef4444)
 --text, --text2, --text3, --border
+
+## Modal
+dataModal is a direct child of <body> — NOT nested in .header (fixed-inside-sticky iOS bug)
 
 ## Mobile breakpoint
 @media (max-width: 500px) — all mobile overrides in one block near end of <style>

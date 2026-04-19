@@ -405,31 +405,27 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="hstat" style="margin-left: 15px; border-left: 1px solid var(--border); padding-left: 15px;">
       <button class="btn sec" onclick="showDataModal()" style="padding: 6px 14px; font-size: 0.78rem;">⚙️ Data</button>
     </div>
+  </div>
+</div>
 
-    <div id="dataModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
-      <div class="card" style="width: 400px; max-width: 90%; background: var(--bg);">
-        <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
-          <h2 style="font-size:1.2rem;">⚙️ Data Manager</h2>
-          <button class="btn sec" style="min-width:auto; padding: 4px 8px;" onclick="document.getElementById('dataModal').style.display='none'">✕</button>
-        </div>
-        
-        <div style="margin-bottom: 15px;">
-          <label class="fl">1. Upload Swim Data (my_swims.json)</label>
-          <input type="file" id="uploadRaw" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
-        </div>
-        
-        <div style="margin-bottom: 25px;">
-          <label class="fl">2. Upload QT Data (county_qt.json)</label>
-          <input type="file" id="uploadQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
-        </div>
-
-        <button class="btn" style="width:100%" onclick="saveDataToBrowser()">💾 Save to Browser</button>
-        <button class="btn sec" style="width:100%; margin-top:10px; border-color:var(--red); color:var(--red);" onclick="if(confirm('Delete all stored data?')) { localStorage.clear(); window.location.reload(); }"> 🗑️ Reset Dashboard</button> 
-        
-        <div style="margin-top:15px; font-size:0.75rem; color:var(--text3); text-align:center;">
-          Data is stored in your browser's local storage on this device only.
-        </div>
-      </div>
+<div id="dataModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
+  <div class="card" style="width: 400px; max-width: 90%; background: var(--bg);">
+    <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+      <h2 style="font-size:1.2rem;">⚙️ Data Manager</h2>
+      <button class="btn sec" style="min-width:auto; padding: 4px 8px;" onclick="document.getElementById('dataModal').style.display='none'">✕</button>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <label class="fl">1. Upload Swim Data (my_swims.json)</label>
+      <input type="file" id="uploadRaw" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
+    </div>
+    <div style="margin-bottom: 25px;">
+      <label class="fl">2. Upload QT Data (county_qt.json)</label>
+      <input type="file" id="uploadQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
+    </div>
+    <button class="btn" style="width:100%" onclick="saveDataToBrowser()">💾 Save to Browser</button>
+    <button class="btn sec" style="width:100%; margin-top:10px; border-color:var(--red); color:var(--red);" onclick="resetDashboard()">🗑️ Reset Dashboard</button>
+    <div style="margin-top:15px; font-size:0.75rem; color:var(--text3); text-align:center;">
+      Data is stored in your browser's local storage on this device only.
     </div>
   </div>
 </div>
@@ -630,7 +626,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     </div>
     <div class="tbl-wrap">
       <table id="resultsTable">
-        <thead>
+        <thead id="resultsThead">
           <tr>
             <th onclick="sortResults('date')">Date ↕</th>
             <th onclick="sortResults('event')">Event ↕</th>
@@ -765,6 +761,7 @@ function saveDataToBrowser() {
         reject(`Invalid JSON in ${file.name}`);
       }
     };
+    reader.onerror = () => reject(`Failed to read ${file.name}`);
     reader.readAsText(file);
   });
 
@@ -798,7 +795,7 @@ function secToTime(s) {
   if (!isFinite(s) || s === null) return '—';
   const m = Math.floor(s / 60);
   const sec = (s - m * 60).toFixed(2).padStart(5, '0');
-  return m > 0 ? m + ':' + sec : (s - m * 60).toFixed(2);
+  return m > 0 ? m + ':' + sec : parseFloat(sec).toFixed(2);
 }
 
 function parseLocalDate(d) {
@@ -854,24 +851,26 @@ function processData(raw) {
 }
 
 function uniqueEvents() {
-  return [...new Set(DATA.map(r => r.event))].sort((a, b) => {
+  if (cache.uniqueEvents) return cache.uniqueEvents;
+  cache.uniqueEvents = [...new Set(DATA.map(r => r.event))].sort((a, b) => {
     const da = getDistance(a), db = getDistance(b);
     if (da !== db) return da - db;
     return a.localeCompare(b);
   });
+  return cache.uniqueEvents;
 }
 
 function uniqueVenues() {
-  return [...new Set(DATA.map(r => r.venue).filter(v => v && v !== 'UNKNOWN'))].sort();
+  if (cache.uniqueVenues) return cache.uniqueVenues;
+  cache.uniqueVenues = [...new Set(DATA.map(r => r.venue).filter(v => v && v !== 'UNKNOWN'))].sort();
+  return cache.uniqueVenues;
 }
 
 function uniqueYears() {
-  return [...new Set(DATA.map(r => r.date.slice(0, 4)))].sort();
+  if (cache.uniqueYears) return cache.uniqueYears;
+  cache.uniqueYears = [...new Set(DATA.map(r => r.date.slice(0, 4)))].sort();
+  return cache.uniqueYears;
 }
-
-// ============================================================
-// POPULATE SELECTS
-// ============================================================
 
 const PALETTE = [
   '#3b82f6','#06b6d4','#8b5cf6','#10b981','#f59e0b',
@@ -968,10 +967,10 @@ function resetProgressionFilters() {
 }
 
 function resetQualifyingFilters() {
-  document.getElementById('qtGender').selectedIndex = 0;
-  document.getElementById('qtAge').selectedIndex = 1;
-  document.getElementById('qtCourse').selectedIndex = 0;
-  document.getElementById('qtStroke').selectedIndex = 0;
+  document.getElementById('qtGender').value = 'Boys';
+  document.getElementById('qtAge').value    = '12';
+  document.getElementById('qtCourse').value = 'Short Course';
+  document.getElementById('qtStroke').value = '';
   renderQualifying();
 }
 
@@ -1026,7 +1025,8 @@ function renderOverview() {
 
   // Stat cards
   const pbs = getPBs();
-  const pbsThisYear = DATA.filter(r => r.isPB && r.date >= '2025-01-01').length;
+  const currentYearStart = `${new Date().getFullYear()}-01-01`;
+  const pbsThisYear = DATA.filter(r => r.isPB && r.date >= currentYearStart).length;
   const withSplits = DATA.filter(r => r.splits.length > 0).length;
   const events = uniqueEvents().length;
 
@@ -1041,7 +1041,7 @@ function renderOverview() {
       <div class="stat-icon">🏆</div>
       <div class="stat-val" style="color:var(--gold)">${pbs.length}</div>
       <div class="stat-label">Current PBs</div>
-      <div class="stat-sub">${pbsThisYear} set in 2025+</div>
+      <div class="stat-sub">${pbsThisYear} set in ${new Date().getFullYear()}+</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">🎯</div>
@@ -1191,7 +1191,7 @@ function renderProgression() {
     const color = PALETTE[i % PALETTE.length];
     return {
       label: key,
-      data: rows.map(r => ({ x: new Date(r.date), y: r.timeInSec, row: r })),
+      data: rows.map(r => ({ x: parseLocalDate(r.date), y: r.timeInSec, row: r })),
       borderColor: color,
       backgroundColor: color + '33',
       pointBackgroundColor: rows.map(r => r.isPB ? '#f59e0b' : color),
@@ -1435,6 +1435,8 @@ function renderSplits() {
   }
 
   const latest = filtered[filtered.length - 1];
+  const courseLabel = courseFilter ? (courseFilter === 'S' ? 'SC' : 'LC') : (latest.course === 'S' ? 'SC' : 'LC');
+  document.getElementById('splitChartTitle').textContent = `⚡ Split Comparison — ${eventFilter} (${courseLabel})`;
 
   const contextualPB = [...DATA]
     .filter(r => r.event === eventFilter && r.course === latest.course)
@@ -1567,12 +1569,19 @@ function analyzeSwim(index) {
   const benchmarkSwim = prevPB || swim;
 
   // Update both datasets: [0] = selected swim, [1] = benchmark
-  splitBarChart.data.labels = swim.splits.map((_, i) => `Lap ${i + 1}`);
+  const lapLabels = swim.splits.map((_, i) => `Lap ${i + 1}`);
+  splitBarChart.data.labels = lapLabels;
   splitBarChart.data.datasets[0].data  = swim.splits;
   splitBarChart.data.datasets[0].label = `Selected (${swim.time})`;
   splitBarChart.data.datasets[1].data  = benchmarkSwim.splits;
   splitBarChart.data.datasets[1].label = prevPB ? `Prev PB (${benchmarkSwim.time})` : `Only swim (${swim.time})`;
   splitBarChart.update();
+
+  // Also update pacing chart labels if lap count changed
+  if (paceChart.data.labels.length !== swim.splits.length) {
+    paceChart.data.labels = lapLabels;
+    paceChart.update();
+  }
 
   // Derive per-lap average from the actual split (leg) times
   const legs = swim.splits;
@@ -1687,8 +1696,21 @@ function resetPBFilters() {
   renderPBs();
 }
 
+function updateSortHeaders() {
+  const cols = ['date', 'event', 'course', 'time'];
+  const labels = { date: 'Date', event: 'Event', course: 'Course', time: 'Time' };
+  document.querySelectorAll('#resultsThead th').forEach(th => {
+    const col = th.getAttribute('onclick')?.match(/sortResults\('(\w+)'\)/)?.[1];
+    if (!col || !cols.includes(col)) return;
+    const arrow = sortCol === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ' ↕';
+    th.textContent = labels[col] + arrow;
+  });
+}
+
 function renderResults() {
-  const eventFilter = document.getElementById('resEvent').value;
+  updateSortHeaders();
+
+  const eventFilter  = document.getElementById('resEvent').value;
   const courseFilter = document.getElementById('resCourse').value;
   const venueFilter = document.getElementById('resVenue').value;
   const yearFilter = document.getElementById('resYear').value;
@@ -1757,64 +1779,8 @@ function renderResults() {
 }
 
 // ============================================================
-// TAB SWITCHING
+// RENDER QUALIFYING TAB
 // ============================================================
-const renderedTabs = new Set();
-
-function showTab(name, target) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  if (target) target.classList.add('active');
-
-  if (name === 'overview')    renderOverview();
-  else if (name === 'progression') renderProgression();
-  else if (name === 'pbs')    renderPBs();
-  else if (name === 'splits') renderSplits();
-  else if (name === 'results') renderResults();
-  else if (name === 'qualifying') renderQualifying();
-}
-
-// ============================================================
-// INIT
-// ============================================================
-async function init() {
-  try {
-    const [raceRes, qtRes] = await Promise.all([
-      fetch(RACE_DATA_URL),
-      fetch(QT_DATA_URL)
-    ]);
-
-    if (!raceRes.ok || !qtRes.ok) throw new Error('Fetch failed');
-
-    RAW     = await raceRes.json();
-    QT_DATA = await qtRes.json();
-
-    // Persist fetched data to localStorage as a local cache
-    localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
-    localStorage.setItem('swimDash_QT',  JSON.stringify(QT_DATA));
-
-  } catch (err) {
-    console.warn('Remote fetch failed, falling back to localStorage:', err);
-    RAW     = JSON.parse(localStorage.getItem('swimDash_RAW')) || [];
-    QT_DATA = JSON.parse(localStorage.getItem('swimDash_QT'))  || [];
-
-    if (RAW.length === 0) {
-      // No data anywhere — show modal so user can upload manually
-      document.getElementById('dataModal').style.display = 'flex';
-      return;
-    }
-  }
-
-  invalidateCache();
-  DATA = processData(RAW);
-
-  populateSelects();
-  renderOverview();   // Overview is the default active tab
-  renderResults();    // Pre-render results for faster first switch
-}
-
-document.addEventListener('DOMContentLoaded', init);
 function renderQualifying() {
   const gender  = document.getElementById('qtGender').value;
   const age     = document.getElementById('qtAge').value;
@@ -1828,21 +1794,18 @@ function renderQualifying() {
   );
   if (stroke) qtRows = qtRows.filter(r => r.event.includes(stroke));
 
-  // Get swimmer's PBs for matching course
+  // Get swimmer's PBs for matching course using memoised lookup
   const dashCourse = course === 'Short Course' ? 'S' : 'L';
+  const allPBs = getPBs().filter(r => r.course === dashCourse);
   const pbMap = {};
-  DATA.forEach(r => {
-    if (r.course !== dashCourse) return;
-    const key = r.event;
-    if (!pbMap[key] || r.timeInSec < pbMap[key].timeInSec) pbMap[key] = r;
-  });
+  allPBs.forEach(r => { pbMap[r.event] = r; });
 
-  // Build matched rows: qt event name must match dashboard event name
+  // Build matched rows
   const matched = qtRows.map(qt => {
-    const pb = pbMap[qt.event] || null;
+    const pb    = pbMap[qt.event] || null;
     const pbSec = pb ? pb.timeInSec : null;
-    const gapQ  = pbSec !== null ? pbSec - qt.qualify  : null;
-    const gapC  = pbSec !== null ? pbSec - qt.consider : null;
+    const gapQ  = pbSec !== null && qt.qualify  !== null ? pbSec - qt.qualify  : null;
+    const gapC  = pbSec !== null && qt.consider !== null ? pbSec - qt.consider : null;
     let status = 'No PB';
     if (pbSec !== null) {
       if (pbSec <= qt.qualify)  status = 'Qualified';
@@ -1897,12 +1860,17 @@ function renderQualifying() {
   const qualData = matched.map(r => r.qualify !== null ? parseFloat(r.qualify.toFixed(2)) : null);
   const consData = matched.map(r => r.consider !== null ? parseFloat(r.consider.toFixed(2)) : null);
 
-  // Color each PB bar by status
   const pbColors = matched.map(r => {
     if (r.status === 'Qualified')     return 'rgba(16,185,129,0.85)';
     if (r.status === 'Consideration') return 'rgba(245,158,11,0.85)';
     if (r.status === 'Outside')       return 'rgba(239,68,68,0.85)';
     return 'rgba(100,116,139,0.4)';
+  });
+  const pbBorders = matched.map(r => {
+    if (r.status === 'Qualified')     return 'rgba(16,185,129,1)';
+    if (r.status === 'Consideration') return 'rgba(245,158,11,1)';
+    if (r.status === 'Outside')       return 'rgba(239,68,68,1)';
+    return 'rgba(100,116,139,0.8)';
   });
 
   destroyChart('qtBarChart');
@@ -1916,7 +1884,7 @@ function renderQualifying() {
           label: "Swimmer's PB",
           data: pbData,
           backgroundColor: pbColors,
-          borderColor: pbColors.map(c => c.replace('0.85','1').replace('0.4','0.8')),
+          borderColor: pbBorders,
           borderWidth: 1,
           borderRadius: 4,
           order: 1
@@ -2032,6 +2000,70 @@ function renderQualifying() {
   }).join('');
 }
 
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function showTab(name, target) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (target) target.classList.add('active');
+
+  if (name === 'overview')         renderOverview();
+  else if (name === 'progression') renderProgression();
+  else if (name === 'pbs')         renderPBs();
+  else if (name === 'splits')      renderSplits();
+  else if (name === 'results')     renderResults();
+  else if (name === 'qualifying')  renderQualifying();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  document.getElementById('hTotalRaces').textContent = '…';
+  document.getElementById('hEvents').textContent     = '…';
+  document.getElementById('hMeets').textContent      = '…';
+  document.getElementById('hSpan').textContent       = '…';
+
+  try {
+    const [raceRes, qtRes] = await Promise.all([
+      fetch(RACE_DATA_URL),
+      fetch(QT_DATA_URL)
+    ]);
+
+    if (!raceRes.ok || !qtRes.ok) throw new Error('Fetch failed');
+
+    RAW     = await raceRes.json();
+    QT_DATA = await qtRes.json();
+
+    localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+    localStorage.setItem('swimDash_QT',  JSON.stringify(QT_DATA));
+
+  } catch (err) {
+    console.warn('Remote fetch failed, falling back to localStorage:', err);
+    RAW     = JSON.parse(localStorage.getItem('swimDash_RAW')) || [];
+    QT_DATA = JSON.parse(localStorage.getItem('swimDash_QT'))  || [];
+
+    if (RAW.length === 0) {
+      document.getElementById('dataModal').style.display = 'flex';
+      return;
+    }
+
+    if (QT_DATA.length === 0) {
+      console.warn('No QT data available — County Qualifying tab will be empty.');
+    }
+  }
+
+  invalidateCache();
+  DATA = processData(RAW);
+
+  populateSelects();
+  renderOverview();
+  renderResults();
+}
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
