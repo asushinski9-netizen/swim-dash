@@ -1,3 +1,40 @@
+## v8 (latest)
+- Bug: renderQualifying status logic now guards qt.qualify/consider !== null before
+  comparison — swimmer faster than consideration-only threshold was showing as "Outside"
+- Bug: populateSelects now uses memoised uniqueEvents()/uniqueVenues() — eliminates
+  duplicated iteration and a sort inconsistency between the two code paths
+- Bug: renderProgression has else fallback for unrecognised compareMode — previously
+  refSwims would be undefined and throw on refSwims[key]
+- Bug: contextualPB now picks lowest timeInSec across all matched PBs (was taking
+  first in alphabetical sort order — LC before SC, giving wrong benchmark)
+- Bug: splitChartTitle now updates in analyzeSwim on every row click to show the
+  selected swim's actual course — was stuck on the last chronological swim's course
+- Bug: splitChartTitle in renderSplits shows "SC/LC" when both courses are selected
+- Bug: meets count key uses | separator — prevents name+date string collision
+- Bug: SC/LC stat card counts computed once via getSwimCounts() not inline DATA.filter
+- Pacing chart: selected swim's line highlighted (white/thick) in analyzeSwim,
+  others dimmed; contextualPBRef module var added to track current PB swim
+- overviewRendered dirty flag — Overview charts no longer re-render on every revisit;
+  reset in invalidateCache() on data reload
+- All tabs pre-rendered in init — first switch to any tab is now instant
+- hideDataModal() named function added — modal close button no longer uses inline call
+- renderQualifying: empty QT_DATA guard shows informative message directing user to
+  upload county_qt.json; !matched.length guard now fires before chart creation
+- resetProgressionFilters uses .value not .selectedIndex
+- renderProgression refSwims/refLabel block properly indented; innerHTML → textContent
+- Stale numbered comment removed from renderSplits
+- Dead .active-coach CSS rule removed
+- updateSortHeaders moved to sortResults only — no longer runs on every filter change
+- secToTime unreachable s===null guard removed; sub-60 branch simplified
+- populateSelects blank-line formatting fixed
+- Dead .sec-hdr and .trend CSS classes removed
+- CC constant added for chart colours — 18 hardcoded hex strings replaced with
+  CC.tick, CC.legend, CC.grid
+- contextualPB lookup uses getPBs() — no longer sorts a full copy of DATA
+- Label accessibility: modal file inputs now have matching for attributes on labels
+- Rollback: fix-18 chart/table empty ordering reverted — guard correctly placed
+  after stat cards, before chart creation, with labels var restored
+  
 ## v7 (latest)
 - Structural: renderQualifying moved before showTab/init (was after DOMContentLoaded)
 - Structural: dataModal moved to direct child of <body> (fixes iOS Safari fixed-inside-sticky bug)

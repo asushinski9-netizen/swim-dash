@@ -39,11 +39,6 @@
   border-left: 3px solid var(--accent) !important;
 }
 
-.split-detail-row.active-coach {
-  background: rgba(59, 130, 246, 0.1);
-  border-left: 3px solid var(--accent);
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
@@ -195,15 +190,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 /* PROGRESS */
 .prog-bar { height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-top: 4px; }
 .prog-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,var(--accent),var(--accent2)); transition: width 1s ease; }
-
-/* SECTION HEADER */
-.sec-hdr { font-size: 0.85rem; font-weight: 700; color: var(--text2); margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
-.sec-hdr::after { content:''; flex: 1; height: 1px; background: var(--border); }
-
-/* TREND INDICATOR */
-.trend { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; }
-.trend.up { color: var(--green); }
-.trend.dn { color: var(--red); }
 
 /* EMPTY STATE */
 .empty { text-align: center; padding: 48px 20px; color: var(--text3); }
@@ -412,14 +398,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   <div class="card" style="width: 400px; max-width: 90%; background: var(--bg);">
     <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
       <h2 style="font-size:1.2rem;">⚙️ Data Manager</h2>
-      <button class="btn sec" style="min-width:auto; padding: 4px 8px;" onclick="document.getElementById('dataModal').style.display='none'">✕</button>
+      <button class="btn sec" style="min-width:auto; padding: 4px 8px;" onclick="hideDataModal()">✕</button>
     </div>
     <div style="margin-bottom: 15px;">
-      <label class="fl">1. Upload Swim Data (my_swims.json)</label>
+      <label class="fl" for="uploadRaw">1. Upload Swim Data (my_swims.json)</label>
       <input type="file" id="uploadRaw" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
     </div>
     <div style="margin-bottom: 25px;">
-      <label class="fl">2. Upload QT Data (county_qt.json)</label>
+      <label class="fl" for="uploadQT">2. Upload QT Data (county_qt.json)</label>
       <input type="file" id="uploadQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
     </div>
     <button class="btn" style="width:100%" onclick="saveDataToBrowser()">💾 Save to Browser</button>
@@ -736,13 +722,20 @@ let DATA = [];
 
 // Cache for expensive computed lookups — invalidated on each data load
 const cache = {};
-function invalidateCache() { Object.keys(cache).forEach(k => delete cache[k]); }
+function invalidateCache() {
+  Object.keys(cache).forEach(k => delete cache[k]);
+  overviewRendered = false;
+}
 
 // ============================================================
 // DATA MANAGER MODAL
 // ============================================================
 function showDataModal() {
   document.getElementById('dataModal').style.display = 'flex';
+}
+
+function hideDataModal() {
+  document.getElementById('dataModal').style.display = 'none';
 }
 
 function saveDataToBrowser() {
@@ -792,10 +785,10 @@ function timeToSec(t) {
 }
 
 function secToTime(s) {
-  if (!isFinite(s) || s === null) return '—';
+  if (!isFinite(s)) return '—';
   const m = Math.floor(s / 60);
-  const sec = (s - m * 60).toFixed(2).padStart(5, '0');
-  return m > 0 ? m + ':' + sec : parseFloat(sec).toFixed(2);
+  const rem = (s - m * 60).toFixed(2);
+  return m > 0 ? m + ':' + rem.padStart(5, '0') : rem;
 }
 
 function parseLocalDate(d) {
@@ -876,6 +869,13 @@ const PALETTE = [
   '#3b82f6','#06b6d4','#8b5cf6','#10b981','#f59e0b',
   '#ef4444','#ec4899','#f97316','#14b8a6','#a855f7'
 ];
+
+// Chart colour tokens — keeps chart config in sync with CSS variables
+const CC = {
+  grid:   '#1e293b',
+  tick:   '#64748b',
+  legend: '#94a3b8',
+};
 
 // ============================================================
 // MEMOISED DATA LOOKUPS
@@ -958,11 +958,10 @@ function getSwimCounts() {
 // FILTER RESET HELPERS
 // ============================================================
 function resetProgressionFilters() {
-  document.getElementById('progEvent').selectedIndex = 0;
-  document.getElementById('progCourse').selectedIndex = 0;
-  document.getElementById('progPBOnly').selectedIndex = 0;
-  const compareEl = document.getElementById('progCompare');
-  if (compareEl) compareEl.selectedIndex = 0;
+  document.getElementById('progEvent').value   = '';
+  document.getElementById('progCourse').value  = '';
+  document.getElementById('progPBOnly').value  = '0';
+  document.getElementById('progCompare').value = 'first';
   renderProgression();
 }
 
@@ -985,12 +984,11 @@ function destroyChart(id) {
 // ============================================================
 // POPULATE SELECTS
 // ============================================================
-
 function populateSelects() {
-  const allEvents = [...new Set(DATA.map(r => r.event))].sort((a, b) => getDistance(a) - getDistance(b));
+  const allEvents = uniqueEvents();
   const eventsWithSplits = [...new Set(DATA.filter(r => r.splits.length > 0).map(r => r.event))].sort((a, b) => getDistance(a) - getDistance(b));
-  const venues = [...new Set(DATA.map(r => r.venue).filter(v => v && v !== 'UNKNOWN'))].sort();
-  const years  = [...new Set(DATA.map(r => r.date.substring(0, 4)))].sort((a, b) => b - a);
+  const venues = uniqueVenues();
+  const years  = uniqueYears().slice().sort((a, b) => b - a);
 
   document.getElementById('progEvent').innerHTML =
     '<option value="">All Events</option>' + allEvents.map(e => `<option value="${e}">${e}</option>`).join('');
@@ -1011,9 +1009,12 @@ function populateSelects() {
 // ============================================================
 // OVERVIEW TAB
 // ============================================================
+let overviewRendered = false;
+
 function renderOverview() {
+  if (overviewRendered) return;
   // Header stats
-  const meets = new Set(DATA.map(r => r.competition + r.date)).size;
+  const meets = new Set(DATA.map(r => r.competition + '|' + r.date)).size;
   const firstDate = parseLocalDate(DATA[0].date);
   const lastDate  = parseLocalDate(DATA[DATA.length - 1].date);
   const months = Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24 * 30.5));
@@ -1025,6 +1026,9 @@ function renderOverview() {
 
   // Stat cards
   const pbs = getPBs();
+  const swimCounts = getSwimCounts();
+  const scCount = Object.entries(swimCounts).filter(([k]) => k.endsWith('|S')).reduce((s, [, v]) => s + v, 0);
+  const lcCount = Object.entries(swimCounts).filter(([k]) => k.endsWith('|L')).reduce((s, [, v]) => s + v, 0);
   const currentYearStart = `${new Date().getFullYear()}-01-01`;
   const pbsThisYear = DATA.filter(r => r.isPB && r.date >= currentYearStart).length;
   const withSplits = DATA.filter(r => r.splits.length > 0).length;
@@ -1035,7 +1039,7 @@ function renderOverview() {
       <div class="stat-icon">🏊</div>
       <div class="stat-val" style="color:var(--accent2)">${DATA.length}</div>
       <div class="stat-label">Total Races</div>
-      <div class="stat-sub">${DATA.filter(r=>r.course==='S').length} SC · ${DATA.filter(r=>r.course==='L').length} LC</div>
+      <div class="stat-sub">${scCount} SC · ${lcCount} LC</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">🏆</div>
@@ -1108,8 +1112,8 @@ function renderOverview() {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#1e293b' } },
-        y: { ticks: { color: '#64748b', stepSize: 1 }, grid: { color: '#1e293b' }, beginAtZero: true }
+        x: { ticks: { color: CC.tick, font: { size: 10 } }, grid: { color: CC.grid } },
+        y: { ticks: { color: CC.tick, stepSize: 1 }, grid: { color: CC.grid }, beginAtZero: true }
       }
     }
   });
@@ -1136,7 +1140,7 @@ function renderOverview() {
       plugins: {
         legend: {
           position: 'right',
-          labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12, padding: 8 }
+          labels: { color: CC.legend, font: { size: 10 }, boxWidth: 12, padding: 8 }
         }
       },
       cutout: '60%'
@@ -1159,6 +1163,8 @@ function renderOverview() {
       <div class="prog-bar"><div class="prog-fill" style="width:${(c/maxV*100).toFixed(0)}%"></div></div>
     </div>
   `).join('');
+
+  overviewRendered = true;
 }
 
 // ============================================================
@@ -1213,7 +1219,7 @@ function renderProgression() {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12, padding: 10 } },
+        legend: { labels: { color: CC.legend, font: { size: 10 }, boxWidth: 12, padding: 10 } },
         tooltip: {
           callbacks: {
             title: items => {
@@ -1236,39 +1242,42 @@ function renderProgression() {
         x: {
           type: 'time',
           time: { unit: 'month', displayFormats: { month: 'MMM yy' } },
-          ticks: { color: '#64748b', font: { size: 10 } },
-          grid: { color: '#1e293b' }
+          ticks: { color: CC.tick, font: { size: 10 } },
+          grid: { color: CC.grid }
         },
         y: {
           reverse: true,
-          ticks: { color: '#64748b', font: { size: 10 }, callback: v => secToTime(v) },
-          grid: { color: '#1e293b' }
+          ticks: { color: CC.tick, font: { size: 10 }, callback: v => secToTime(v) },
+          grid: { color: CC.grid }
         }
       }
     }
   });
 
-// Determine reference data based on filter
-let refSwims;
-let refLabel;
+  // Determine reference data based on compare mode
+  let refSwims;
+  let refLabel;
 
-if (compareMode === 'first') {
-  refSwims = getFirstSwims();
-  refLabel = 'First';
-} else if (compareMode === 'latest') {
-  refSwims = getLatestSwims();
-  refLabel = 'Latest';
-} else if (compareMode === 'prevBest') {
-  refSwims = getPreviousBestSwims();
-  refLabel = 'Prev Best';
-} else if (compareMode === 'prevSwim') {
-  refSwims = getPreviousSwims();
-  refLabel = 'Prev Swim';
-}
+  if (compareMode === 'first') {
+    refSwims = getFirstSwims();
+    refLabel = 'First';
+  } else if (compareMode === 'latest') {
+    refSwims = getLatestSwims();
+    refLabel = 'Latest';
+  } else if (compareMode === 'prevBest') {
+    refSwims = getPreviousBestSwims();
+    refLabel = 'Prev Best';
+  } else if (compareMode === 'prevSwim') {
+    refSwims = getPreviousSwims();
+    refLabel = 'Prev Swim';
+  } else {
+    refSwims = getFirstSwims();
+    refLabel = 'First';
+  }
 
-// Update Card Title Dynamically
-const titleEl = document.getElementById('compareCardTitle');
-if (titleEl) titleEl.innerHTML = `🏁 Best vs ${refLabel}`;
+  // Update card title
+  const titleEl = document.getElementById('compareCardTitle');
+  if (titleEl) titleEl.textContent = `🏁 Best vs ${refLabel}`;
 
   const pbs = getPBs();
   const swimCounts = getSwimCounts();
@@ -1407,7 +1416,8 @@ function renderPBs() {
 // ============================================================
 // SPLITS TAB
 // ============================================================
-let currentEventFiltered = []; 
+let currentEventFiltered = [];
+let contextualPBRef = null;
 let splitBarChart = null;
 let paceChart = null;
 
@@ -1421,7 +1431,6 @@ function renderSplits() {
     return;
   }
 
-  // 1. Get the list of swims to display
   let filtered = DATA.filter(r => r.splits.length > 0 && r.event === eventFilter);
   if (courseFilter) {
     filtered = filtered.filter(r => r.course === courseFilter);
@@ -1435,13 +1444,15 @@ function renderSplits() {
   }
 
   const latest = filtered[filtered.length - 1];
-  const courseLabel = courseFilter ? (courseFilter === 'S' ? 'SC' : 'LC') : (latest.course === 'S' ? 'SC' : 'LC');
+  const courseLabel = courseFilter === 'S' ? 'SC' : courseFilter === 'L' ? 'LC' : 'SC/LC';
   document.getElementById('splitChartTitle').textContent = `⚡ Split Comparison — ${eventFilter} (${courseLabel})`;
 
-  const contextualPB = [...DATA]
-    .filter(r => r.event === eventFilter && r.course === latest.course)
-    .sort((a, b) => a.timeInSec - b.timeInSec)[0] || latest;
+  const matchedPBs = getPBs().filter(r => r.event === eventFilter && (!courseFilter || r.course === courseFilter));
+  const contextualPB = matchedPBs.length
+    ? matchedPBs.reduce((best, r) => r.timeInSec < best.timeInSec ? r : best, matchedPBs[0])
+    : filtered.reduce((best, r) => r.timeInSec < best.timeInSec ? r : best, filtered[0]);
 
+  contextualPBRef = contextualPB;
   renderSplitCharts(filtered, contextualPB);
 
   let detailHTML = '';
@@ -1501,13 +1512,13 @@ function renderSplitCharts(filtered, truePB) {
       scales: { 
         y: { 
           beginAtZero: false, 
-          ticks: { callback: v => secToTime(v), color: '#94a3b8' }, 
-          grid: { color: '#1e293b' } 
+          ticks: { callback: v => secToTime(v), color: CC.legend }, 
+          grid: { color: CC.grid } 
         },
-        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+        x: { ticks: { color: CC.legend }, grid: { display: false } }
       },
       plugins: { 
-        legend: { labels: { color: '#94a3b8' }, position: 'bottom' },
+        legend: { labels: { color: CC.legend }, position: 'bottom' },
         tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${secToTime(ctx.raw)}` } }
       }
     }
@@ -1532,11 +1543,11 @@ function renderSplitCharts(filtered, truePB) {
       responsive: true,
       maintainAspectRatio: false,
       scales: { 
-        y: { ticks: { callback: v => secToTime(v), color: '#94a3b8' }, grid: { color: '#1e293b' } },
-        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+        y: { ticks: { callback: v => secToTime(v), color: CC.legend }, grid: { color: CC.grid } },
+        x: { ticks: { color: CC.legend }, grid: { display: false } }
       },
       plugins: { 
-        legend: { display: true, position: 'right', labels: { color: '#94a3b8', boxWidth: 10, font: { size: 9 } } }
+        legend: { display: true, position: 'right', labels: { color: CC.legend, boxWidth: 10, font: { size: 9 } } }
       }
     }
   });
@@ -1577,13 +1588,26 @@ function analyzeSwim(index) {
   splitBarChart.data.datasets[1].label = prevPB ? `Prev PB (${benchmarkSwim.time})` : `Only swim (${swim.time})`;
   splitBarChart.update();
 
-  // Also update pacing chart labels if lap count changed
+  // Also update pacing chart labels if lap count changed, and highlight selected line
   if (paceChart.data.labels.length !== swim.splits.length) {
     paceChart.data.labels = lapLabels;
-    paceChart.update();
   }
+  paceChart.data.datasets.forEach((ds, i) => {
+    const isSelected = currentEventFiltered[i] === swim;
+    ds.borderWidth = isSelected ? 4 : 1.5;
+    ds.pointRadius = isSelected ? 5 : 2;
+    ds.borderColor = currentEventFiltered[i] === contextualPBRef
+      ? '#f59e0b'
+      : isSelected
+        ? '#ffffff'
+        : `hsl(${210 + (i * 20)}, 70%, 50%)`;
+  });
+  paceChart.update();
 
-  // Derive per-lap average from the actual split (leg) times
+  // Update chart title to reflect the selected swim's course
+  const eventFilter = document.getElementById('splitsEvent').value;
+  document.getElementById('splitChartTitle').textContent =
+    `⚡ Split Comparison — ${eventFilter} (${swim.course === 'S' ? 'SC' : 'LC'})`;
   const legs = swim.splits;
   const legAvg = legs.reduce((a, b) => a + b, 0) / legs.length;
   const isDebut = !prevPB;
@@ -1677,6 +1701,7 @@ let sortDir = 1;
 function sortResults(col) {
   if (sortCol === col) sortDir *= -1;
   else { sortCol = col; sortDir = 1; }
+  updateSortHeaders();
   renderResults();
 }
 
@@ -1708,8 +1733,6 @@ function updateSortHeaders() {
 }
 
 function renderResults() {
-  updateSortHeaders();
-
   const eventFilter  = document.getElementById('resEvent').value;
   const courseFilter = document.getElementById('resCourse').value;
   const venueFilter = document.getElementById('resVenue').value;
@@ -1787,6 +1810,19 @@ function renderQualifying() {
   const course  = document.getElementById('qtCourse').value;
   const stroke  = document.getElementById('qtStroke').value;
 
+  // Guard: no QT data loaded
+  if (QT_DATA.length === 0) {
+    document.getElementById('qtStats').innerHTML = '';
+    document.getElementById('qtLegend').innerHTML = '';
+    destroyChart('qtBarChart');
+    document.getElementById('qtTableBody').innerHTML =
+      `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3)">
+        No qualifying time data loaded.<br>
+        <span style="font-size:0.8rem">Upload county_qt.json via the ⚙️ Data menu.</span>
+      </td></tr>`;
+    return;
+  }
+
   // Filter QT rows — exclude rows where both times are null (event not offered for age group)
   let qtRows = QT_DATA.filter(r =>
     r.gender === gender && r.age === age && r.course === course &&
@@ -1808,8 +1844,8 @@ function renderQualifying() {
     const gapC  = pbSec !== null && qt.consider !== null ? pbSec - qt.consider : null;
     let status = 'No PB';
     if (pbSec !== null) {
-      if (pbSec <= qt.qualify)  status = 'Qualified';
-      else if (pbSec <= qt.consider) status = 'Consideration';
+      if (qt.qualify  !== null && pbSec <= qt.qualify)  status = 'Qualified';
+      else if (qt.consider !== null && pbSec <= qt.consider) status = 'Consideration';
       else status = 'Outside';
     }
     return { ...qt, pb, pbSec, gapQ, gapC, status };
@@ -1822,10 +1858,10 @@ function renderQualifying() {
   });
 
   // Stat cards
-  const qualified    = matched.filter(r => r.status === 'Qualified').length;
+  const qualified     = matched.filter(r => r.status === 'Qualified').length;
   const consideration = matched.filter(r => r.status === 'Consideration').length;
-  const outside  = matched.filter(r => r.status === 'Outside').length;
-  const noPB     = matched.filter(r => r.status === 'No PB').length;
+  const outside       = matched.filter(r => r.status === 'Outside').length;
+  const noPB          = matched.filter(r => r.status === 'No PB').length;
 
   document.getElementById('qtStats').innerHTML = `
     <div class="stat-card">
@@ -1853,6 +1889,15 @@ function renderQualifying() {
       <div class="stat-sub">Event not swum</div>
     </div>
   `;
+
+  // If no events match the filter, clear chart and show table message
+  if (!matched.length) {
+    destroyChart('qtBarChart');
+    document.getElementById('qtLegend').innerHTML = '';
+    document.getElementById('qtTableBody').innerHTML =
+      `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
+    return;
+  }
 
   // Bar chart datasets
   const labels   = matched.map(r => r.event);
@@ -1937,13 +1982,13 @@ function renderQualifying() {
         }
       },
       scales: {
-        x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        x: { ticks: { color: CC.legend, font: { size: 11 } }, grid: { color: CC.grid } },
         y: {
           ticks: {
-            color: '#94a3b8',
+            color: CC.legend,
             callback: v => secToTime(v)
           },
-          grid: { color: '#1e293b' }
+          grid: { color: CC.grid }
         }
       }
     }
@@ -1961,11 +2006,6 @@ function renderQualifying() {
 
   // Table
   const tbody = document.getElementById('qtTableBody');
-  if (!matched.length) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
-    return;
-  }
-
   tbody.innerHTML = matched.map(r => {
     const pbStr = r.pbSec !== null
       ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
@@ -2060,7 +2100,10 @@ async function init() {
 
   populateSelects();
   renderOverview();
+  renderProgression();
+  renderPBs();
   renderResults();
+  renderQualifying();
 }
 
 document.addEventListener('DOMContentLoaded', init);

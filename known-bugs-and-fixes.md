@@ -57,6 +57,22 @@ Was: `pbColors.map(c => c.replace('0.85','1').replace('0.4','0.8'))`
 This is fragile — if any opacity value contains those substrings elsewhere it
 corrupts the colour. Now uses a directly constructed pbBorders array instead.
 
+### contextualPB wrong course when "Both" selected
+getPBs() sorts by distance then event name — "L" sorts before "S" alphabetically,
+so .filter()[0] returned the LC PB even when SC was faster.
+Fix: use .reduce() to pick lowest timeInSec across all matched PBs.
+
+### splitChartTitle stuck on last swim's course
+renderSplits derived courseLabel from latest.course (last chronological swim).
+analyzeSwim never updated the title on row click.
+Fix: renderSplits shows "SC/LC" when both courses selected; analyzeSwim updates
+the title on every click to reflect the selected swim's actual course.
+
+### matched guard must come after stat cards, before chart creation
+Early return when !matched.length must fire after stat cards are rendered
+(so counts show 0) but before destroyChart/new Chart (so no empty chart instance
+is created). The labels variable must be declared after this guard.
+
 ## WATCH-OUT AREAS
 
 ### fmtDate / fmtDateShort timezone shift
@@ -105,3 +121,18 @@ Uses dynamic new Date().getFullYear() — do not hardcode a year here.
 ### reader.onerror in saveDataToBrowser
 FileReader Promises must have both onload AND onerror handlers.
 Without onerror, a failed read leaves the Promise permanently pending.
+
+### contextualPBRef module variable
+contextualPBRef is set in renderSplits alongside currentEventFiltered.
+analyzeSwim uses it to colour the PB line gold in the pacing chart.
+Must be updated whenever renderSplitCharts is called.
+
+### overviewRendered flag
+Set to true at end of renderOverview(), reset to false in invalidateCache().
+If a new data source is loaded without page reload, invalidateCache() ensures
+the overview re-renders with fresh data.
+
+### CC chart colour constant
+Chart.js cannot read CSS variables. CC = {grid, tick, legend} holds the
+equivalent hex values. If the colour scheme changes, update both :root CSS
+variables AND the CC constant.

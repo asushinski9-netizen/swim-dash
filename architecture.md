@@ -32,6 +32,9 @@ Current version: v7
 - splitBarChart, paceChart: Chart instances (module-level, not in charts{} registry)
 - sortCol, sortDir: Results tab sort state (reflected in header via updateSortHeaders())
 - cache{}: memoisation store, cleared by invalidateCache()
+- overviewRendered: boolean — dirty flag, prevents Overview re-rendering on revisit
+- contextualPBRef: swim object — the current PB used as benchmark in the pacing chart
+- CC: object — chart colour tokens {grid, tick, legend} matching CSS variables
 
 ## Tab IDs
 tab-overview, tab-progression, tab-pbs, tab-splits, tab-results, tab-qualifying
