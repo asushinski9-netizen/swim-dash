@@ -2,7 +2,7 @@
 
 ## File
 Single HTML file: swimming_dash_vN.html  
-Current version: v7 
+Current version: v8 
 ~2000 lines total
 
 ## Script section layout (in order)
