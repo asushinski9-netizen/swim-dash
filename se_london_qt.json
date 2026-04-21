@@ -145,7 +145,7 @@
   {"gender":"Girls","course":"Long Course","event":"400 Free","age":"15","qualify":276.48,"consider":290.30},
   {"gender":"Girls","course":"Long Course","event":"400 Free","age":"16","qualify":274.48,"consider":288.20},
   {"gender":"Girls","course":"Long Course","event":"400 Free","age":"17","qualify":272.38,"consider":286.00},
-  {"gender":"Girls","course":"Long Course","event":"18+","qualify":267.71,"consider":281.10},
+  {"gender":"Girls","course":"Long Course","event":"400 Free","age":"18+","qualify":267.71,"consider":281.10},
   {"gender":"Girls","course":"Long Course","event":"800 Free","age":"11/12","qualify":617.14,"consider":648.00},
   {"gender":"Girls","course":"Long Course","event":"800 Free","age":"13","qualify":594.29,"consider":624.00},
   {"gender":"Girls","course":"Long Course","event":"800 Free","age":"14","qualify":592.38,"consider":622.00},
