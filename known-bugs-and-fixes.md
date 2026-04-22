@@ -73,6 +73,31 @@ Early return when !matched.length must fire after stat cards are rendered
 (so counts show 0) but before destroyChart/new Chart (so no empty chart instance
 is created). The labels variable must be declared after this guard.
 
+### null.closest() crash in analyzeSwim (v11)
+analyzeSwim used getElementById('splitBarChart').closest('.card') to find the card wrapper.
+After a debut row was selected, the canvas was replaced with a div message, so the next
+getElementById returned null and .closest() threw. Fixed with stable id="splitBarChartWrap"
+wrapper div that always exists. Both analyzeSwim and renderSplitCharts reference the wrapper.
+
+### lapLabels undefined in analyzeSwim (v10)
+paceChart.data.labels = lapLabels referenced an undeclared variable (existed in v8, dropped
+in v9 scatter refactor). Fixed: const lapLabels = swim.splits.map(...) declared before use.
+
+### progChart canvas gone after debut callout (v12)
+Replacing progChartWrap.innerHTML with a debut message removed the canvas from DOM. Next
+renderProgression() call got null from getElementById('progChart'). Fixed with stable
+id="progChartWrap" wrapper — canvas is restored inside it before destroyChart() each render.
+
+### Improvement Summary empty for debut events (v12)
+With compareMode=prevSwim or prevBest, getPreviousSwims/getPreviousBestSwims return no entry
+for debut events. The `if (!refSwim) return` silently skipped them leaving the summary blank.
+Fixed: debut events now render an explicit "Debut — no previous benchmark" row instead.
+
+### indexAxis:y on scatter chart (v10)
+Chart.js scatter charts don't support indexAxis. Option was silently ignored. Removed in v10.
+In v12, scatter was replaced entirely with a grouped horizontal bar chart (type:'bar' with
+indexAxis:'y') which does support indexAxis correctly.
+
 ## WATCH-OUT AREAS
 
 ### fmtDate / fmtDateShort timezone shift

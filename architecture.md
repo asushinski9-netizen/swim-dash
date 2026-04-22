@@ -2,7 +2,7 @@
 
 ## File
 Single HTML file: swimming_dash_vN.html  
-Current version: v8 
+Current version: v12 
 ~2000 lines total
 
 ## Script section layout (in order)
@@ -26,15 +26,20 @@ Current version: v8
 13. INIT — async init() with GitHub fetch → localStorage fallback → modal fallback
 14. DOMContentLoaded → init()
 
-## Key global state
-- DATA: processed swim array (sorted chronologically)
-- currentEventFiltered[]: swims shown in Splits tab (used by analyzeSwim)
-- splitBarChart, paceChart: Chart instances (module-level, not in charts{} registry)
-- sortCol, sortDir: Results tab sort state (reflected in header via updateSortHeaders())
-- cache{}: memoisation store, cleared by invalidateCache()
-- overviewRendered: boolean — dirty flag, prevents Overview re-rendering on revisit
-- contextualPBRef: swim object — the current PB used as benchmark in the pacing chart
-- CC: object — chart colour tokens {grid, tick, legend} matching CSS variables
+## Key global state (additions from v9–v12)
+- splitBarChartWrap: stable wrapper div id for the split comparison chart area
+  (canvas may be replaced by debut message; wrapper always exists in DOM)
+- progChartWrap: stable wrapper div id for the progression chart area
+  (same pattern — canvas restored here before each renderProgression call)
+- contextualPBRef: set in renderSplits, used in analyzeSwim for pacing chart colouring
+- sortedForPace: local sort of currentEventFiltered by timeInSec asc used in both
+  renderSplitCharts (dataset creation) and analyzeSwim (highlight loop)
+- overviewRendered: dirty flag reset by invalidateCache(); prevents redundant re-renders
+
+## New functions (v9–v12)
+- showAddRaceModal() / hideAddRaceModal() / saveNewRace() — Add Race FAB workflow
+- showDataModal() / hideDataModal() — Data Manager modal (no longer in header)
+- downloadRaceData() — exports RAW as my_swims.json download
 
 ## Tab IDs
 tab-overview, tab-progression, tab-pbs, tab-splits, tab-results, tab-qualifying

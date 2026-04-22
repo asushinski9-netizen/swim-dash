@@ -1,4 +1,55 @@
-## v8 (latest)
+## v12 (latest)
+- Tabs: Inactive tabs further darkened to #b8cde0 with border #a0bbd4 for mobile contrast
+- Grid: Added min-width:0 to all grid children to prevent chart blowout; chart-wrap gets overflow:hidden
+- Progression debut: Single-race selection replaces chart with debut callout (stable progChartWrap wrapper)
+- Progression improvement: Debut row shown when refSwim is null (prevSwim/prevBest modes)
+- Overview charts: Race Frequency 220→280px, Events Breakdown 220→320px
+- Splits debut message: Context-aware — "Select a later race" if others exist, "Swim again" if truly first
+- Splits chart: Scatter replaced with grouped horizontal bar chart (indexAxis:y, shorter=faster — intuitive)
+- Splits pacing: sortedForPace — datasets ordered fastest→slowest so fastest line leads legend
+- Splits lap delta label: "Lap Deltas vs PB" → "Lap Deltas vs Prev PB"
+- Results table: Mobile font scaled to 0.65rem with tighter padding
+- QT table: Mobile font scaled to 0.62rem with tighter padding
+- Data FAB: Matched to 56px (same as ＋ FAB)
+
+## v11
+- Tabs: Active tab lightened to #4f86d8; inactive tabs darkened to var(--surface3) + border
+- Debut badge: Moved to right side under time in Recent PBs (was left side next to event name)
+- Mobile bleed: Removed display:flex from #tab-progression (was causing other panels to bleed)
+- Bug (critical): analyzeSwim crashed with null.closest() when canvas replaced by debut message
+  → Fixed by adding stable id="splitBarChartWrap" wrapper; both analyzeSwim and
+  renderSplitCharts reference wrapper div, not the canvas that may have been replaced
+- renderSplitCharts: Checks splitBarChartWrap for canvas before getting ctx
+- Download JSON: Added downloadRaceData() and ⬇️ Download button in Data Manager modal
+- Data FAB: Added .fab-data ⚙️ button above ＋ FAB to restore Data Manager access
+
+## v10
+- Logo: Replaced hand-drawn SVG dolphin with actual uploaded BPSC PNG (base64 <img>)
+- Colours: CC.grid darkened to #cbd5e1 (was #e2e8f0 — invisible on white)
+- PALETTE: Updated to deeper tones suitable for light background
+- Bug: lapLabels undefined in analyzeSwim → declared as const before paceChart update
+- Bug: showError declared at top of saveNewRace (was after its call sites)
+- Bug: indexAxis:y removed from scatter chart (unsupported on scatter type)
+- Bug: renderSplits() removed from saveNewRace (cleared splits tab if no event selected)
+- Bug: Selected pacing line was #ffffff (invisible on light bg) → now #1a56c4
+- Bug: Mobile :last-child rule targeting removed data button → removed
+- Bug: Progression mobile ordering used flex order on tab panel → replaced with simpler approach
+- Bug: Scatter tooltip ctx.parsed.y wrapped in Math.round()
+- Bug: CC.legend used for tick colour on pacing chart → CC.tick
+- Pacing chart: Uses PALETTE instead of hsl() formula
+
+## v9
+- Theme: Full light theme overhaul (--bg:#f0f4f8, --surface:#fff, --accent:#1a56c4 BPSC blue)
+- Logo: Replaced swimmer emoji with actual BPSC PNG logo (base64 embedded) in header
+- Data button: Removed from header (modal still accessible via init fallback)
+- Debut badges: Added .badge.debut CSS; shown in Overview Recent PBs (right side under time),
+  Progression Improvement Summary, Progression BvF Δ column, Results Δ Prev column
+- Mobile progression: prog-chart-card class added; chart moves below summary on mobile via order CSS
+- Splits chart: Bar chart replaced with horizontal scatter/dot chart (inverted X = faster right)
+- Splits debut: analyzeSwim suppresses chart for debut races, shows message instead
+- Add Race FAB: ＋ fixed floating button opens modal; saves to localStorage + re-renders all tabs
+
+## v8
 - Bug: renderQualifying status logic now guards qt.qualify/consider !== null before
   comparison — swimmer faster than consideration-only threshold was showing as "Outside"
 - Bug: populateSelects now uses memoised uniqueEvents()/uniqueVenues() — eliminates
@@ -35,7 +86,7 @@
 - Rollback: fix-18 chart/table empty ordering reverted — guard correctly placed
   after stat cards, before chart creation, with labels var restored
   
-## v7 (latest)
+## v7
 - Structural: renderQualifying moved before showTab/init (was after DOMContentLoaded)
 - Structural: dataModal moved to direct child of <body> (fixes iOS Safari fixed-inside-sticky bug)
 - Removed: dead renderedTabs Set, orphaned POPULATE SELECTS section comment

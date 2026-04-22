@@ -8,20 +8,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 <style>
 :root {
-  --bg: #0a0e1a;
-  --surface: #111827;
-  --surface2: #1a2236;
-  --surface3: #243049;
-  --accent: #3b82f6;
-  --accent2: #06b6d4;
-  --accent3: #8b5cf6;
-  --gold: #f59e0b;
-  --green: #10b981;
-  --red: #ef4444;
-  --text: #f1f5f9;
-  --text2: #94a3b8;
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface2: #e8eef5;
+  --surface3: #d6e2ef;
+  --accent: #1a56c4;
+  --accent2: #0ea5d4;
+  --accent3: #7c3aed;
+  --gold: #d97706;
+  --green: #059669;
+  --red: #dc2626;
+  --text: #0f172a;
+  --text2: #334155;
   --text3: #64748b;
-  --border: #1e293b;
+  --border: #cbd5e1;
 }
 
 .split-detail-row {
@@ -44,42 +44,43 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 
 /* HEADER */
 .header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 18px 28px;
+  background: linear-gradient(135deg, #1a56c4 0%, #1e6fd4 60%, #0ea5d4 100%);
+  border-bottom: none;
+  padding: 14px 28px;
   display: flex; align-items: center; gap: 16px;
   position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 16px rgba(26,86,196,0.25);
 }
 .header-icon { font-size: 2rem; }
+.header-logo { height: 48px; width: 48px; border-radius: 50%; background: white; padding: 3px; object-fit: contain; flex-shrink: 0; }
 .header-title h1 {
-  font-size: 1.3rem; font-weight: 700;
-  background: linear-gradient(90deg, #60a5fa, #06b6d4);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-size: 1.3rem; font-weight: 700; color: #ffffff;
 }
-.header-title p { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+.header-title p { font-size: 0.78rem; color: rgba(255,255,255,0.75); margin-top: 2px; }
 .header-stats { margin-left: auto; display: flex; gap: 28px; }
 .hstat { text-align: center; }
-.hstat-val { font-size: 1.3rem; font-weight: 700; color: var(--accent2); }
-.hstat-label { font-size: 0.68rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+.hstat-val { font-size: 1.3rem; font-weight: 700; color: #ffffff; }
+.hstat-label { font-size: 0.68rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* TABS */
 .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
 .tabs {
-  display: flex; gap: 4px; background: var(--surface);
+  display: flex; gap: 4px; background: var(--surface2);
   border-radius: 12px; padding: 4px; margin-bottom: 24px;
   border: 1px solid var(--border); overflow-x: auto;
 }
 .tab {
   flex: 1; min-width: 90px; padding: 10px 14px; border: none;
-  background: transparent; color: var(--text2); font-size: 0.83rem;
+  background: #b8cde0; color: var(--text2); font-size: 0.83rem;
   font-weight: 500; border-radius: 8px; cursor: pointer;
   transition: all 0.2s; white-space: nowrap; text-align: center;
+  border: 1px solid #a0bbd4;
 }
-.tab:hover { background: var(--surface2); color: var(--text); }
+.tab:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
 .tab.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: white; box-shadow: 0 2px 12px rgba(59,130,246,0.35);
+  background: #4f86d8;
+  color: white; border-color: #4f86d8;
+  box-shadow: 0 2px 8px rgba(26,86,196,0.25);
 }
 
 /* PANELS */
@@ -90,14 +91,18 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
 .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
 .grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 20px; }
+.grid2 > *, .grid3 > *, .grid4 > * { min-width: 0; }
 @media(max-width:1000px){ .grid4{grid-template-columns:repeat(2,1fr);} .grid3{grid-template-columns:1fr 1fr;} }
 @media(max-width:640px){ .grid2,.grid3,.grid4{grid-template-columns:1fr;} }
+
+/* CHART WRAP — overflow hidden prevents canvas blowout */
+.chart-wrap { position: relative; overflow: hidden; }
 
 /* CARDS */
 .card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 16px; padding: 20px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .card-title {
   font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
@@ -109,7 +114,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .stat-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 16px; padding: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: transform 0.2s;
 }
 .stat-card:hover { transform: translateY(-3px); }
@@ -117,6 +122,32 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .stat-val { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
 .stat-label { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
 .stat-sub { font-size: 0.7rem; color: var(--text3); margin-top: 4px; }
+
+/* ADD RACE FAB */
+.fab-add {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--accent); color: white; border: none;
+  font-size: 1.6rem; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26,86,196,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.fab-add:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(26,86,196,0.5); }
+
+.fab-data {
+  position: fixed; bottom: 88px; right: 24px; z-index: 200;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--surface); color: var(--text2); border: 1px solid var(--border);
+  font-size: 1.3rem; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.fab-data:hover { transform: scale(1.08); color: var(--accent); }
+
+/* DEBUT badge */
+.badge.debut { background: rgba(26,86,196,0.12); color: var(--accent); font-size: 0.62rem; }
 
 /* FILTERS */
 .filter-bar {
@@ -135,11 +166,11 @@ select, .btn {
 }
 select:focus { border-color: var(--accent); }
 .btn {
-  min-width: auto; background: linear-gradient(135deg,var(--accent),var(--accent2));
+  min-width: auto; background: var(--accent);
   border: none; font-weight: 600; color: white; padding: 7px 18px;
   border-radius: 8px; cursor: pointer; transition: opacity 0.2s;
 }
-.btn:hover { opacity: 0.85; }
+.btn:hover { opacity: 0.88; }
 .btn.sec { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
 
 /* TABLE */
@@ -159,9 +190,9 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   display: inline-block; padding: 2px 8px; border-radius: 20px;
   font-size: 0.68rem; font-weight: 700;
 }
-.badge.S { background: rgba(59,130,246,0.2); color: #60a5fa; }
-.badge.L { background: rgba(6,182,212,0.2); color: #22d3ee; }
-.badge.pb { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: #1a0f00; font-size: 0.62rem; }
+.badge.S { background: rgba(26,86,196,0.12); color: #1a56c4; }
+.badge.L { background: rgba(14,165,212,0.15); color: #0284a8; }
+.badge.pb { background: linear-gradient(135deg,#d97706,#f59e0b); color: #fff; font-size: 0.62rem; }
 .dpos { color: var(--green); font-weight: 600; }
 .dneg { color: var(--red); font-weight: 600; }
 
@@ -189,7 +220,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
 /* PROGRESS */
 .prog-bar { height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-top: 4px; }
-.prog-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,var(--accent),var(--accent2)); transition: width 1s ease; }
+.prog-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 1s ease; }
 
 /* EMPTY STATE */
 .empty { text-align: center; padding: 48px 20px; color: var(--text3); }
@@ -201,9 +232,9 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 .cl-dot { width: 10px; height: 10px; border-radius: 50%; }
 
 /* Enhanced Split Colors */
-.sc.fast { border-top: 3px solid var(--green); background: rgba(16, 185, 129, 0.1); }
-.sc.fade { border-top: 3px solid var(--red); background: rgba(239, 68, 68, 0.1); }
-.sc.even { border-top: 3px solid var(--text3); }
+.sc.fast { border-top: 3px solid var(--green); background: rgba(5,150,105,0.08); }
+.sc.fade { border-top: 3px solid var(--red); background: rgba(220,38,38,0.08); }
+.sc.even { border-top: 3px solid var(--border); }
 
 /* --- MOBILE OPTIMIZATIONS --- */
 @media (max-width: 500px) {
@@ -223,7 +254,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   .header-icon { font-size: 1.8rem !important; }
   .header-title h1 { font-size: 1.1rem !important; }
 
-  /* 3. Header Stats & Data Button Fix */
+  /* 3. Header Stats */
   .header-stats {
     margin-left: 0 !important;
     width: 100% !important;
@@ -236,25 +267,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     flex: 1 1 auto !important;
     min-width: 0 !important;
     padding: 0 4px !important;
-    border: none !important; /* Strips the inline desktop border */
+    border: none !important;
   }
   .hstat-val { font-size: 1.1rem !important; }
   .hstat-label { font-size: 0.65rem !important; }
-
-  /* Target the Data Button container explicitly to override inline padding */
-  .header-stats > .hstat:last-child {
-    flex: 0 0 100% !important;
-    padding: 15px 0 0 0 !important; 
-    margin-top: 10px !important;
-    border-top: 1px solid var(--border) !important;
-    display: flex !important;
-    justify-content: center !important;
-  }
-  .header-stats .btn.sec {
-    width: 180px !important;
-    height: 40px !important;
-    border-radius: 20px !important;
-  }
 
   /* 4. Tabs */
   .tabs { flex-wrap: wrap !important; background: transparent !important; }
@@ -324,12 +340,16 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     border-radius: 8px !important;
     width: 100% !important;
     background: var(--surface3) !important;
+    color: var(--text) !important;
   }
 
-  /* 7. Progression Tab Data - Scroll Killers */
+  /* 7. Progression Tab — move summary cards above chart on mobile */
+  #tab-progression .prog-chart-card {
+    margin-top: 12px;
+  }
   #tab-progression .grid2 {
     display: flex !important;
-    flex-direction: column !important; 
+    flex-direction: column !important;
     gap: 12px !important;
     width: 100% !important;
   }
@@ -339,14 +359,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     font-size: 0.65rem !important;
   }
   #bestVsFirst th, #bestVsFirst td {
-    padding: 8px 4px !important; /* Tightens the 6 columns significantly */
+    padding: 8px 4px !important;
   }
   #bestVsFirst .badge {
     padding: 2px 4px !important;
     font-size: 0.55rem !important;
   }
   #bestVsFirst .tc {
-    font-size: 0.75rem !important; /* Slightly smaller time font */
+    font-size: 0.75rem !important;
   }
 
   /* Shrink the Chart Heights so they don't consume the entire viewport */
@@ -370,6 +390,21 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-qualifying .stat-val {
     font-size: 1.4rem !important;
   }
+
+  /* FAB position on mobile */
+  .fab-add { bottom: 16px; right: 16px; width: 50px; height: 50px; font-size: 1.4rem; }
+  .fab-data { bottom: 74px; right: 16px; width: 50px; height: 50px; font-size: 1.2rem; }
+
+  /* 11. Results table — scale down on mobile for horizontal fit */
+  #tab-results table { font-size: 0.65rem !important; }
+  #tab-results th, #tab-results td { padding: 6px 5px !important; white-space: nowrap; }
+  #tab-results .badge { padding: 1px 4px !important; font-size: 0.55rem !important; }
+  #tab-results .tc { font-size: 0.7rem !important; }
+
+  /* 12. County QT event table — scale down on mobile */
+  #tab-qualifying .tbl-wrap table { font-size: 0.62rem !important; }
+  #tab-qualifying .tbl-wrap th, #tab-qualifying .tbl-wrap td { padding: 5px 4px !important; }
+  #tab-qualifying .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.52rem !important; }
 }
 
 
@@ -378,19 +413,16 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 <body>
 
 <div class="header">
-  <div class="header-icon">🏊</div>
+  <img class="header-logo" src="data:image/png;base64,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" alt="Broomfield Park Swimming Club">
   <div class="header-title">
     <h1>Swimming Performance Dashboard</h1>
-    <p>Personal race history, PBs &amp; split analysis</p>
+    <p>Broomfield Park SC · Personal race history &amp; analysis</p>
   </div>
   <div class="header-stats">
     <div class="hstat"><div class="hstat-val" id="hTotalRaces">—</div><div class="hstat-label">Races</div></div>
     <div class="hstat"><div class="hstat-val" id="hEvents">—</div><div class="hstat-label">Events</div></div>
     <div class="hstat"><div class="hstat-val" id="hMeets">—</div><div class="hstat-label">Meets</div></div>
     <div class="hstat"><div class="hstat-val" id="hSpan">—</div><div class="hstat-label">Months</div></div>
-    <div class="hstat" style="margin-left: 15px; border-left: 1px solid var(--border); padding-left: 15px;">
-      <button class="btn sec" onclick="showDataModal()" style="padding: 6px 14px; font-size: 0.78rem;">⚙️ Data</button>
-    </div>
   </div>
 </div>
 
@@ -409,7 +441,8 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       <input type="file" id="uploadQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
     </div>
     <button class="btn" style="width:100%" onclick="saveDataToBrowser()">💾 Save to Browser</button>
-    <button class="btn sec" style="width:100%; margin-top:10px; border-color:var(--red); color:var(--red);" onclick="resetDashboard()">🗑️ Reset Dashboard</button>
+    <button class="btn sec" style="width:100%; margin-top:8px;" onclick="downloadRaceData()">⬇️ Download my_swims.json</button>
+    <button class="btn sec" style="width:100%; margin-top:8px; border-color:var(--red); color:var(--red);" onclick="resetDashboard()">🗑️ Reset Dashboard</button>
     <div style="margin-top:15px; font-size:0.75rem; color:var(--text3); text-align:center;">
       Data is stored in your browser's local storage on this device only.
     </div>
@@ -435,13 +468,13 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="card">
         <div class="card-title">📅 Race Frequency by Month</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="freqChart"></canvas></div>
+        <div class="chart-wrap" style="height:280px"><canvas id="freqChart"></canvas></div>
       </div>
     </div>
     <div class="grid2">
       <div class="card">
         <div class="card-title">🎯 Events Breakdown</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="eventPieChart"></canvas></div>
+        <div class="chart-wrap" style="height:320px"><canvas id="eventPieChart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title">📍 Venues Visited</div>
@@ -486,9 +519,9 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <button class="btn sec" onclick="resetProgressionFilters()">Reset Filters</button>
   </div>      
     </div>
-    <div class="card" style="margin-bottom:20px">
+    <div class="card prog-chart-card" style="margin-bottom:20px">
       <div class="card-title">📈 Time Progression</div>
-      <div class="chart-wrap" style="height:340px"><canvas id="progChart"></canvas></div>
+      <div class="chart-wrap" id="progChartWrap" style="height:340px"><canvas id="progChart"></canvas></div>
     </div>
     <div class="grid2">
       <div class="card">
@@ -565,7 +598,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="grid2">
       <div class="card">
         <div class="card-title" id="splitChartTitle">⚡ Split Comparison</div>
-        <div class="chart-wrap" style="height:300px"><canvas id="splitBarChart"></canvas></div>
+        <div class="chart-wrap" id="splitBarChartWrap" style="height:300px"><canvas id="splitBarChart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title">📋 Split Detail</div>
@@ -705,7 +738,76 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     </div>
   </div>
 
-</div><script>
+</div>
+
+<!-- ADD RACE FAB -->
+<button class="fab-add" onclick="showAddRaceModal()" title="Add new race result">＋</button>
+<button class="fab-data" onclick="showDataModal()" title="Data Manager">⚙️</button>
+
+<!-- ADD RACE MODAL -->
+<div id="addRaceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:998; align-items:center; justify-content:center; padding:16px;">
+  <div class="card" style="width:520px; max-width:100%; max-height:90vh; overflow-y:auto; background:var(--surface);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 style="font-size:1.1rem; font-weight:700; color:var(--text);">➕ Add Race Result</h2>
+      <button class="btn sec" style="min-width:auto; padding:4px 10px;" onclick="hideAddRaceModal()">✕</button>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="fg" style="grid-column:1/span 2;">
+        <label class="fl" for="ar-date">Date</label>
+        <input type="date" id="ar-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+      <div class="fg">
+        <label class="fl" for="ar-event">Event</label>
+        <select id="ar-event" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;">
+          <option value="50 Free">50 Free</option><option value="100 Free">100 Free</option>
+          <option value="200 Free">200 Free</option><option value="400 Free">400 Free</option>
+          <option value="800 Free">800 Free</option><option value="1500 Free">1500 Free</option>
+          <option value="50 Back">50 Back</option><option value="100 Back">100 Back</option>
+          <option value="200 Back" selected>200 Back</option>
+          <option value="50 Breast">50 Breast</option><option value="100 Breast">100 Breast</option>
+          <option value="200 Breast">200 Breast</option>
+          <option value="50 Fly">50 Fly</option><option value="100 Fly">100 Fly</option>
+          <option value="200 Fly">200 Fly</option>
+          <option value="200 IM">200 IM</option><option value="400 IM">400 IM</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl" for="ar-course">Course</label>
+        <select id="ar-course" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;">
+          <option value="S">Short Course (25m)</option>
+          <option value="L">Long Course (50m)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl" for="ar-time">Time (mm:ss.hh or ss.hh)</label>
+        <input type="text" id="ar-time" placeholder="e.g. 2:55.68 or 38.10"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+      <div class="fg">
+        <label class="fl" for="ar-venue">Venue</label>
+        <input type="text" id="ar-venue" placeholder="e.g. Watford"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+      <div class="fg" style="grid-column:1/span 2;">
+        <label class="fl" for="ar-competition">Competition Name</label>
+        <input type="text" id="ar-competition" placeholder="e.g. Watford SC County Qualifier 2025"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+      <div class="fg" style="grid-column:1/span 2;">
+        <label class="fl" for="ar-splits">Splits — individual lap times in seconds, comma-separated (optional)</label>
+        <input type="text" id="ar-splits" placeholder="e.g. 41.88, 46.55, 46.78, 40.47"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+    </div>
+    <div id="ar-error" style="display:none;margin-top:12px;padding:10px;background:rgba(220,38,38,0.1);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:0.82rem;"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn sec" style="flex:1;" onclick="hideAddRaceModal()">Cancel</button>
+      <button class="btn" style="flex:2;" onclick="saveNewRace()">💾 Save Race</button>
+    </div>
+  </div>
+</div>
+
+<script>
 
 // ============================================================
 // CONFIGURATION
@@ -772,6 +874,17 @@ function resetDashboard() {
     localStorage.clear();
     window.location.reload();
   }
+}
+
+function downloadRaceData() {
+  const json = JSON.stringify(RAW, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'my_swims.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ============================================================
@@ -866,15 +979,15 @@ function uniqueYears() {
 }
 
 const PALETTE = [
-  '#3b82f6','#06b6d4','#8b5cf6','#10b981','#f59e0b',
-  '#ef4444','#ec4899','#f97316','#14b8a6','#a855f7'
+  '#1a56c4','#0891b2','#7c3aed','#059669','#d97706',
+  '#dc2626','#db2777','#ea580c','#0d9488','#9333ea'
 ];
 
-// Chart colour tokens — keeps chart config in sync with CSS variables
+// Chart colour tokens — matches CSS variables for light theme
 const CC = {
-  grid:   '#1e293b',
-  tick:   '#64748b',
-  legend: '#94a3b8',
+  grid:   '#cbd5e1',
+  tick:   '#475569',
+  legend: '#334155',
 };
 
 // ============================================================
@@ -1068,7 +1181,8 @@ function renderOverview() {
     rpEl.innerHTML = '<div class="empty"><div class="empty-icon">🏅</div><p>No PBs yet</p></div>';
   } else {
     rpEl.innerHTML = recentPBs.map(r => {
-      const imp = r.deltaPrev !== null && r.deltaPrev < 0 ? Math.abs(r.deltaPrev) : null;
+      const isDebut = r.deltaPrev === null;
+      const imp = !isDebut && r.deltaPrev < 0 ? Math.abs(r.deltaPrev) : null;
       return `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
           <div>
@@ -1078,7 +1192,9 @@ function renderOverview() {
           </div>
           <div style="text-align:right">
             <div class="tc" style="color:var(--gold);font-size:1.1rem">${r.time}</div>
-            ${imp ? `<div style="font-size:0.7rem;color:var(--green)">▼ ${imp.toFixed(2)}s faster than previous</div>` : ''}
+            ${isDebut
+              ? `<div style="font-size:0.7rem;margin-top:2px"><span class="badge debut">Debut</span></div>`
+              : imp ? `<div style="font-size:0.7rem;color:var(--green)">▼ ${imp.toFixed(2)}s faster</div>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -1209,50 +1325,70 @@ function renderProgression() {
     };
   });
 
+  // Ensure canvas exists in wrapper (may have been replaced by a debut message)
+  const progWrap = document.getElementById('progChartWrap');
+  if (!progWrap.querySelector('canvas')) {
+    progWrap.innerHTML = '<canvas id="progChart"></canvas>';
+  }
+
   destroyChart('progChart');
-  const canvas = document.getElementById('progChart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  charts['progChart'] = new Chart(ctx, {
-    type: 'line',
-    data: { datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: CC.legend, font: { size: 10 }, boxWidth: 12, padding: 10 } },
-        tooltip: {
-          callbacks: {
-            title: items => {
-              const raw = items[0].raw;
-              return raw.row.event + ' (' + raw.row.course + ') — ' + fmtDate(raw.row.date);
-            },
-            label: items => {
-              const raw = items.raw;
-              const pb = raw.row.isPB ? ' ⭐ PB' : '';
-              const delta = raw.row.deltaPrev !== null
-                ? (raw.row.deltaPrev > 0 ? ' (+' : ' (') + raw.row.deltaPrev.toFixed(2) + 's)'
-                : '';
-              return ' ' + raw.row.time + delta + pb;
-            },
-            afterLabel: items => { return ' ' + items.raw.row.competition + '\n ' + items.raw.row.venue; }
+
+  // Fix 3: Single-race selection → show debut callout instead of 1-dot chart
+  const totalPoints = datasets.reduce((sum, ds) => sum + ds.data.length, 0);
+  if (totalPoints === 1) {
+    const onlyRow = datasets[0].data[0].row;
+    progWrap.innerHTML = `
+      <div class="empty" style="padding:40px 16px;">
+        <div style="font-size:2.5rem;margin-bottom:10px;">🚀</div>
+        <div style="font-weight:700;font-size:1rem;color:var(--text);margin-bottom:6px;">Debut Race</div>
+        <div style="font-size:0.85rem;color:var(--text3);">Only one result for this selection —
+          <strong style="color:var(--gold)">${onlyRow.time}</strong>
+          on ${fmtDate(onlyRow.date)} at ${onlyRow.venue}.</div>
+      </div>`;
+    // Fall through to render improvement summary below
+  } else {
+    const ctx = document.getElementById('progChart').getContext('2d');
+    charts['progChart'] = new Chart(ctx, {
+      type: 'line',
+      data: { datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: CC.legend, font: { size: 10 }, boxWidth: 12, padding: 10 } },
+          tooltip: {
+            callbacks: {
+              title: items => {
+                const raw = items[0].raw;
+                return raw.row.event + ' (' + raw.row.course + ') — ' + fmtDate(raw.row.date);
+              },
+              label: items => {
+                const raw = items.raw;
+                const pb = raw.row.isPB ? ' ⭐ PB' : '';
+                const delta = raw.row.deltaPrev !== null
+                  ? (raw.row.deltaPrev > 0 ? ' (+' : ' (') + raw.row.deltaPrev.toFixed(2) + 's)'
+                  : '';
+                return ' ' + raw.row.time + delta + pb;
+              },
+              afterLabel: items => { return ' ' + items.raw.row.competition + '\n ' + items.raw.row.venue; }
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: 'time',
+            time: { unit: 'month', displayFormats: { month: 'MMM yy' } },
+            ticks: { color: CC.tick, font: { size: 10 } },
+            grid: { color: CC.grid }
+          },
+          y: {
+            reverse: true,
+            ticks: { color: CC.tick, font: { size: 10 }, callback: v => secToTime(v) },
+            grid: { color: CC.grid }
           }
         }
-      },
-      scales: {
-        x: {
-          type: 'time',
-          time: { unit: 'month', displayFormats: { month: 'MMM yy' } },
-          ticks: { color: CC.tick, font: { size: 10 } },
-          grid: { color: CC.grid }
-        },
-        y: {
-          reverse: true,
-          ticks: { color: CC.tick, font: { size: 10 }, callback: v => secToTime(v) },
-          grid: { color: CC.grid }
-        }
       }
-    }
-  });
+    });
+  }
 
   // Determine reference data based on compare mode
   let refSwims;
@@ -1292,15 +1428,29 @@ function renderProgression() {
     eventsToShow.forEach(pb => {
       const key = pb.event + '|' + pb.course;
       const refSwim = refSwims[key];
-      if (!refSwim) return;
+      const swims = swimCounts[key] || 1;
+
+      // Fix 4: No reference swim found (debut for prevSwim/prevBest modes) → show debut row
+      if (!refSwim || swims === 1) {
+        improvHTML += `
+          <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-weight:700">${pb.event} <span class="badge ${pb.course}">${pb.course}</span></span>
+              <span class="badge debut">Debut</span>
+            </div>
+            <div style="font-size:0.72rem;color:var(--text3)">
+              First swim: ${pb.time} on ${fmtDateShort(pb.date)} — no previous benchmark
+            </div>
+          </div>`;
+        return;
+      }
 
       const imp = refSwim.timeInSec - pb.timeInSec;
       const impPct = (imp / refSwim.timeInSec * 100).toFixed(1);
       const improved = imp > 0;
 
-      const swims = swimCounts[pb.event + '|' + pb.course] || 1;
       let trendHTML = '';
-      if (swims === 1 || imp === 0) {
+      if (imp === 0) {
         trendHTML = `<span style="color:var(--gold); font-weight:600;">—</span>`;
       } else {
         trendHTML = `<span class="${improved ? 'dpos' : 'dneg'}">${improved ? '▼' : '▲'} ${Math.abs(imp).toFixed(2)}s (${Math.abs(impPct)}%)</span>`;
@@ -1321,7 +1471,7 @@ function renderProgression() {
         </div>`;
     });
   }
-  document.getElementById('improvSummary').innerHTML = improvHTML;
+  document.getElementById('improvSummary').innerHTML = improvHTML || '<div class="empty"><div class="empty-icon">📊</div><p>No data</p></div>';
 
   // Best vs Reference comparison table
   let bvfHTML = '<div class="tbl-wrap"><table><thead><tr>' +
@@ -1335,7 +1485,9 @@ function renderProgression() {
     const imp = refSwim ? refSwim.timeInSec - pb.timeInSec : 0;
 
     let deltaCell = '';
-    if (swims === 1 || imp === 0) {
+    if (swims === 1) {
+      deltaCell = `<td><span class="badge debut">Debut</span></td>`;
+    } else if (imp === 0) {
       deltaCell = `<td style="color:var(--gold); font-weight:600;">—</td>`;
     } else {
       deltaCell = `<td class="${imp > 0 ? 'dpos' : 'dneg'}">${imp > 0 ? '▼' : '▲'}${Math.abs(imp).toFixed(2)}s</td>`;
@@ -1488,6 +1640,11 @@ function renderSplits() {
 }
 
 function renderSplitCharts(filtered, truePB) {
+  // Ensure canvas exists inside the stable wrapper (may have been replaced by debut message)
+  const wrap = document.getElementById('splitBarChartWrap');
+  if (!wrap.querySelector('canvas')) {
+    wrap.innerHTML = '<canvas id="splitBarChart"></canvas>';
+  }
   const ctxBar = document.getElementById('splitBarChart').getContext('2d');
   const ctxPace = document.getElementById('paceChart').getContext('2d');
 
@@ -1496,46 +1653,68 @@ function renderSplitCharts(filtered, truePB) {
 
   const latest = filtered[filtered.length - 1];
 
-  // Bar Chart (Selected vs True PB)
+  // Dot/scatter chart: each lap plotted as a point — X axis = time (inverted: faster = right)
+  // This replaces the bar chart so the visual direction is intuitive (further right = faster)
   splitBarChart = new Chart(ctxBar, {
     type: 'bar',
     data: {
       labels: latest.splits.map((_, i) => `Lap ${i + 1}`),
       datasets: [
-        { label: 'Current Selection', data: latest.splits, backgroundColor: '#3b82f6' },
-        { label: 'Personal Best', data: truePB.splits, backgroundColor: '#f59e0b' }
+        {
+          label: `Selected (${latest.time})`,
+          data: latest.splits,
+          backgroundColor: 'rgba(26,86,196,0.75)',
+          borderColor: '#1a56c4',
+          borderWidth: 1,
+          borderRadius: 3,
+        },
+        {
+          label: `PB (${truePB.time})`,
+          data: truePB.splits,
+          backgroundColor: 'rgba(217,119,6,0.65)',
+          borderColor: '#d97706',
+          borderWidth: 1,
+          borderRadius: 3,
+        }
       ]
     },
     options: {
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      scales: { 
-        y: { 
-          beginAtZero: false, 
-          ticks: { callback: v => secToTime(v), color: CC.legend }, 
-          grid: { color: CC.grid } 
+      scales: {
+        x: {
+          title: { display: true, text: 'Split time (s)  — shorter bar = faster', color: CC.tick, font: { size: 10 } },
+          ticks: { callback: v => secToTime(v), color: CC.tick },
+          grid: { color: CC.grid }
         },
-        x: { ticks: { color: CC.legend }, grid: { display: false } }
+        y: {
+          ticks: { color: CC.tick },
+          grid: { display: false }
+        }
       },
-      plugins: { 
+      plugins: {
         legend: { labels: { color: CC.legend }, position: 'bottom' },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${secToTime(ctx.raw)}` } }
+        tooltip: { callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${secToTime(ctx.parsed.x)}`
+        }}
       }
     }
   });
 
-  // Pacing Profile — splits are individual lap times, plotted directly
+  // Pacing Profile — sort fastest→slowest so fastest appears at top of legend
+  const sortedForPace = filtered.slice().sort((a, b) => a.timeInSec - b.timeInSec);
   paceChart = new Chart(ctxPace, {
     type: 'line',
     data: {
       labels: latest.splits.map((_, i) => `Lap ${i + 1}`),
-      datasets: filtered.map((r, idx) => ({
+      datasets: sortedForPace.map((r, idx) => ({
         label: `${fmtDateShort(r.date)} (${r.time})`,
         data: r.splits,
-        borderColor: r === truePB ? '#f59e0b' : `hsl(${210 + (idx * 20)}, 70%, 50%)`,
+        borderColor: r === truePB ? '#d97706' : PALETTE[idx % PALETTE.length],
         borderWidth: r === truePB ? 3 : 2,
         pointRadius: 4,
-        pointBackgroundColor: r === truePB ? '#f59e0b' : '#3b82f6',
+        pointBackgroundColor: r === truePB ? '#d97706' : PALETTE[idx % PALETTE.length],
         tension: 0.2
       }))
     },
@@ -1543,8 +1722,8 @@ function renderSplitCharts(filtered, truePB) {
       responsive: true,
       maintainAspectRatio: false,
       scales: { 
-        y: { ticks: { callback: v => secToTime(v), color: CC.legend }, grid: { color: CC.grid } },
-        x: { ticks: { color: CC.legend }, grid: { display: false } }
+        y: { ticks: { callback: v => secToTime(v), color: CC.tick }, grid: { color: CC.grid } },
+        x: { ticks: { color: CC.tick }, grid: { display: false } }
       },
       plugins: { 
         legend: { display: true, position: 'right', labels: { color: CC.legend, boxWidth: 10, font: { size: 9 } } }
@@ -1578,29 +1757,48 @@ function analyzeSwim(index) {
   }
 
   const benchmarkSwim = prevPB || swim;
+  const isDebut = !prevPB;
+  const barChartWrap = document.getElementById('splitBarChartWrap');
 
-  // Update both datasets: [0] = selected swim, [1] = benchmark
-  const lapLabels = swim.splits.map((_, i) => `Lap ${i + 1}`);
-  splitBarChart.data.labels = lapLabels;
-  splitBarChart.data.datasets[0].data  = swim.splits;
-  splitBarChart.data.datasets[0].label = `Selected (${swim.time})`;
-  splitBarChart.data.datasets[1].data  = benchmarkSwim.splits;
-  splitBarChart.data.datasets[1].label = prevPB ? `Prev PB (${benchmarkSwim.time})` : `Only swim (${swim.time})`;
-  splitBarChart.update();
+  if (isDebut) {
+    // Debut race — destroy chart and show message
+    if (splitBarChart) { splitBarChart.destroy(); splitBarChart = null; }
+    const otherSwims = currentEventFiltered.length > 1;
+    barChartWrap.innerHTML =
+      `<div class="empty" style="padding:32px 16px;">
+        <div style="font-size:2rem;margin-bottom:8px;">🚀</div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:4px;">Debut Race</div>
+        <div style="font-size:0.8rem;color:var(--text3)">No previous benchmark to compare against.${otherSwims ? '<br>Select a later race to see split comparison.' : '<br>Swim this event again to unlock split comparison.'}</div>
+      </div>`;
+  } else {
+    // Non-debut — recreate canvas if it was replaced by the debut message
+    if (!splitBarChart) {
+      barChartWrap.innerHTML = '<canvas id="splitBarChart"></canvas>';
+      renderSplitCharts(currentEventFiltered, contextualPBRef);
+    }
+    splitBarChart.data.labels = swim.splits.map((_, i) => `Lap ${i + 1}`);
+    splitBarChart.data.datasets[0].data  = swim.splits;
+    splitBarChart.data.datasets[0].label = `Selected (${swim.time})`;
+    splitBarChart.data.datasets[1].data  = benchmarkSwim.splits;
+    splitBarChart.data.datasets[1].label = `Prev PB (${benchmarkSwim.time})`;
+    splitBarChart.update();
+  }
 
   // Also update pacing chart labels if lap count changed, and highlight selected line
+  const lapLabels = swim.splits.map((_, i) => `Lap ${i + 1}`);
   if (paceChart.data.labels.length !== swim.splits.length) {
     paceChart.data.labels = lapLabels;
   }
+  // Datasets are sorted fastest→slowest; match each dataset label to find selected/PB
+  const sortedForPace = currentEventFiltered.slice().sort((a, b) => a.timeInSec - b.timeInSec);
   paceChart.data.datasets.forEach((ds, i) => {
-    const isSelected = currentEventFiltered[i] === swim;
+    const r = sortedForPace[i];
+    const isSelected = r === swim;
+    const isPB = r === contextualPBRef;
     ds.borderWidth = isSelected ? 4 : 1.5;
     ds.pointRadius = isSelected ? 5 : 2;
-    ds.borderColor = currentEventFiltered[i] === contextualPBRef
-      ? '#f59e0b'
-      : isSelected
-        ? '#ffffff'
-        : `hsl(${210 + (i * 20)}, 70%, 50%)`;
+    ds.borderColor = isPB ? '#d97706' : isSelected ? '#1a56c4' : PALETTE[i % PALETTE.length];
+    ds.pointBackgroundColor = isPB ? '#d97706' : isSelected ? '#1a56c4' : PALETTE[i % PALETTE.length];
   });
   paceChart.update();
 
@@ -1610,7 +1808,7 @@ function analyzeSwim(index) {
     `⚡ Split Comparison — ${eventFilter} (${swim.course === 'S' ? 'SC' : 'LC'})`;
   const legs = swim.splits;
   const legAvg = legs.reduce((a, b) => a + b, 0) / legs.length;
-  const isDebut = !prevPB;
+  // isDebut already declared above
 
   const lapCards = legs.map((s, i) => {
     let displayValue = '';
@@ -1677,7 +1875,7 @@ function analyzeSwim(index) {
 
     <div style="background:var(--surface2); padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border);">
       <div style="font-size:0.6rem; text-transform:uppercase; color:var(--text3); margin-bottom:8px; letter-spacing:0.05em; font-weight:600;">
-        ${isDebut ? 'Actual Splits' : 'Lap Deltas vs PB'}
+        ${isDebut ? 'Actual Splits' : 'Lap Deltas vs Prev PB'}
       </div>
       <div style="display:grid; grid-template-columns: repeat(auto-fill, 65px); gap:6px; justify-content: start;">
         ${lapCards.join('')}
@@ -1773,7 +1971,7 @@ function renderResults() {
   tbody.innerHTML = filtered.map(r => {
     const deltaStr = r.deltaPrev !== null
       ? `<span class="${r.deltaPrev < 0 ? 'dpos' : 'dneg'}">${r.deltaPrev < 0 ? '▼' : '▲'}${Math.abs(r.deltaPrev).toFixed(2)}s</span>`
-      : '<span style="color:var(--text3)">—</span>';
+      : '<span class="badge debut">Debut</span>';
 
     const pbStr = r.isPB
       ? '<span class="badge pb">PB</span>'
@@ -2104,6 +2302,78 @@ async function init() {
   renderPBs();
   renderResults();
   renderQualifying();
+}
+
+// ============================================================
+// ADD RACE MODAL
+// ============================================================
+function showAddRaceModal() {
+  // Pre-fill today's date
+  document.getElementById('ar-date').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('ar-error').style.display = 'none';
+  document.getElementById('ar-time').value = '';
+  document.getElementById('ar-venue').value = '';
+  document.getElementById('ar-competition').value = '';
+  document.getElementById('ar-splits').value = '';
+  document.getElementById('addRaceModal').style.display = 'flex';
+}
+
+function hideAddRaceModal() {
+  document.getElementById('addRaceModal').style.display = 'none';
+}
+
+function saveNewRace() {
+  const errEl = document.getElementById('ar-error');
+  errEl.style.display = 'none';
+
+  function showError(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
+
+  const date        = document.getElementById('ar-date').value.trim();
+  const event       = document.getElementById('ar-event').value;
+  const course      = document.getElementById('ar-course').value;
+  const timeStr     = document.getElementById('ar-time').value.trim();
+  const venue       = document.getElementById('ar-venue').value.trim() || 'Unknown';
+  const competition = document.getElementById('ar-competition').value.trim() || 'Unknown Meet';
+  const splitsRaw   = document.getElementById('ar-splits').value.trim();
+
+  // Validation
+  if (!date) { showError('Please enter a date.'); return; }
+  if (!timeStr) { showError('Please enter a time (e.g. 2:55.68 or 38.10).'); return; }
+  if (!/^\d+(:\d{2}\.\d{2}|\.\d{2})$/.test(timeStr)) {
+    showError('Time must be in mm:ss.hh format (e.g. 2:55.68) or ss.hh format (e.g. 38.10).'); return;
+  }
+
+  // Parse splits
+  let splits = [];
+  if (splitsRaw) {
+    splits = splitsRaw.split(',').map(s => parseFloat(s.trim()));
+    if (splits.some(isNaN)) { showError('Splits must be comma-separated numbers in seconds (e.g. 41.88, 46.55).'); return; }
+  }
+
+  // Build new entry
+  const newEntry = { course, event, date, competition, venue, time: timeStr, splits };
+
+  // Append to RAW and persist
+  RAW.push(newEntry);
+  localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+
+  // Re-process data and re-render all tabs
+  invalidateCache();
+  DATA = processData(RAW);
+  populateSelects();
+  renderOverview();
+  renderProgression();
+  renderPBs();
+  renderResults();
+  renderQualifying();
+
+  hideAddRaceModal();
+
+  // Brief confirmation flash on FAB
+  const fab = document.querySelector('.fab-add');
+  fab.textContent = '✓';
+  fab.style.background = 'var(--green)';
+  setTimeout(() => { fab.textContent = '＋'; fab.style.background = ''; }, 2000);
 }
 
 document.addEventListener('DOMContentLoaded', init);

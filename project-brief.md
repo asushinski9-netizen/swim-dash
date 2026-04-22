@@ -11,6 +11,11 @@ history, personal bests, split analysis, and county qualifying status.
 - Vanilla JS ES6+, CSS custom properties (dark theme)
 - No frameworks, no TypeScript
 
+## Add Race workflow
+New races entered via the ＋ FAB are stored in localStorage only (swimDash_RAW).
+To make them permanent: open ⚙️ Data Manager → ⬇️ Download my_swims.json → push to GitHub.
+The dashboard fetches from GitHub on load and falls back to localStorage if offline.
+
 ## Data sources
 - Race data: GitHub raw JSON → localStorage cache → manual upload fallback
 - RACE_DATA_URL: https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json
