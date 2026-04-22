@@ -1,71 +1,54 @@
 # Session Log
 
-## v13 (latest)
-- Mobile tabs: Explicit #9ab4cc background on mobile overrides desktop value; active tab retains #4f86d8 via dedicated mobile rule
-- Progression ghost chart: Added `delete charts['progChart']` after debut callout to prevent Chart.js orphan reference causing empty renders on event re-select
+## v14 (latest)
+- Tabs: Colour changed to match Reset Filter buttons (var(--surface2) bg, var(--border) border, var(--text2) text) on both desktop and mobile; active tab stays #4f86d8
+- Stat cards: Added text-align:center globally to .stat-card — centres Overview, County QT, and Regional QT metrics on desktop without changing mobile (already flex-centred)
+- BvF mobile table: th and td both set to 0.62rem !important with matching padding — previously inconsistent
+- County QT / Regional QT event tables: th and td both explicitly set to 0.60rem !important for consistency
+- QT stat cards (County + Regional): Replaced static sub-text with event lists:
+  - Qualified card: lists events with checkmark and PB time
+  - Consideration card: lists events with PB time and "+Xs to QT" gap to qualify time
+  - Outside card: lists events with PB time and "+Xs to CT" gap to consideration time
+  - Shared buildQtStatCards(matched, statsElId) helper avoids duplication between renderQualifying() and renderRegionalQualifying()
+
+## v13
+- Mobile tabs: Explicit hex on mobile overrides desktop; active retains #4f86d8 via dedicated mobile rule
+- Progression ghost chart: delete charts['progChart'] after debut callout prevents orphan reference
 - Progression debut callout: Shows competition name instead of venue
-- Pacing Profile: Lines now sorted fastest→slowest (sortedForPace) in both renderSplitCharts and analyzeSwim highlight loop
-- QT table: PB Date moved to its own column (was inline below PB time, inflating row height)
-- Regional Qualifying tab added: New 🏅 Regional QT tab using se_london_qt.json
-  - SE London age groups: 11/12, 13, 14, 15, 16, 17, 18+ (different from county 10+11…17+)
-  - Long Course default (SE London is primarily LC); no null values in SE QT data
-  - Full matching renderRegionalQualifying() function: stat cards, bar+line chart, 8-column table with PB Date column
-  - resetRegionalFilters() helper
-  - SE_QT_DATA_URL constant; SE_QT_DATA global with swimDash_SE_QT localStorage key
-  - Data Manager: third upload field for se_london_qt.json (uploadSEQT)
-  - init() fetches all three URLs in parallel; falls back to localStorage individually
-  - showTab() dispatches to renderRegionalQualifying() for 'regional'
-  - Mobile: regional table scaled same as county (0.62rem); grid4 2-column
+- Pacing Profile: Lines sorted fastest-slowest via sortedForPace in both renderSplitCharts and analyzeSwim
+- QT table: PB Date moved to its own column
+- Regional Qualifying tab added using se_london_qt.json (age groups 11/12, 13-17, 18+)
+- SE_QT_DATA_URL, SE_QT_DATA global, swimDash_SE_QT localStorage, third upload field in Data Manager
+- init() fetches all three data URLs in parallel
 
 ## v12
-- Tabs: Inactive tabs further darkened to #b8cde0 with border #a0bbd4 for mobile contrast
-- Grid: Added min-width:0 to all grid children to prevent chart blowout; chart-wrap gets overflow:hidden
-- Progression debut: Single-race selection replaces chart with debut callout (stable progChartWrap wrapper)
-- Progression improvement: Debut row shown when refSwim is null (prevSwim/prevBest modes)
-- Overview charts: Race Frequency 220→280px, Events Breakdown 220→320px
-- Splits debut message: Context-aware — "Select a later race" if others exist, "Swim again" if truly first
-- Splits chart: Scatter replaced with grouped horizontal bar chart (indexAxis:y, shorter=faster — intuitive)
-- Splits pacing: sortedForPace — datasets ordered fastest→slowest so fastest line leads legend
-- Splits lap delta label: "Lap Deltas vs PB" → "Lap Deltas vs Prev PB"
-- Results table: Mobile font scaled to 0.65rem with tighter padding
-- QT table: Mobile font scaled to 0.62rem with tighter padding
-- Data FAB: Matched to 56px (same as ＋ FAB)
+- Tabs: #b8cde0 inactive, #a0bbd4 border
+- Grid: min-width:0 on children; chart-wrap overflow:hidden
+- Progression debut: stable progChartWrap wrapper; single-race debut callout
+- Progression improvement: Debut row for null refSwim in prevSwim/prevBest modes
+- Overview charts: Frequency 280px, Breakdown 320px
+- Splits debut message: context-aware
+- Splits chart: horizontal bar (indexAxis:y) replaces scatter
+- Splits pacing: sorted fastest-slowest
+- Splits lap delta label: "vs Prev PB"
+- Results/QT tables: mobile font scaling
+- Data FAB: 56px
 
 ## v11
-- Tabs: Active tab lightened to #4f86d8; inactive tabs darkened to var(--surface3) + border
-- Debut badge: Moved to right side under time in Recent PBs (was left side next to event name)
-- Mobile bleed: Removed display:flex from #tab-progression (was causing other panels to bleed)
-- Bug (critical): analyzeSwim crashed with null.closest() when canvas replaced by debut message
-  → Fixed with stable id="splitBarChartWrap" wrapper; both analyzeSwim and
-    renderSplitCharts reference the wrapper div, not the canvas
-- renderSplitCharts: Checks splitBarChartWrap for canvas before getting ctx
-- Download JSON: Added downloadRaceData() and ⬇️ Download button in Data Manager modal
-- Data FAB: Added .fab-data ⚙️ button above ＋ FAB to restore Data Manager access
+- Tabs: #4f86d8 active, surface3+border inactive
+- Debut badge: right side under time
+- Mobile panel bleed: removed display:flex from #tab-progression
+- Bug: null.closest() fixed with id="splitBarChartWrap"
+- Download JSON: downloadRaceData() + button
+- Data FAB: .fab-data button
 
 ## v10
-- Logo: Replaced hand-drawn SVG dolphin with actual uploaded BPSC PNG (base64 <img>)
-- Colours: CC.grid darkened to #cbd5e1 (was #e2e8f0 — invisible on white)
-- PALETTE: Updated to deeper tones suitable for light background
-- Bug: lapLabels undefined in analyzeSwim → declared as const before paceChart update
-- Bug: showError declared at top of saveNewRace (was after its call sites)
-- Bug: indexAxis:y removed from scatter chart (unsupported on scatter type)
-- Bug: renderSplits() removed from saveNewRace (cleared splits tab if no event selected)
-- Bug: Selected pacing line was #ffffff (invisible on light bg) → now #1a56c4
-- Bug: Mobile :last-child rule targeting removed data button → removed
-- Bug: Progression mobile ordering used flex order on tab panel → replaced with simpler approach
-- Bug: Scatter tooltip ctx.parsed.y wrapped in Math.round()
-- Bug: CC.legend used for tick colour on pacing chart → CC.tick
-- Pacing chart: Uses PALETTE instead of hsl() formula
+- Logo: real BPSC PNG base64
+- CC.grid: #cbd5e1; PALETTE updated for light bg
+- Bugs: lapLabels, showError order, indexAxis, renderSplits in save, white line, last-child, progression mobile order, tooltip float, CC.legend, hsl()
 
 ## v9
-- Theme: Full light theme overhaul (--bg:#f0f4f8, --surface:#fff, --accent:#1a56c4 BPSC blue)
-- Logo: Replaced swimmer emoji with BPSC PNG logo (base64 embedded) in header
-- Data button: Removed from header (modal still accessible via init fallback and later FAB)
-- Debut badges: Added .badge.debut CSS; shown in Overview Recent PBs (right side under time),
-  Progression Improvement Summary, Progression BvF Δ column, Results Δ Prev column
-- Mobile progression: prog-chart-card class added; chart moves below summary on mobile
-- Splits chart: Bar chart replaced with horizontal scatter/dot chart
-- Splits debut: analyzeSwim suppresses chart for debut races, shows message instead
-- Add Race FAB: ＋ fixed floating button opens modal; saves to localStorage + re-renders all tabs
-
-## v8 and earlier — see original session-log
+- Light theme, BPSC blue accent, logo
+- Debut badges everywhere
+- Add Race FAB + modal
+- Splits debut suppression

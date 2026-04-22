@@ -71,12 +71,12 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 }
 .tab {
   flex: 1; min-width: 90px; padding: 10px 14px; border: none;
-  background: #b8cde0; color: var(--text2); font-size: 0.83rem;
+  background: var(--surface2); color: var(--text2); font-size: 0.83rem;
   font-weight: 500; border-radius: 8px; cursor: pointer;
   transition: all 0.2s; white-space: nowrap; text-align: center;
-  border: 1px solid #a0bbd4;
+  border: 1px solid var(--border);
 }
-.tab:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+.tab:hover { background: var(--surface3); color: var(--text); border-color: var(--accent); }
 .tab.active {
   background: #4f86d8;
   color: white; border-color: #4f86d8;
@@ -116,6 +116,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
   border-radius: 16px; padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: transform 0.2s;
+  text-align: center;
 }
 .stat-card:hover { transform: translateY(-3px); }
 .stat-icon { font-size: 1.6rem; margin-bottom: 8px; }
@@ -277,10 +278,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   .tab { 
     flex: 1 1 45% !important; 
     font-size: 0.75rem !important; 
-    padding: 9px 4px !important; 
-    background: #9ab4cc !important;
-    border: 1px solid #7a9ab8 !important;
-    color: #1e3a52 !important;
+    padding: 9px 4px !important;
+    background: var(--surface2) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text2) !important;
   }
   .tab.active {
     background: #4f86d8 !important;
@@ -361,19 +362,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   }
 
   /* Shrink the Best vs First Table to fit the iPhone screen */
-  #bestVsFirst table {
-    font-size: 0.65rem !important;
-  }
-  #bestVsFirst th, #bestVsFirst td {
-    padding: 8px 4px !important;
-  }
-  #bestVsFirst .badge {
-    padding: 2px 4px !important;
-    font-size: 0.55rem !important;
-  }
-  #bestVsFirst .tc {
-    font-size: 0.75rem !important;
-  }
+  #bestVsFirst table { font-size: 0.62rem !important; }
+  #bestVsFirst th { font-size: 0.62rem !important; padding: 7px 4px !important; }
+  #bestVsFirst td { font-size: 0.62rem !important; padding: 7px 4px !important; }
+  #bestVsFirst .badge { padding: 2px 4px !important; font-size: 0.52rem !important; }
+  #bestVsFirst .tc { font-size: 0.62rem !important; }
 
   /* Shrink the Chart Heights so they don't consume the entire viewport */
   .chart-wrap {
@@ -408,16 +401,18 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-results .tc { font-size: 0.7rem !important; }
 
   /* 12. County QT event table — scale down on mobile */
-  #tab-qualifying .tbl-wrap table { font-size: 0.62rem !important; }
-  #tab-qualifying .tbl-wrap th, #tab-qualifying .tbl-wrap td { padding: 5px 4px !important; }
-  #tab-qualifying .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.52rem !important; }
+  #tab-qualifying .tbl-wrap table { font-size: 0.60rem !important; }
+  #tab-qualifying .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-qualifying .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-qualifying .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
 
   /* Regional QT table — same scaling */
-  #tab-regional .tbl-wrap table { font-size: 0.62rem !important; }
-  #tab-regional .tbl-wrap th, #tab-regional .tbl-wrap td { padding: 5px 4px !important; }
-  #tab-regional .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.52rem !important; }
+  #tab-regional .tbl-wrap table { font-size: 0.60rem !important; }
+  #tab-regional .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-regional .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-regional .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
   #tab-regional .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-  #tab-regional .stat-card { padding: 12px 5px !important; text-align: center; }
+  #tab-regional .stat-card { padding: 12px 5px !important; }
 }
 
 
@@ -2098,6 +2093,54 @@ function renderResults() {
 }
 
 // ============================================================
+// SHARED QT STAT CARD BUILDER (county + regional)
+// Fix 6/7/8: Qualified lists events; Consideration lists event+PB+gap to qualify;
+//            Outside lists event+PB+gap to consideration
+// ============================================================
+function buildQtStatCards(matched, statsElId) {
+  const qualified     = matched.filter(r => r.status === 'Qualified');
+  const consideration = matched.filter(r => r.status === 'Consideration');
+  const outside       = matched.filter(r => r.status === 'Outside');
+  const noPB          = matched.filter(r => r.status === 'No PB');
+
+  const evList = (items, fn) => items.length
+    ? `<div style="margin-top:8px;text-align:left;font-size:0.7rem;line-height:1.6;">${items.map(fn).join('')}</div>`
+    : '';
+
+  document.getElementById(statsElId).innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-val" style="color:var(--green)">${qualified.length}</div>
+      <div class="stat-label">Qualified</div>
+      ${evList(qualified, r =>
+        `<div style="color:var(--text2)"><span style="font-weight:600;color:var(--green)">✓</span> ${r.event} <span style="color:var(--text3)">${secToTime(r.pbSec)}</span></div>`
+      )}
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔶</div>
+      <div class="stat-val" style="color:var(--gold)">${consideration.length}</div>
+      <div class="stat-label">Consideration</div>
+      ${evList(consideration, r =>
+        `<div style="color:var(--text2)"><span style="font-weight:600;color:var(--gold)">◆</span> ${r.event} <span style="color:var(--text3)">${secToTime(r.pbSec)}</span> <span style="color:var(--red);font-size:0.65rem;">+${Math.abs(r.gapQ).toFixed(2)}s to QT</span></div>`
+      )}
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-val" style="color:var(--red)">${outside.length}</div>
+      <div class="stat-label">Outside Times</div>
+      ${evList(outside, r =>
+        `<div style="color:var(--text2)"><span style="font-weight:600;color:var(--red)">✗</span> ${r.event} <span style="color:var(--text3)">${secToTime(r.pbSec)}</span> <span style="color:var(--red);font-size:0.65rem;">+${Math.abs(r.gapC).toFixed(2)}s to CT</span></div>`
+      )}
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">—</div>
+      <div class="stat-val" style="color:var(--text3)">${noPB.length}</div>
+      <div class="stat-label">No PB Recorded</div>
+      <div class="stat-sub">Event not swum</div>
+    </div>`;
+}
+
+// ============================================================
 // RENDER QUALIFYING TAB
 // ============================================================
 function renderQualifying() {
@@ -2153,38 +2196,8 @@ function renderQualifying() {
     return parseInt(a.event) - parseInt(b.event);
   });
 
-  // Stat cards
-  const qualified     = matched.filter(r => r.status === 'Qualified').length;
-  const consideration = matched.filter(r => r.status === 'Consideration').length;
-  const outside       = matched.filter(r => r.status === 'Outside').length;
-  const noPB          = matched.filter(r => r.status === 'No PB').length;
-
-  document.getElementById('qtStats').innerHTML = `
-    <div class="stat-card">
-      <div class="stat-icon">✅</div>
-      <div class="stat-val" style="color:var(--green)">${qualified}</div>
-      <div class="stat-label">Qualified</div>
-      <div class="stat-sub">Direct entry</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🔶</div>
-      <div class="stat-val" style="color:var(--gold)">${consideration}</div>
-      <div class="stat-label">Consideration</div>
-      <div class="stat-sub">May be selected</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">❌</div>
-      <div class="stat-val" style="color:var(--red)">${outside}</div>
-      <div class="stat-label">Outside times</div>
-      <div class="stat-sub">Below consideration</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">—</div>
-      <div class="stat-val" style="color:var(--text3)">${noPB}</div>
-      <div class="stat-label">No PB recorded</div>
-      <div class="stat-sub">Event not swum</div>
-    </div>
-  `;
+  // Stat cards — with event lists (fixes 6/7/8)
+  buildQtStatCards(matched, 'qtStats');
 
   // If no events match the filter, clear chart and show table message
   if (!matched.length) {
@@ -2539,37 +2552,8 @@ function renderRegionalQualifying() {
     return parseInt(a.event) - parseInt(b.event);
   });
 
-  // Stat cards
-  const qualified     = matched.filter(r => r.status === 'Qualified').length;
-  const consideration = matched.filter(r => r.status === 'Consideration').length;
-  const outside       = matched.filter(r => r.status === 'Outside').length;
-  const noPB          = matched.filter(r => r.status === 'No PB').length;
-
-  document.getElementById('rqStats').innerHTML = `
-    <div class="stat-card">
-      <div class="stat-icon">✅</div>
-      <div class="stat-val" style="color:var(--green)">${qualified}</div>
-      <div class="stat-label">Qualified</div>
-      <div class="stat-sub">Direct entry</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🔶</div>
-      <div class="stat-val" style="color:var(--gold)">${consideration}</div>
-      <div class="stat-label">Consideration</div>
-      <div class="stat-sub">May be selected</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">❌</div>
-      <div class="stat-val" style="color:var(--red)">${outside}</div>
-      <div class="stat-label">Outside times</div>
-      <div class="stat-sub">Below consideration</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">—</div>
-      <div class="stat-val" style="color:var(--text3)">${noPB}</div>
-      <div class="stat-label">No PB recorded</div>
-      <div class="stat-sub">Event not swum</div>
-    </div>`;
+  // Stat cards — with event lists (fixes 6/7/8)
+  buildQtStatCards(matched, 'rqStats');
 
   if (!matched.length) {
     document.getElementById('rqTableBody').innerHTML =
