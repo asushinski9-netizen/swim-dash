@@ -272,14 +272,20 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   .hstat-val { font-size: 1.1rem !important; }
   .hstat-label { font-size: 0.65rem !important; }
 
-  /* 4. Tabs */
+  /* 4. Tabs — 7 tabs: 3 rows of 2 + 1 full width */
   .tabs { flex-wrap: wrap !important; background: transparent !important; }
   .tab { 
     flex: 1 1 45% !important; 
-    font-size: 0.8rem !important; 
-    padding: 10px 5px !important; 
-    background: var(--surface2);
-    border: 1px solid var(--border);
+    font-size: 0.75rem !important; 
+    padding: 9px 4px !important; 
+    background: #9ab4cc !important;
+    border: 1px solid #7a9ab8 !important;
+    color: #1e3a52 !important;
+  }
+  .tab.active {
+    background: #4f86d8 !important;
+    color: white !important;
+    border-color: #4f86d8 !important;
   }
   .tab:last-child { flex: 1 1 100% !important; }
 
@@ -405,6 +411,13 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-qualifying .tbl-wrap table { font-size: 0.62rem !important; }
   #tab-qualifying .tbl-wrap th, #tab-qualifying .tbl-wrap td { padding: 5px 4px !important; }
   #tab-qualifying .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.52rem !important; }
+
+  /* Regional QT table — same scaling */
+  #tab-regional .tbl-wrap table { font-size: 0.62rem !important; }
+  #tab-regional .tbl-wrap th, #tab-regional .tbl-wrap td { padding: 5px 4px !important; }
+  #tab-regional .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.52rem !important; }
+  #tab-regional .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  #tab-regional .stat-card { padding: 12px 5px !important; text-align: center; }
 }
 
 
@@ -436,9 +449,13 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       <label class="fl" for="uploadRaw">1. Upload Swim Data (my_swims.json)</label>
       <input type="file" id="uploadRaw" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
     </div>
-    <div style="margin-bottom: 25px;">
-      <label class="fl" for="uploadQT">2. Upload QT Data (county_qt.json)</label>
+    <div style="margin-bottom: 15px;">
+      <label class="fl" for="uploadQT">2. Upload County QT Data (county_qt.json)</label>
       <input type="file" id="uploadQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
+    </div>
+    <div style="margin-bottom: 25px;">
+      <label class="fl" for="uploadSEQT">3. Upload Regional QT Data (se_london_qt.json)</label>
+      <input type="file" id="uploadSEQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
     </div>
     <button class="btn" style="width:100%" onclick="saveDataToBrowser()">💾 Save to Browser</button>
     <button class="btn sec" style="width:100%; margin-top:8px;" onclick="downloadRaceData()">⬇️ Download my_swims.json</button>
@@ -456,7 +473,8 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <button class="tab" onclick="showTab('pbs', this)">🏆 Personal Bests</button>
     <button class="tab" onclick="showTab('splits', this)">⚡ Splits</button>
     <button class="tab" onclick="showTab('results', this)">📋 All Results</button>
-    <button class="tab" onclick="showTab('qualifying', this)">🎯 County Qualifying</button>
+    <button class="tab" onclick="showTab('qualifying', this)">🎯 County QT</button>
+    <button class="tab" onclick="showTab('regional', this)">🏅 Regional QT</button>
   </div>
 
   <div class="panel active" id="tab-overview">
@@ -725,6 +743,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
             <tr>
               <th>Event</th>
               <th>PB</th>
+              <th>PB Date</th>
               <th>Qualify Time</th>
               <th>Consideration Time</th>
               <th>Gap to Qualify</th>
@@ -733,6 +752,81 @@ tr:hover td { background: var(--surface2); color: var(--text); }
             </tr>
           </thead>
           <tbody id="qtTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGIONAL QUALIFYING PANEL -->
+  <div class="panel" id="tab-regional">
+    <div class="filter-bar">
+      <div class="fg">
+        <span class="fl">Gender</span>
+        <select id="rqGender" onchange="renderRegionalQualifying()">
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Age Group</span>
+        <select id="rqAge" onchange="renderRegionalQualifying()">
+          <option value="11/12" selected>11/12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18+">18+</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Course</span>
+        <select id="rqCourse" onchange="renderRegionalQualifying()">
+          <option value="Long Course">Long Course (50m)</option>
+          <option value="Short Course">Short Course (25m)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <span class="fl">Stroke</span>
+        <select id="rqStroke" onchange="renderRegionalQualifying()">
+          <option value="">All Strokes</option>
+          <option value="Free">Freestyle</option>
+          <option value="Back">Backstroke</option>
+          <option value="Breast">Breaststroke</option>
+          <option value="Fly">Butterfly</option>
+          <option value="IM">Individual Medley</option>
+        </select>
+      </div>
+      <div class="fg" style="align-self: flex-end;">
+        <button class="btn sec" onclick="resetRegionalFilters()">Reset Filters</button>
+      </div>
+    </div>
+
+    <div class="grid4" id="rqStats" style="margin-bottom:20px"></div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">🏅 PB vs SE London Regional Qualifying & Consideration Times</div>
+      <div style="height:380px;position:relative"><canvas id="rqBarChart"></canvas></div>
+      <div class="chart-legend" id="rqLegend" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Event-by-Event Status</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>PB</th>
+              <th>PB Date</th>
+              <th>Qualify Time</th>
+              <th>Consideration Time</th>
+              <th>Gap to Qualify</th>
+              <th>Gap to Consider</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="rqTableBody"></tbody>
         </table>
       </div>
     </div>
@@ -758,7 +852,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <label class="fl" for="ar-event">Event</label>
-        <select id="ar-event" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;">
+        <select id="ar-event" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
           <option value="50 Free">50 Free</option><option value="100 Free">100 Free</option>
           <option value="200 Free">200 Free</option><option value="400 Free">400 Free</option>
           <option value="800 Free">800 Free</option><option value="1500 Free">1500 Free</option>
@@ -773,7 +867,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <label class="fl" for="ar-course">Course</label>
-        <select id="ar-course" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;">
+        <select id="ar-course" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
           <option value="S">Short Course (25m)</option>
           <option value="L">Long Course (50m)</option>
         </select>
@@ -814,12 +908,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 // ============================================================
 const RACE_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json';
 const QT_DATA_URL   = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/county_qt.json';
+const SE_QT_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/se_london_qt.json';
 
 // ============================================================
 // DATA
 // ============================================================
 let RAW = JSON.parse(localStorage.getItem('swimDash_RAW')) || [];
 let QT_DATA = JSON.parse(localStorage.getItem('swimDash_QT')) || [];
+let SE_QT_DATA = JSON.parse(localStorage.getItem('swimDash_SE_QT')) || [];
 let DATA = [];
 
 // Cache for expensive computed lookups — invalidated on each data load
@@ -862,6 +958,8 @@ function saveDataToBrowser() {
 
   if (rawFile) promises.push(readFile(rawFile, 'swimDash_RAW'));
   if (qtFile)  promises.push(readFile(qtFile,  'swimDash_QT'));
+  const seQtFile = document.getElementById('uploadSEQT').files[0];
+  if (seQtFile) promises.push(readFile(seQtFile, 'swimDash_SE_QT'));
   if (promises.length === 0) return alert('Please select at least one file.');
 
   Promise.all(promises)
@@ -1343,9 +1441,9 @@ function renderProgression() {
         <div style="font-weight:700;font-size:1rem;color:var(--text);margin-bottom:6px;">Debut Race</div>
         <div style="font-size:0.85rem;color:var(--text3);">Only one result for this selection —
           <strong style="color:var(--gold)">${onlyRow.time}</strong>
-          on ${fmtDate(onlyRow.date)} at ${onlyRow.venue}.</div>
+          on ${fmtDate(onlyRow.date)} at ${onlyRow.competition}.</div>
       </div>`;
-    // Fall through to render improvement summary below
+    delete charts['progChart']; // ensure no ghost chart reference
   } else {
     const ctx = document.getElementById('progChart').getContext('2d');
     charts['progChart'] = new Chart(ctx, {
@@ -2228,7 +2326,8 @@ function renderQualifying() {
 
     return `<tr>
       <td style="font-weight:600;color:var(--text)">${r.event}</td>
-      <td>${pbStr}${r.pb ? `<span style="font-size:0.7rem;color:var(--text3);display:block">${fmtDate(r.pb.date)}</span>` : ''}</td>
+      <td>${pbStr}</td>
+      <td style="color:var(--text3);font-size:0.78rem">${r.pb ? fmtDateShort(r.pb.date) : '—'}</td>
       <td class="tc">${secToTime(r.qualify)}</td>
       <td class="tc">${secToTime(r.consider)}</td>
       <td>${gapQStr}</td>
@@ -2253,6 +2352,7 @@ function showTab(name, target) {
   else if (name === 'splits')      renderSplits();
   else if (name === 'results')     renderResults();
   else if (name === 'qualifying')  renderQualifying();
+  else if (name === 'regional')    renderRegionalQualifying();
 }
 
 // ============================================================
@@ -2265,32 +2365,34 @@ async function init() {
   document.getElementById('hSpan').textContent       = '…';
 
   try {
-    const [raceRes, qtRes] = await Promise.all([
+    const [raceRes, qtRes, seQtRes] = await Promise.all([
       fetch(RACE_DATA_URL),
-      fetch(QT_DATA_URL)
+      fetch(QT_DATA_URL),
+      fetch(SE_QT_DATA_URL)
     ]);
 
     if (!raceRes.ok || !qtRes.ok) throw new Error('Fetch failed');
 
-    RAW     = await raceRes.json();
-    QT_DATA = await qtRes.json();
+    RAW       = await raceRes.json();
+    QT_DATA   = await qtRes.json();
+    SE_QT_DATA = seQtRes.ok ? await seQtRes.json() : [];
 
-    localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
-    localStorage.setItem('swimDash_QT',  JSON.stringify(QT_DATA));
+    localStorage.setItem('swimDash_RAW',   JSON.stringify(RAW));
+    localStorage.setItem('swimDash_QT',    JSON.stringify(QT_DATA));
+    localStorage.setItem('swimDash_SE_QT', JSON.stringify(SE_QT_DATA));
 
   } catch (err) {
     console.warn('Remote fetch failed, falling back to localStorage:', err);
-    RAW     = JSON.parse(localStorage.getItem('swimDash_RAW')) || [];
-    QT_DATA = JSON.parse(localStorage.getItem('swimDash_QT'))  || [];
+    RAW        = JSON.parse(localStorage.getItem('swimDash_RAW'))   || [];
+    QT_DATA    = JSON.parse(localStorage.getItem('swimDash_QT'))    || [];
+    SE_QT_DATA = JSON.parse(localStorage.getItem('swimDash_SE_QT')) || [];
 
     if (RAW.length === 0) {
       document.getElementById('dataModal').style.display = 'flex';
       return;
     }
-
-    if (QT_DATA.length === 0) {
-      console.warn('No QT data available — County Qualifying tab will be empty.');
-    }
+    if (QT_DATA.length === 0)    console.warn('No County QT data — County Qualifying tab will be empty.');
+    if (SE_QT_DATA.length === 0) console.warn('No SE Regional QT data — Regional Qualifying tab will be empty.');
   }
 
   invalidateCache();
@@ -2374,6 +2476,199 @@ function saveNewRace() {
   fab.textContent = '✓';
   fab.style.background = 'var(--green)';
   setTimeout(() => { fab.textContent = '＋'; fab.style.background = ''; }, 2000);
+}
+
+function resetRegionalFilters() {
+  document.getElementById('rqGender').value = 'Boys';
+  document.getElementById('rqAge').value    = '11/12';
+  document.getElementById('rqCourse').value = 'Long Course';
+  document.getElementById('rqStroke').value = '';
+  renderRegionalQualifying();
+}
+
+// ============================================================
+// REGIONAL QUALIFYING TAB (SE London)
+// ============================================================
+function renderRegionalQualifying() {
+  if (!SE_QT_DATA.length) {
+    document.getElementById('rqStats').innerHTML = '';
+    document.getElementById('rqTableBody').innerHTML =
+      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">
+        No SE London QT data. Upload se_london_qt.json via ⚙️ Data Manager.
+      </td></tr>`;
+    return;
+  }
+
+  const gender = document.getElementById('rqGender').value;
+  const age    = document.getElementById('rqAge').value;
+  const course = document.getElementById('rqCourse').value;
+  const stroke = document.getElementById('rqStroke').value;
+
+  // SE London QT has no null values, so no null filtering needed
+  let qtRows = SE_QT_DATA.filter(r =>
+    r.gender === gender && r.age === age && r.course === course
+  );
+  if (stroke) qtRows = qtRows.filter(r => r.event.includes(stroke));
+
+  // Get swimmer's PBs for matching course code
+  const dashCourse = course === 'Short Course' ? 'S' : 'L';
+  const pbMap = {};
+  DATA.forEach(r => {
+    if (r.course !== dashCourse) return;
+    const key = r.event;
+    if (!pbMap[key] || r.timeInSec < pbMap[key].timeInSec) pbMap[key] = r;
+  });
+
+  const strokeOrder = ['Free','Back','Breast','Fly','IM'];
+  const matched = qtRows.map(qt => {
+    const pb    = pbMap[qt.event] || null;
+    const pbSec = pb ? pb.timeInSec : null;
+    const gapQ  = pbSec !== null ? pbSec - qt.qualify  : null;
+    const gapC  = pbSec !== null ? pbSec - qt.consider : null;
+    let status = 'No PB';
+    if (pbSec !== null) {
+      if (pbSec <= qt.qualify)       status = 'Qualified';
+      else if (pbSec <= qt.consider) status = 'Consideration';
+      else                           status = 'Outside';
+    }
+    return { ...qt, pb, pbSec, gapQ, gapC, status };
+  }).sort((a, b) => {
+    const sa = strokeOrder.indexOf(getStroke(a.event));
+    const sb = strokeOrder.indexOf(getStroke(b.event));
+    if (sa !== sb) return sa - sb;
+    return parseInt(a.event) - parseInt(b.event);
+  });
+
+  // Stat cards
+  const qualified     = matched.filter(r => r.status === 'Qualified').length;
+  const consideration = matched.filter(r => r.status === 'Consideration').length;
+  const outside       = matched.filter(r => r.status === 'Outside').length;
+  const noPB          = matched.filter(r => r.status === 'No PB').length;
+
+  document.getElementById('rqStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-val" style="color:var(--green)">${qualified}</div>
+      <div class="stat-label">Qualified</div>
+      <div class="stat-sub">Direct entry</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔶</div>
+      <div class="stat-val" style="color:var(--gold)">${consideration}</div>
+      <div class="stat-label">Consideration</div>
+      <div class="stat-sub">May be selected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-val" style="color:var(--red)">${outside}</div>
+      <div class="stat-label">Outside times</div>
+      <div class="stat-sub">Below consideration</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">—</div>
+      <div class="stat-val" style="color:var(--text3)">${noPB}</div>
+      <div class="stat-label">No PB recorded</div>
+      <div class="stat-sub">Event not swum</div>
+    </div>`;
+
+  if (!matched.length) {
+    document.getElementById('rqTableBody').innerHTML =
+      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
+    destroyChart('rqBarChart');
+    return;
+  }
+
+  // Bar chart
+  const pbColors  = matched.map(r => {
+    if (r.status === 'Qualified')     return 'rgba(16,185,129,0.85)';
+    if (r.status === 'Consideration') return 'rgba(245,158,11,0.85)';
+    if (r.status === 'Outside')       return 'rgba(239,68,68,0.85)';
+    return 'rgba(100,116,139,0.4)';
+  });
+
+  destroyChart('rqBarChart');
+  const ctx = document.getElementById('rqBarChart').getContext('2d');
+  charts['rqBarChart'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: matched.map(r => r.event),
+      datasets: [
+        {
+          label: "Swimmer's PB",
+          data: matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null),
+          backgroundColor: pbColors,
+          borderColor: pbColors.map(c => c.replace('0.85','1').replace('0.4','0.8')),
+          borderWidth: 1, borderRadius: 4, order: 1
+        },
+        {
+          label: 'Qualify time',
+          data: matched.map(r => parseFloat(r.qualify.toFixed(2))),
+          type: 'line', borderColor: '#10b981', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [6,3], pointRadius: 4,
+          pointBackgroundColor: '#10b981', order: 0, tension: 0
+        },
+        {
+          label: 'Consideration time',
+          data: matched.map(r => parseFloat(r.consider.toFixed(2))),
+          type: 'line', borderColor: '#f59e0b', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [4,4], pointRadius: 4,
+          pointBackgroundColor: '#f59e0b', order: 0, tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (item) => {
+          const r = matched[item.dataIndex];
+          if (item.dataset.label === "Swimmer's PB")
+            return r.pbSec === null ? ' No PB recorded' : ` PB: ${secToTime(r.pbSec)} (${r.status})`;
+          if (item.dataset.label === 'Qualify time') return ` Qualify: ${secToTime(r.qualify)}`;
+          return ` Consideration: ${secToTime(r.consider)}`;
+        }}}
+      },
+      scales: {
+        x: { ticks: { color: CC.tick, font: { size: 11 } }, grid: { color: CC.grid } },
+        y: { ticks: { color: CC.tick, callback: v => secToTime(v) }, grid: { color: CC.grid } }
+      }
+    }
+  });
+
+  document.getElementById('rqLegend').innerHTML = `
+    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #10b981;background:none"></div> Qualify time</div>
+    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #f59e0b;background:none"></div> Consideration time</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(16,185,129,0.85);border-radius:2px"></div> PB — Qualified</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(245,158,11,0.85);border-radius:2px"></div> PB — Consideration</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(239,68,68,0.85);border-radius:2px"></div> PB — Outside</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(100,116,139,0.4);border-radius:2px"></div> No PB</div>`;
+
+  // Table
+  document.getElementById('rqTableBody').innerHTML = matched.map(r => {
+    const pbStr  = r.pbSec !== null
+      ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
+      : '<span style="color:var(--text3)">—</span>';
+    const gapQStr = r.gapQ !== null
+      ? `<span class="${r.gapQ <= 0 ? 'dpos' : 'dneg'}">${r.gapQ <= 0 ? '▼' : '▲'}${Math.abs(r.gapQ).toFixed(2)}s</span>`
+      : '<span style="color:var(--text3)">—</span>';
+    const gapCStr = r.gapC !== null
+      ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
+      : '<span style="color:var(--text3)">—</span>';
+    const statusColor = r.status === 'Qualified' ? '#10b981' : r.status === 'Consideration' ? '#f59e0b'
+      : r.status === 'Outside' ? '#ef4444' : '#64748b';
+    const statusIcon  = r.status === 'Qualified' ? '✅' : r.status === 'Consideration' ? '🔶'
+      : r.status === 'Outside' ? '❌' : '—';
+    return `<tr>
+      <td style="font-weight:600;color:var(--text)">${r.event}</td>
+      <td>${pbStr}</td>
+      <td style="color:var(--text3);font-size:0.78rem">${r.pb ? fmtDateShort(r.pb.date) : '—'}</td>
+      <td class="tc">${secToTime(r.qualify)}</td>
+      <td class="tc">${secToTime(r.consider)}</td>
+      <td>${gapQStr}</td>
+      <td>${gapCStr}</td>
+      <td><span style="color:${statusColor};font-weight:600">${statusIcon} ${r.status}</span></td>
+    </tr>`;
+  }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', init);

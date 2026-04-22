@@ -33,7 +33,7 @@ Same as RAW plus:
 - isPB: boolean      — true if this is the best time for event+course at time of swim
 - deltaPrev: number|null — difference vs previous swim of same event+course (negative = faster)
 
-## QT_DATA entry (county_qt.json)
+## County QT entry (county_qt.json)
 ```json
 {
   "gender": "Boys",
@@ -45,6 +45,35 @@ Same as RAW plus:
 }
 ```
 
+## SE London Regional QT entry (se_london_qt.json)
+```json
+{
+  "gender": "Boys",
+  "course": "Long Course",    // "Short Course" or "Long Course"
+  "event": "50 Back",         // matches RAW event string exactly
+  "age": "11/12",             // "11/12", "13".."17", "18+"  ← different from county!
+  "qualify": 36.76,           // seconds (float), never null in SE London data
+  "consider": 38.60           // seconds (float), never null in SE London data
+}
+```
+
+## Age group comparison
+| County QT  | SE London QT |
+|------------|--------------|
+| 10+11      | 11/12        |
+| 12         | (none)       |
+| 13–16      | 13–17        |
+| 17+        | 18+          |
+
+SE London is primarily Long Course. Both courses present in the data.
+SE London has no null values — all events offered for all age groups.
+
 ## Course code mapping
-RAW/DATA uses "S"/"L" — QT_DATA uses "Short Course"/"Long Course"
+RAW/DATA uses "S"/"L"
+QT_DATA and SE_QT_DATA use "Short Course"/"Long Course"
 Conversion: course === 'Short Course' ? 'S' : 'L'
+
+## GitHub URLs
+RACE_DATA_URL:  https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json
+QT_DATA_URL:    https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/county_qt.json
+SE_QT_DATA_URL: https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/se_london_qt.json

@@ -6,78 +6,33 @@
 RAW splits are individual lap times. Do NOT convert via splits[i] - splits[i-1].
 That was incorrectly applied in v6 refactor and caused nonsense values (2.58s laps).
 
-### renderQualifying defined after DOMContentLoaded
-renderQualifying() must be declared before showTab() and init(). It was briefly
-placed after document.addEventListener('DOMContentLoaded', init) which works due
-to hoisting but is structurally wrong and breaks under strict mode / const refactor.
-
-### dataModal inside sticky header
-position:fixed inside position:sticky causes rendering bugs on iOS Safari.
-dataModal must be a direct child of <body>, not nested inside .header-stats.
-
-### trendHTML scoping in renderProgression
-Must be declared with `let trendHTML = ''` inside the forEach callback.
-Without it, trendHTML is implicit global and bleeds across loop iterations.
-
-### imp scoping in BvF table
-`const imp = refSwim ? refSwim.timeInSec - pb.timeInSec : 0` must be declared
-inside the eventsToShow.forEach(), not referenced from the outer forEach scope.
-
-### Split Comparison bar chart frozen
-analyzeSwim() must update BOTH datasets[0] (Current Selection) AND datasets[1]
-(benchmark). Only updating [1] leaves [0] frozen on the latest swim forever.
-
-### splitDetail.innerHTML double-set + analyzeSwim double-called
-renderSplits() once set splitDetail.innerHTML twice and called analyzeSwim twice.
-The second innerHTML set wiped the analyzeSwim output. Keep exactly one of each.
-
-### populateSelects() wiping "All Events" option
-The progEvent select must include '<option value="">All Events</option>' as
-first item — populateSelects() overwrites static HTML options.
-
-### resetPBFilters() commented out
-resetPBFilters() was once commented out while the Reset button still called it,
-causing ReferenceError on click. Never comment out functions wired to HTML buttons.
-
-### getPreviousSwims() — sort must use localeCompare
-Sort history descending using b.date.localeCompare(a.date), NOT b.date - a.date
-(treating date strings as numbers gives NaN comparisons).
-
 ### renderOverview() closing brace
 renderOverview() once had its closing } in the wrong place mid-function,
 causing chart rendering code to run at parse time.
 
-### gapQ/gapC NaN when qualify/consider is null
-`pbSec - qt.qualify` evaluates to NaN when qt.qualify is null (even if pbSec is
-not null). The filter at line ~1826 only excludes rows where BOTH are null.
-Guard: `pbSec !== null && qt.qualify !== null ? pbSec - qt.qualify : null`
+### getPreviousSwims() — sort must use localeCompare
+Sort history descending using b.date.localeCompare(a.date), NOT b.date - a.date.
 
-### borderColor string-replace hack in qualifying chart
-Was: `pbColors.map(c => c.replace('0.85','1').replace('0.4','0.8'))`
-This is fragile — if any opacity value contains those substrings elsewhere it
-corrupts the colour. Now uses a directly constructed pbBorders array instead.
+### trendHTML scoping in renderProgression
+Must be declared with `let trendHTML = ''` inside the forEach callback.
 
-### contextualPB wrong course when "Both" selected
-getPBs() sorts by distance then event name — "L" sorts before "S" alphabetically,
-so .filter()[0] returned the LC PB even when SC was faster.
-Fix: use .reduce() to pick lowest timeInSec across all matched PBs.
+### imp scoping in BvF table
+`const imp = ...` must be declared inside eventsToShow.forEach(), not outer scope.
 
-### splitChartTitle stuck on last swim's course
-renderSplits derived courseLabel from latest.course (last chronological swim).
-analyzeSwim never updated the title on row click.
-Fix: renderSplits shows "SC/LC" when both courses selected; analyzeSwim updates
-the title on every click to reflect the selected swim's actual course.
+### Split Comparison bar chart frozen
+analyzeSwim() must update BOTH datasets[0] and datasets[1]. Only updating [1] left [0] frozen.
 
-### matched guard must come after stat cards, before chart creation
-Early return when !matched.length must fire after stat cards are rendered
-(so counts show 0) but before destroyChart/new Chart (so no empty chart instance
-is created). The labels variable must be declared after this guard.
+### splitDetail.innerHTML double-set + analyzeSwim double-called
+renderSplits() once set splitDetail.innerHTML twice and called analyzeSwim twice.
+
+### populateSelects() wiping "All Events" option
+The progEvent select must include '<option value="">All Events</option>' as first item.
 
 ### null.closest() crash in analyzeSwim (v11)
-analyzeSwim used getElementById('splitBarChart').closest('.card') to find the card wrapper.
-After a debut row was selected, the canvas was replaced with a div message, so the next
-getElementById returned null and .closest() threw. Fixed with stable id="splitBarChartWrap"
-wrapper div that always exists. Both analyzeSwim and renderSplitCharts reference the wrapper.
+analyzeSwim used getElementById('splitBarChart').closest('.card'). After a debut row was
+selected, the canvas was replaced with a div, so getElementById returned null and .closest()
+threw TypeError. Fixed with stable id="splitBarChartWrap" wrapper div that always exists.
+Both analyzeSwim and renderSplitCharts reference the wrapper, not the canvas.
 
 ### lapLabels undefined in analyzeSwim (v10)
 paceChart.data.labels = lapLabels referenced an undeclared variable (existed in v8, dropped
@@ -89,75 +44,69 @@ renderProgression() call got null from getElementById('progChart'). Fixed with s
 id="progChartWrap" wrapper — canvas is restored inside it before destroyChart() each render.
 
 ### Improvement Summary empty for debut events (v12)
-With compareMode=prevSwim or prevBest, getPreviousSwims/getPreviousBestSwims return no entry
-for debut events. The `if (!refSwim) return` silently skipped them leaving the summary blank.
-Fixed: debut events now render an explicit "Debut — no previous benchmark" row instead.
+With compareMode=prevSwim or prevBest, no ref swim exists for debut events. The
+`if (!refSwim) return` silently skipped them. Fixed: debut events now render an explicit
+"Debut — no previous benchmark" row.
 
 ### indexAxis:y on scatter chart (v10)
-Chart.js scatter charts don't support indexAxis. Option was silently ignored. Removed in v10.
-In v12, scatter was replaced entirely with a grouped horizontal bar chart (type:'bar' with
-indexAxis:'y') which does support indexAxis correctly.
+Chart.js scatter charts don't support indexAxis. Silently ignored. Removed in v10.
+In v12, scatter was replaced with a grouped horizontal bar chart (type:'bar' + indexAxis:'y').
+
+### Progression ghost chart after debut (v13)
+After showng debut callout in progChartWrap, charts['progChart'] still held a stale reference.
+On next render, destroyChart found no canvas but the reference remained. Fixed by explicitly
+calling `delete charts['progChart']` after replacing the innerHTML with the debut message.
+
+### Mobile tab override not applying (v13)
+Mobile CSS used var(--surface2) for inactive tab background, which the desktop value #b8cde0
+overrode. Fixed by using explicit hex #9ab4cc in the @media block with !important.
 
 ## WATCH-OUT AREAS
 
 ### fmtDate / fmtDateShort timezone shift
 new Date('2025-11-15') parses as UTC midnight → toLocaleDateString() in timezones
 behind UTC shows the previous day. Always use parseLocalDate() which constructs
-new Date(y, m-1, d) in local time. Also applies to progression chart x-axis dates.
+new Date(y, m-1, d) in local time.
 
 ### secToTime() for sub-60s values
 Returns "38.00" not "0:38.00" for times under 60s — correct swimming notation.
-The null/Infinity guard: if (!isFinite(s) || s === null) return '—'
-Uses pre-computed `sec` variable for the sub-60 branch — do not recompute s - m*60.
+The null/Infinity guard: if (!isFinite(s)) return '—'
 
 ### QT_DATA course strings ≠ DATA course codes
-QT uses "Short Course"/"Long Course"; DATA uses "S"/"L". Always convert before matching.
-Conversion: `course === 'Short Course' ? 'S' : 'L'`
+County QT uses "Short Course"/"Long Course"; DATA uses "S"/"L".
+SE London QT uses the same "Short Course"/"Long Course" convention.
+Always convert: course === 'Short Course' ? 'S' : 'L'
 
-### Null qualify/consider in QT_DATA
+### SE London QT age groups differ from County QT
+County: "10+11", "12", "13"..."16", "17+"
+SE London: "11/12", "13", "14"..."17", "18+"
+These are different select options in different panels — do not share filter state.
+
+### SE London QT has no null values
+Unlike county_qt.json which has null qualify/consider for some 10+11 events,
+se_london_qt.json has no nulls. The null-filter guard in renderQualifying is not
+needed in renderRegionalQualifying but was kept safe with direct value access.
+
+### Null qualify/consider in QT_DATA (county only)
 10+11 age group has null for 400 IM, 800 Free, 1500 Free.
 Filter with !(r.qualify === null && r.consider === null).
-Guard .toFixed(): r.qualify !== null ? parseFloat(r.qualify.toFixed(2)) : null
-Guard gapQ/gapC: pbSec !== null && qt.qualify !== null ? pbSec - qt.qualify : null
+Guard .toFixed() calls: r.qualify !== null ? parseFloat(r.qualify.toFixed(2)) : null
 
 ### renderSplitCharts vs analyzeSwim chart ownership
 splitBarChart and paceChart are module-level vars (not in charts{} registry).
-renderSplitCharts() creates them fresh. analyzeSwim() mutates datasets[0] and [1]
-and calls .update() — it does NOT recreate the chart.
-analyzeSwim also updates paceChart.data.labels if the lap count changed.
+renderSplitCharts() creates them fresh. analyzeSwim() mutates datasets and calls .update().
+sortedForPace must be applied in BOTH places — dataset creation and the highlight loop.
 
 ### Memoisation cache invalidation
-invalidateCache() must be called whenever DATA is reprocessed.
-Cache keys: pbs, firstSwims, latestSwims, previousSwims, previousBestSwims,
-swimCounts, uniqueEvents, uniqueVenues, uniqueYears.
+invalidateCache() must be called whenever DATA is reprocessed. Also resets overviewRendered.
 
-### resetQualifyingFilters must use .value not .selectedIndex
-.selectedIndex = 1 silently resets to the wrong option if dropdown order changes.
-Use .value = '12' (or the correct string) for all qualifying filter resets.
+### progChartWrap canvas restoration
+Before every destroyChart('progChart') call, the code checks progWrap.querySelector('canvas')
+and restores the canvas if the debut message replaced it. This must happen BEFORE destroyChart,
+not after, because destroyChart looks up charts['progChart'] which requires the canvas to exist.
 
-### processData mutates spread-cloned objects
-processData writes isPB and deltaPrev onto the objects it creates via spread.
-This is safe as long as processData is only called once per data load (which
-invalidateCache() + DATA = processData(RAW) enforces). Don't call it twice.
-
-### pbsThisYear threshold
-Uses dynamic new Date().getFullYear() — do not hardcode a year here.
-
-### reader.onerror in saveDataToBrowser
-FileReader Promises must have both onload AND onerror handlers.
-Without onerror, a failed read leaves the Promise permanently pending.
-
-### contextualPBRef module variable
-contextualPBRef is set in renderSplits alongside currentEventFiltered.
-analyzeSwim uses it to colour the PB line gold in the pacing chart.
-Must be updated whenever renderSplitCharts is called.
-
-### overviewRendered flag
-Set to true at end of renderOverview(), reset to false in invalidateCache().
-If a new data source is loaded without page reload, invalidateCache() ensures
-the overview re-renders with fresh data.
-
-### CC chart colour constant
-Chart.js cannot read CSS variables. CC = {grid, tick, legend} holds the
-equivalent hex values. If the colour scheme changes, update both :root CSS
-variables AND the CC constant.
+### Three localStorage keys for data
+swimDash_RAW — race entries (my_swims.json)
+swimDash_QT  — county qualifying times (county_qt.json)
+swimDash_SE_QT — SE London regional times (se_london_qt.json)
+All three are fetched in parallel in init() and stored to localStorage on success.

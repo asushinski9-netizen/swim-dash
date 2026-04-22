@@ -1,4 +1,23 @@
-## v12 (latest)
+# Session Log
+
+## v13 (latest)
+- Mobile tabs: Explicit #9ab4cc background on mobile overrides desktop value; active tab retains #4f86d8 via dedicated mobile rule
+- Progression ghost chart: Added `delete charts['progChart']` after debut callout to prevent Chart.js orphan reference causing empty renders on event re-select
+- Progression debut callout: Shows competition name instead of venue
+- Pacing Profile: Lines now sorted fastest→slowest (sortedForPace) in both renderSplitCharts and analyzeSwim highlight loop
+- QT table: PB Date moved to its own column (was inline below PB time, inflating row height)
+- Regional Qualifying tab added: New 🏅 Regional QT tab using se_london_qt.json
+  - SE London age groups: 11/12, 13, 14, 15, 16, 17, 18+ (different from county 10+11…17+)
+  - Long Course default (SE London is primarily LC); no null values in SE QT data
+  - Full matching renderRegionalQualifying() function: stat cards, bar+line chart, 8-column table with PB Date column
+  - resetRegionalFilters() helper
+  - SE_QT_DATA_URL constant; SE_QT_DATA global with swimDash_SE_QT localStorage key
+  - Data Manager: third upload field for se_london_qt.json (uploadSEQT)
+  - init() fetches all three URLs in parallel; falls back to localStorage individually
+  - showTab() dispatches to renderRegionalQualifying() for 'regional'
+  - Mobile: regional table scaled same as county (0.62rem); grid4 2-column
+
+## v12
 - Tabs: Inactive tabs further darkened to #b8cde0 with border #a0bbd4 for mobile contrast
 - Grid: Added min-width:0 to all grid children to prevent chart blowout; chart-wrap gets overflow:hidden
 - Progression debut: Single-race selection replaces chart with debut callout (stable progChartWrap wrapper)
@@ -17,8 +36,8 @@
 - Debut badge: Moved to right side under time in Recent PBs (was left side next to event name)
 - Mobile bleed: Removed display:flex from #tab-progression (was causing other panels to bleed)
 - Bug (critical): analyzeSwim crashed with null.closest() when canvas replaced by debut message
-  → Fixed by adding stable id="splitBarChartWrap" wrapper; both analyzeSwim and
-  renderSplitCharts reference wrapper div, not the canvas that may have been replaced
+  → Fixed with stable id="splitBarChartWrap" wrapper; both analyzeSwim and
+    renderSplitCharts reference the wrapper div, not the canvas
 - renderSplitCharts: Checks splitBarChartWrap for canvas before getting ctx
 - Download JSON: Added downloadRaceData() and ⬇️ Download button in Data Manager modal
 - Data FAB: Added .fab-data ⚙️ button above ＋ FAB to restore Data Manager access
@@ -40,86 +59,13 @@
 
 ## v9
 - Theme: Full light theme overhaul (--bg:#f0f4f8, --surface:#fff, --accent:#1a56c4 BPSC blue)
-- Logo: Replaced swimmer emoji with actual BPSC PNG logo (base64 embedded) in header
-- Data button: Removed from header (modal still accessible via init fallback)
+- Logo: Replaced swimmer emoji with BPSC PNG logo (base64 embedded) in header
+- Data button: Removed from header (modal still accessible via init fallback and later FAB)
 - Debut badges: Added .badge.debut CSS; shown in Overview Recent PBs (right side under time),
   Progression Improvement Summary, Progression BvF Δ column, Results Δ Prev column
-- Mobile progression: prog-chart-card class added; chart moves below summary on mobile via order CSS
-- Splits chart: Bar chart replaced with horizontal scatter/dot chart (inverted X = faster right)
+- Mobile progression: prog-chart-card class added; chart moves below summary on mobile
+- Splits chart: Bar chart replaced with horizontal scatter/dot chart
 - Splits debut: analyzeSwim suppresses chart for debut races, shows message instead
 - Add Race FAB: ＋ fixed floating button opens modal; saves to localStorage + re-renders all tabs
 
-## v8
-- Bug: renderQualifying status logic now guards qt.qualify/consider !== null before
-  comparison — swimmer faster than consideration-only threshold was showing as "Outside"
-- Bug: populateSelects now uses memoised uniqueEvents()/uniqueVenues() — eliminates
-  duplicated iteration and a sort inconsistency between the two code paths
-- Bug: renderProgression has else fallback for unrecognised compareMode — previously
-  refSwims would be undefined and throw on refSwims[key]
-- Bug: contextualPB now picks lowest timeInSec across all matched PBs (was taking
-  first in alphabetical sort order — LC before SC, giving wrong benchmark)
-- Bug: splitChartTitle now updates in analyzeSwim on every row click to show the
-  selected swim's actual course — was stuck on the last chronological swim's course
-- Bug: splitChartTitle in renderSplits shows "SC/LC" when both courses are selected
-- Bug: meets count key uses | separator — prevents name+date string collision
-- Bug: SC/LC stat card counts computed once via getSwimCounts() not inline DATA.filter
-- Pacing chart: selected swim's line highlighted (white/thick) in analyzeSwim,
-  others dimmed; contextualPBRef module var added to track current PB swim
-- overviewRendered dirty flag — Overview charts no longer re-render on every revisit;
-  reset in invalidateCache() on data reload
-- All tabs pre-rendered in init — first switch to any tab is now instant
-- hideDataModal() named function added — modal close button no longer uses inline call
-- renderQualifying: empty QT_DATA guard shows informative message directing user to
-  upload county_qt.json; !matched.length guard now fires before chart creation
-- resetProgressionFilters uses .value not .selectedIndex
-- renderProgression refSwims/refLabel block properly indented; innerHTML → textContent
-- Stale numbered comment removed from renderSplits
-- Dead .active-coach CSS rule removed
-- updateSortHeaders moved to sortResults only — no longer runs on every filter change
-- secToTime unreachable s===null guard removed; sub-60 branch simplified
-- populateSelects blank-line formatting fixed
-- Dead .sec-hdr and .trend CSS classes removed
-- CC constant added for chart colours — 18 hardcoded hex strings replaced with
-  CC.tick, CC.legend, CC.grid
-- contextualPB lookup uses getPBs() — no longer sorts a full copy of DATA
-- Label accessibility: modal file inputs now have matching for attributes on labels
-- Rollback: fix-18 chart/table empty ordering reverted — guard correctly placed
-  after stat cards, before chart creation, with labels var restored
-  
-## v7
-- Structural: renderQualifying moved before showTab/init (was after DOMContentLoaded)
-- Structural: dataModal moved to direct child of <body> (fixes iOS Safari fixed-inside-sticky bug)
-- Removed: dead renderedTabs Set, orphaned POPULATE SELECTS section comment
-- Bugs: gapQ/gapC null guard for partially-null QT rows, pacing chart labels now
-  update when a swim with different lap count is selected, secToTime double-compute eliminated
-- Qualifying: now uses memoised getPBs() instead of iterating DATA directly
-- Qualifying: borderColor constructed directly as pbBorders array (no string-replace hack)
-- resetQualifyingFilters: uses .value not .selectedIndex (safe if dropdown order changes)
-- splitChartTitle: updated dynamically in renderSplits with event name and course
-- Reset Dashboard modal button now calls resetDashboard() consistently (confirm dialog)
-- pbsThisYear uses dynamic new Date().getFullYear() — was hardcoded to 2025
-- Progression chart x-axis uses parseLocalDate() for timezone consistency
-- uniqueEvents(), uniqueVenues(), uniqueYears() all memoised via cache{}
-- reader.onerror handler added in saveDataToBrowser (Promise no longer hangs silently)
-- Loading … placeholders in header stats during initial GitHub fetch
-- QT-empty warning logged in init catch block
-- Results table sort headers show ↑/↓ on active column, ↕ on others
-
-## v6
-- Fixed 25 issues from full code review
-- Bugs: renderOverview brace, getPreviousSwims sort, trendHTML scope, imp scope,
-  splitBarChart dataset[0] not updating, double render in renderSplits
-- Perf: memoised all lookup functions with cache{}, added getSwimCounts()
-- CSS: moved qualifying mobile styles into @media block, removed duplicate active rule
-- UX: secToTime sub-60s formatting, parseLocalDate timezone fix, removed 'securely' text
-- Then: reverted incorrect cumulative-splits conversion (splits are already lap times)
-- Then: fixed trendHTML/imp scoping bugs introduced during refactor
-- Then: fixed split bar chart Current Selection frozen (analyzeSwim now updates both datasets)
-
-## v5
-- Added County Qualifying tab with QT_DATA, gender/age/course/stroke filters,
-  bar chart + table, stat cards
-
-## v4
-- Added missing QT events (200 Breast, 200 Fly, 400 IM, 800 Free, 1500 Free)
-- Fixed qualifying chart event ordering (stroke then distance)
+## v8 and earlier — see original session-log
