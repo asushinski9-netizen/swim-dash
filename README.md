@@ -1,70 +1,49 @@
-This is a README.md file tailored for your Swimming Performance Dashboard based on the features and technical structure implemented in version 5 of your project.
+# Swimming Performance Dashboard — Project Brief
 
-🏊 Swimming Performance Dashboard
-A comprehensive, client-side web application designed for competitive swimmers to track race history, analyze pacing strategy through an AI-driven coach, and monitor progress toward County Qualifying times.
+## Purpose
+Single-file HTML dashboard for tracking a competitive swimmer's race history,
+personal bests, split analysis, and qualifying status against both county and
+regional standards.
 
-✨ Key Features
-📊 Multi-Dimensional Overview: High-level statistics including total race counts, event variety, and venue history.
+## Swimmer
+Broomfield Park Swimming Club (BPSC), membership 1745801.
+Dashboard branding uses BPSC royal blue (#1a56c4) and the club logo (base64 PNG embedded).
 
-📈 Progression Tracking: Dynamic charts to visualize time improvements over months or years, with the ability to compare current marks against first swims, latest swims, or previous personal bests.
+## Tech stack
+- Single-file HTML5 — no build step, no bundler
+- Chart.js 4.4.0 (CDN: jsdelivr)
+- chartjs-adapter-date-fns (CDN: jsdelivr)
+- Vanilla JS ES6+, CSS custom properties (light theme)
+- No frameworks, no TypeScript
 
-🏆 Personal Best (PB) Gallery: A dedicated view of all current records, automatically categorized by stroke and course (Short Course vs. Long Course).
+## Data sources
+| File               | GitHub URL                                                                               | Description                    |
+|--------------------|------------------------------------------------------------------------------------------|--------------------------------|
+| my_swims.json      | .../asushinski9-netizen/swim-dash/main/my_swims.json                                     | Race entries                   |
+| county_qt.json     | .../asushinski9-netizen/swim-dash/main/county_qt.json                                    | Middlesex County QT 2026       |
+| se_london_qt.json  | .../asushinski9-netizen/swim-dash/main/se_london_qt.json                                 | SE London Regional QT          |
 
-🤖 AI Pacing Coach:
+All three fetched in parallel at startup; localStorage fallback if offline.
 
-Analyzes split data to provide actionable feedback.
+## Qualifying time sources
+- County: Middlesex County Championships 2026 PDF (harrowswim.com)
+- Regional: SE London Regional Championships (se_london_qt.json uploaded directly)
 
-Contextual Logic: Tailors advice differently for 100m sprints (e.g., praising "White-White" controlled pacing) versus 200m+ endurance events.
+## Deployment
+- Opened directly as a local HTML file (file://) OR served from GitHub Pages
+- Must work offline after first load (localStorage cache for all three data files)
+- Must work on mobile (has @media 500px breakpoint)
 
-Visual Color Coding: Uses Green (fast/burst), White (steady), and Red (fade) chips to visually represent race efficiency relative to the race average.
+## Add Race workflow
+New races entered via the ＋ FAB are stored in localStorage only.
+To make permanent: open ⚙️ Data Manager → ⬇️ Download my_swims.json → push file to GitHub.
+The dashboard re-fetches from GitHub on next load.
 
-📋 Detailed Result History: A filterable, sortable table containing every recorded swim, competition name, and specific lap splits.
-
-🎯 County Qualifying Analysis: Automatically compares your current PBs against standard Qualifying and Consideration times for specific age groups and genders.
-
-⚙️ Data Management
-This dashboard is data-less by default; it does not store your personal information on a server. Instead, it utilizes your browser's LocalStorage to keep data secure and private on your own device.
-
-How to Load Data
-Click the ⚙️ Data button in the top header.
-
-Upload your race history file (my_swims.json).
-
-Upload your qualifying times file (county_qt.json).
-
-Click 💾 Save to Browser to initialize the dashboard.
-
-Data Formats
-The application requires data in specific JSON formats.
-
-Example my_swims.json entry:
-
-JSON
-{
-  "course": "S",
-  "event": "100 Free",
-  "date": "2025-11-15",
-  "competition": "County Qualifier 2025",
-  "venue": "Watford",
-  "time": "1:17.43",
-  "splits": [37.28, 40.15]
-}
-📱 Mobile Usage
-The dashboard is optimized for mobile viewing. For the best experience on iOS or Android:
-
-Documents by Readdle: Use this app to open the HTML file locally with full JavaScript permissions.
-
-GitHub Pages: Host the HTML file as a static site (e.g., index.html) to access it via a dedicated URL.
-
-Add to Home Screen: Once opened in Safari or Chrome, use the "Add to Home Screen" feature to treat the dashboard like a native app.
-
-🛠️ Technical Details
-Frontend: Pure HTML5, CSS3, and Vanilla JavaScript.
-
-Charts: Powered by Chart.js for responsive visualizations.
-
-Storage: Browser localStorage API.
-
-Validation: The Data Manager includes built-in JSON validation to prevent dashboard crashes from malformed files.
-
-Note: This dashboard is a private tool. Always keep a backup of your .json data files, as clearing your browser cache may remove stored records.
+## Tabs (v13)
+1. 📊 Overview — stat cards, recent PBs, frequency chart, events breakdown, venues
+2. 📈 Progression — time chart, improvement summary, best vs reference table
+3. 🏆 Personal Bests — PB cards per event+course with improvement vs reference
+4. ⚡ Splits — AI pacing coach, split comparison bar chart, pacing profile, split detail
+5. 📋 All Results — sortable filterable results table with all swims
+6. 🎯 County QT — Middlesex county qualifying status with chart and table
+7. 🏅 Regional QT — SE London regional qualifying status with chart and table
