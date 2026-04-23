@@ -129,7 +129,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
   position: fixed; bottom: 24px; right: 24px; z-index: 200;
   width: 56px; height: 56px; border-radius: 50%;
   background: var(--accent); color: white; border: none;
-  font-size: 1.6rem; cursor: pointer;
+  font-size: 1.8rem; line-height: 1; cursor: pointer;
   box-shadow: 0 4px 16px rgba(26,86,196,0.4);
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -350,10 +350,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     color: var(--text) !important;
   }
 
-  /* 7. Progression Tab — move summary cards above chart on mobile */
-  #tab-progression .prog-chart-card {
-    margin-top: 12px;
-  }
+  /* 7. Progression Tab grid2 on mobile */
   #tab-progression .grid2 {
     display: flex !important;
     flex-direction: column !important;
@@ -379,16 +376,20 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     gap: 10px !important;
   }
   #tab-qualifying .stat-card {
-    padding: 12px 5px !important;
+    padding: 10px 6px !important;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
   }
-  #tab-qualifying .stat-val {
-    font-size: 1.4rem !important;
+  #tab-qualifying .stat-val { font-size: 1.3rem !important; }
+  /* Event lists in stat cards — smaller on mobile */
+  #tab-qualifying .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
+  #tab-regional .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  #tab-regional .stat-card {
+    padding: 10px 6px !important;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
   }
+  #tab-regional .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
 
   /* FAB position on mobile */
   .fab-add { bottom: 16px; right: 16px; width: 50px; height: 50px; font-size: 1.4rem; }
@@ -411,8 +412,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-regional .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
   #tab-regional .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
   #tab-regional .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
-  #tab-regional .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-  #tab-regional .stat-card { padding: 12px 5px !important; }
 }
 
 
@@ -532,10 +531,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <button class="btn sec" onclick="resetProgressionFilters()">Reset Filters</button>
   </div>      
     </div>
-    <div class="card prog-chart-card" style="margin-bottom:20px">
-      <div class="card-title">📈 Time Progression</div>
-      <div class="chart-wrap" id="progChartWrap" style="height:340px"><canvas id="progChart"></canvas></div>
-    </div>
     <div class="grid2">
       <div class="card">
         <div class="card-title">📊 Improvement Summary</div>
@@ -545,6 +540,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         <div class="card-title" id="compareCardTitle">🏁 Best vs First</div>
         <div id="bestVsFirst"></div>
       </div>
+    </div>
+    <div class="card prog-chart-card" style="margin-bottom:20px">
+      <div class="card-title">📈 Time Progression</div>
+      <div class="chart-wrap" id="progChartWrap" style="height:340px"><canvas id="progChart"></canvas></div>
     </div>
   </div>
 
@@ -611,7 +610,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="grid2">
       <div class="card">
         <div class="card-title" id="splitChartTitle">⚡ Split Comparison</div>
-        <div class="chart-wrap" id="splitBarChartWrap" style="height:300px"><canvas id="splitBarChart"></canvas></div>
+      <div class="chart-wrap" id="splitBarChartWrap" style="height:300px">
+        <div class="empty" style="padding:32px 16px;">
+          <div style="font-size:0.85rem;color:var(--text3)">Select an event to begin analysis.</div>
+        </div>
+      </div>
       </div>
       <div class="card">
         <div class="card-title">📋 Split Detail</div>
@@ -620,7 +623,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     </div>
     <div class="card">
       <div class="card-title">📊 Pacing Profile — All Swims</div>
-      <div class="chart-wrap" style="height:280px"><canvas id="paceChart"></canvas></div>
+      <div class="chart-wrap" id="paceChartWrap" style="height:280px">
+        <div class="empty" style="padding:32px 16px;">
+          <div style="font-size:0.85rem;color:var(--text3)">Select an event to begin analysis.</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -669,6 +676,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
             <th>Competition</th>
             <th>Venue</th>
             <th>Splits</th>
+            <th>Del</th>
           </tr>
         </thead>
         <tbody id="resultsTbody"></tbody>
@@ -778,7 +786,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         <span class="fl">Course</span>
         <select id="rqCourse" onchange="renderRegionalQualifying()">
           <option value="Long Course">Long Course (50m)</option>
-          <option value="Short Course">Short Course (25m)</option>
+          <option value="Short Course" selected>Short Course (25m)</option>
         </select>
       </div>
       <div class="fg">
@@ -847,7 +855,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <label class="fl" for="ar-event">Event</label>
-        <select id="ar-event" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
+        <select id="ar-event" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;appearance:none;-webkit-appearance:none;">
           <option value="50 Free">50 Free</option><option value="100 Free">100 Free</option>
           <option value="200 Free">200 Free</option><option value="400 Free">400 Free</option>
           <option value="800 Free">800 Free</option><option value="1500 Free">1500 Free</option>
@@ -862,7 +870,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <label class="fl" for="ar-course">Course</label>
-        <select id="ar-course" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
+        <select id="ar-course" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;appearance:none;-webkit-appearance:none;">
           <option value="S">Short Course (25m)</option>
           <option value="L">Long Course (50m)</option>
         </select>
@@ -1733,12 +1741,16 @@ function renderSplits() {
 }
 
 function renderSplitCharts(filtered, truePB) {
-  // Ensure canvas exists inside the stable wrapper (may have been replaced by debut message)
+  // Ensure canvases exist in stable wrappers (may have been replaced by empty-state messages)
   const wrap = document.getElementById('splitBarChartWrap');
   if (!wrap.querySelector('canvas')) {
     wrap.innerHTML = '<canvas id="splitBarChart"></canvas>';
   }
-  const ctxBar = document.getElementById('splitBarChart').getContext('2d');
+  const paceWrap = document.getElementById('paceChartWrap');
+  if (!paceWrap.querySelector('canvas')) {
+    paceWrap.innerHTML = '<canvas id="paceChart"></canvas>';
+  }
+  const ctxBar  = document.getElementById('splitBarChart').getContext('2d');
   const ctxPace = document.getElementById('paceChart').getContext('2d');
 
   if (splitBarChart) splitBarChart.destroy();
@@ -1815,7 +1827,7 @@ function renderSplitCharts(filtered, truePB) {
       responsive: true,
       maintainAspectRatio: false,
       scales: { 
-        y: { ticks: { callback: v => secToTime(v), color: CC.tick }, grid: { color: CC.grid } },
+        y: { reverse: true, ticks: { callback: v => secToTime(v), color: CC.tick }, grid: { color: CC.grid } },
         x: { ticks: { color: CC.tick }, grid: { display: false } }
       },
       plugins: { 
@@ -2055,7 +2067,7 @@ function renderResults() {
 
   const tbody = document.getElementById('resultsTbody');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text3)">
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text3)">
       No results match the current filters</td></tr>`;
     document.getElementById('resCount').textContent = '';
     return;
@@ -2085,6 +2097,7 @@ function renderResults() {
       <td style="color:var(--text2);max-width:220px;overflow:hidden;text-overflow:ellipsis">${r.competition || '—'}</td>
       <td style="color:var(--text2)">${r.venue || '—'}</td>
       <td style="color:var(--text3);font-size:0.75rem;font-variant-numeric:tabular-nums">${splitsStr}</td>
+      <td><button onclick="removeRace('${r.date}','${r.event}','${r.course}','${r.time}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px;" title="Remove this race">✕</button></td>
     </tr>`;
   }).join('');
 
@@ -2491,10 +2504,35 @@ function saveNewRace() {
   setTimeout(() => { fab.textContent = '＋'; fab.style.background = ''; }, 2000);
 }
 
+// ============================================================
+// REMOVE RACE
+// ============================================================
+function removeRace(date, event, course, time) {
+  if (!confirm(`Remove ${event} (${course}) ${time} on ${fmtDate(date)}?\n\nThis cannot be undone.`)) return;
+
+  const idx = RAW.findIndex(r =>
+    r.date === date && r.event === event && r.course === course && r.time === time
+  );
+  if (idx === -1) { alert('Race not found — it may have already been removed.'); return; }
+
+  RAW.splice(idx, 1);
+  localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+
+  invalidateCache();
+  DATA = processData(RAW);
+  populateSelects();
+  renderOverview();
+  renderProgression();
+  renderPBs();
+  renderResults();
+  renderQualifying();
+  renderRegionalQualifying();
+}
+
 function resetRegionalFilters() {
   document.getElementById('rqGender').value = 'Boys';
   document.getElementById('rqAge').value    = '11/12';
-  document.getElementById('rqCourse').value = 'Long Course';
+  document.getElementById('rqCourse').value = 'Short Course';
   document.getElementById('rqStroke').value = '';
   renderRegionalQualifying();
 }
