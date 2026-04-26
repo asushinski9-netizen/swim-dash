@@ -2,91 +2,90 @@
 
 ## RESOLVED — do not re-introduce
 
-### splits[] are lap times, not cumulative
-RAW splits are individual lap times. Do NOT derive via splits[i] - splits[i-1].
+### splits[] are lap times, not cumulative (v6)
+Do NOT derive via splits[i] - splits[i-1].
 
 ### null.closest() crash in analyzeSwim (v11)
-After debut row selected, canvas replaced by div, getElementById returned null.
-Fixed: stable id="splitBarChartWrap" wrapper. Both analyzeSwim and renderSplitCharts
-reference the wrapper div, not the canvas directly.
+Fixed: stable id="splitBarChartWrap". Canvas replaced on debut; wrapper always exists.
 
 ### lapLabels undefined in analyzeSwim (v10)
-paceChart.data.labels = lapLabels — variable undeclared in v9.
-Fixed: const lapLabels declared before use.
+Fixed: const lapLabels declared before paceChart.data.labels reference.
 
 ### progChart canvas gone after debut callout (v12)
-Replacing progChartWrap.innerHTML removed the canvas.
 Fixed: stable id="progChartWrap"; canvas restored before destroyChart() each render.
 
 ### Progression ghost chart after debut (v13)
-charts['progChart'] held stale reference after debut callout innerHTML replacement.
-Fixed: delete charts['progChart'] after replacement.
-
-### Improvement Summary empty for debut events (v12)
-compareMode=prevSwim/prevBest: no refSwim for debut → silent skip.
-Fixed: explicit "Debut — no previous benchmark" row rendered instead.
+Fixed: delete charts['progChart'] after debut callout innerHTML replacement.
 
 ### indexAxis:y on scatter chart (v10)
-Chart.js scatter ignores indexAxis. Removed; replaced in v12 with horizontal bar chart.
+Fixed in v12: replaced with horizontal bar chart (type:'bar' + indexAxis:'y').
 
-### Mobile tab CSS override not applying (v13/v14)
-Fixed in v14: uses same var(--surface2) CSS variables as desktop. Both use identical
-source values; !important on mobile ensures override where needed.
+### paceChart null crash in analyzeSwim (v16)
+Fixed: entire pacing update block wrapped in if (paceChart) { ... }.
 
-### paceChart canvas not in stable wrapper (v15)
-paceChart canvas was a bare <canvas> with no stable wrapper ID. If renderSplitCharts
-was called after the empty-state div replaced it, getElementById('paceChart') returned
-null. Fixed: added id="paceChartWrap" stable wrapper; renderSplitCharts checks
-paceWrap.querySelector('canvas') and restores canvas if missing, same pattern as
-splitBarChartWrap.
+### Backdated race broke Progression/Personal Bests benchmark lookups (v17)
+getPreviousSwims / getPreviousBestSwims used r.date < pb.date — returned nothing
+when backdated entry became PB. Fixed: r !== pb identity filter.
+getPreviousSwims    → newest non-PB swim (sorted newest-first, [0])
+getPreviousBestSwims → fastest non-PB swim (min timeInSec reduce)
 
-### Stat card event lists — null gap guard (v14)
-Outside card uses Math.abs(r.gapC).toFixed(2); Consideration uses Math.abs(r.gapQ).toFixed(2).
-Both are guaranteed non-null for their respective statuses. Safe as long as status
-logic remains: Qualified → gapQ<=0, Consideration → gapC<=0 && gapQ>0, Outside → gapC>0.
+### Splits compared every swim against course PB not previous PB (v18)
+v17 changed analyzeSwim prevPB to "fastest of all other swims" — always the overall PB.
+REVERTED: analyzeSwim uses r.date < swim.date. Semantically correct: "best time before
+this swim was swum". Backdated first swim correctly shows as Debut.
 
-## WATCH-OUT AREAS
+### Backdated PB showed dash in Improvement Summary; compared to itself in BvF (v18)
+When backdated entry is both first and fastest, getFirstSwims() === getPBs() for that key.
+imp = 0 → dash. Fixed: debut guard extended to !refSwim || swims===1 || refSwim===pb.
+Applied in Improvement Summary forEach and BvF table forEach.
 
-### fmtDate / fmtDateShort timezone shift
-Always use parseLocalDate() — new Date('YYYY-MM-DD') parses as UTC midnight.
+### Results tab Debut badge missing for first swim of multi-swim events (v19)
+v17 changed Results debut detection to swimCount===1 — only showed Debut for events
+swum exactly once total, breaking debut display for all events with multiple swims.
+Fixed: reverted to r.deltaPrev===null, which processData() sets for the chronologically
+first swim of each event+course. This is the correct per-row debut indicator.
 
-### secToTime() sub-60s
-Returns "38.00" not "0:38.00". Guard: if (!isFinite(s)) return '—'
+### CSS -webkit-appearance without standard appearance (v19)
+Add Race modal selects had -webkit-appearance:none in inline styles without appearance:none.
+VS Code CSS linter flagged line 858. Fixed: added appearance:none to all inline selects.
 
-### QT course strings vs DATA course codes
-county_qt / se_london_qt use "Short Course"/"Long Course"; DATA uses "S"/"L".
-Convert: course === 'Short Course' ? 'S' : 'L'
+## WATCH-OUT AREAS — DEBUT DETECTION: THREE CONTEXTS, THREE APPROACHES
 
-### SE London QT age groups differ from County QT
-County: "10+11","12","13"–"16","17+"
-SE London: "11/12","13"–"17","18+"
-These are separate selects in separate panels — do not share filter state.
+| Context                    | Method                          | Rationale                                |
+|----------------------------|---------------------------------|------------------------------------------|
+| Results Δ Prev column      | r.deltaPrev === null            | First chronological swim of event        |
+| Overview Recent PBs badge  | swimCount === 1                 | Only swim ever for that event+course     |
+| Progression Improv/BvF     | !refSwim || swims===1 || ref===pb | No meaningful reference to compare to  |
+| Splits analyzeSwim         | prevPB === null (date filtered) | No earlier swim with splits existed      |
 
-### SE London QT has no null values; county_qt does (10+11 events)
-buildQtStatCards assumes gapQ/gapC are non-null for Consideration/Outside statuses.
+Do NOT unify these. Each answers a different question about debut status.
 
-### sortedForPace must match in BOTH renderSplitCharts and analyzeSwim
-Dataset creation and highlight loop must use the same sort. If one changes, update both.
+### analyzeSwim prevPB uses date filter — intentional (v18)
+prevPB = fastest swim with r.date < swim.date AND splits.length > 0.
+Backdated first swim → no earlier dates → prevPB null → Debut. Correct.
 
-### Three localStorage keys
-swimDash_RAW, swimDash_QT, swimDash_SE_QT — all fetched in parallel in init().
+### getPreviousSwims / getPreviousBestSwims use r !== pb identity
+Works because getPBs() returns references into same DATA array. Do not convert to index.
 
-### buildQtStatCards is shared — changes affect both County and Regional tabs
-Test both tabs after modifying this function.
+### refSwim === pb guard in Progression (v18)
+Catches backdated entry that is both first and fastest. Without it, imp=0 → dash not Debut.
+Essential for correct display of backdated PBs in Improvement Summary and BvF table.
 
-### progChartWrap canvas restoration order
-Check querySelector('canvas') → restore if missing → destroyChart → debut check → create or replace.
-Canvas must exist BEFORE destroyChart so charts['progChart'] lookup succeeds.
+### fmtDate/fmtDateShort: always use parseLocalDate()
+new Date('YYYY-MM-DD') parses UTC midnight → wrong day in non-UTC timezones.
 
-### removeRace matches on date+event+course+time
-If two entries share all four fields (duplicate race entered), findIndex removes the first.
-This is an edge case but worth noting if duplicates are ever entered via Add Race.
+### secToTime() sub-60s returns "38.00" not "0:38.00". Guard: if (!isFinite(s)) return '—'
 
-### Pacing Profile Y-axis is reversed (v15)
-reverse:true means lower values (faster splits) appear at top. This is intentional.
-Do NOT remove this without updating the feature description.
+### QT course strings vs DATA codes: "Short Course"/"Long Course" vs "S"/"L"
 
-### Time Progression chart is last in HTML source (v15)
-Improvement Summary and BvF table render before the chart. This replaces the previous
-CSS ordering approach (prog-chart-card order:10, etc.) which was fragile. The mobile
-media query no longer needs ordering rules for the progression tab.
+### SE London QT age groups differ from County QT (see data-schema.md)
+
+### buildQtStatCards shared — changes affect both County and Regional tabs
+
+### progChartWrap restoration order: querySelector → restore → destroyChart → create/replace
+
+### removeRace matches date+event+course+time (first findIndex). Duplicates: first match removed.
+
+### Pacing Profile Y-axis: reverse:true intentional (faster splits at top)
+
+### Time Progression: last in HTML source — no CSS ordering rules needed
