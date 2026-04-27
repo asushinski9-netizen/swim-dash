@@ -42,6 +42,10 @@ statusLabel used swim.timeInSec < prevPB.timeInSec — true for every swim that 
 at the time it was swum, including ones now beaten. Fixed: uses swim.isPB (processData
 flag) — only the current overall fastest swim gets the green badge.
 
+### AI Coach "Current PB" tagging logic (v20.2)
+Previously, the statusLabel relied on `swim.isPB`, which flagged all historical PBs, and then `swim === contextualPBRef`, which failed to tag Long Course PBs if the user was viewing "Both" courses simultaneously.
+**Fixed:** The AI Coach now checks `getPBs().includes(swim)`. This ensures that only the current overall fastest swim gets the green "⭐ CURRENT PB" badge, and correctly respects that a swimmer holds separate PBs for Short Course and Long Course events. The unnecessary "ABOVE PB" badge was also removed to keep the UI clean.
+
 ## WATCH-OUT AREAS
 
 ### Debut detection — four contexts (unchanged from v19)

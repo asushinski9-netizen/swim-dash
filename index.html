@@ -2031,13 +2031,18 @@ function analyzeSwim(index) {
     else if (finishDiff < -0.2) adviceNotes.push(`<strong>Finish:</strong> Strong negative split finish!`);
   }
 
-  // Header rendering
+// Header rendering
   const courseDisplay = swim.course === 'S' ? 'SC' : 'LC';
-  let statusLabel = isDebut
-    ? `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>`
-    : swim.isPB
-      ? `<span class="badge pb" style="background:var(--green); color:white; font-size:0.65rem;">⭐ CURRENT PB</span>`
-      : `<span class="badge" style="background:var(--surface3); color:var(--text2); font-size:0.65rem;">ABOVE PB</span>`;
+  
+  // A swim is the "Current PB" if it exists in the master PB array (which accounts for Course)
+  const isCurrentPB = getPBs().includes(swim);
+  
+  let statusLabel = '';
+  if (isDebut) {
+    statusLabel = `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>`;
+  } else if (isCurrentPB) {
+    statusLabel = `<span class="badge pb" style="background:var(--green); color:white; font-size:0.65rem;">⭐ CURRENT PB</span>`;
+  }
 
   aiContent.innerHTML = `
     <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">

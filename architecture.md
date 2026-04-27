@@ -2,8 +2,8 @@
 
 ## File
 Single HTML file: swimming_dash_vN.html
-Current version: v20.1
-~2762 lines total
+Current version: v20.2
+~2768 lines total
 
 ## Script section layout (in order)
 1.  CONFIGURATION — RACE_DATA_URL, QT_DATA_URL, SE_QT_DATA_URL

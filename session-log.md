@@ -1,6 +1,12 @@
 # Session Log
+## v20.2 (latest)
+- Bug: AI Pacing Agent tagged all historical PBs as "Current PB" in the Splits tab.
+  Root cause: The logic relied on `swim.isPB`, which is calculated in `processData()` as a running minimum. This meant every race that was a PB *at the time it was swum* remained flagged as true, cluttering the UI for improving swimmers.
+  Fix: Changed `analyzeSwim` to use `getPBs().includes(swim)`. This ensures only the absolute fastest current swim for that specific Event + Course is tagged. Using the `getPBs()` master list also ensures that Short Course and Long Course PBs are both correctly recognized when the Course filter is set to "Both".
 
-## v20.1 (latest)
+- UX: Refined AI Coach badge visibility. Removed the "Above PB" badge for standard races. The AI Pacing Coach now only renders a badge for "🚀 DEBUT" or "⭐ CURRENT PB", leaving non-record swims untagged to reduce visual noise and highlight significant achievements.
+
+## v20.1 
 - Bug: Progression "Latest Swim" mode showed Debut badge when PB is the most recent swim.
   Root cause: the `refSwim === pb` debut guard (added in v18 for backdated entries) fired
   for ALL compare modes, including 'latest'. When the overall PB is also the latest swim
