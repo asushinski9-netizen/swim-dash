@@ -1,66 +1,51 @@
 # Session Log
 
-## v19 (latest)
-- Bug: CSS linter vendorPrefix warning on line 858 — Add Race modal selects used
-  -webkit-appearance:none without the standard appearance:none alongside it.
-  Fixed: added appearance:none to all inline-style selects in Add Race modal.
-  The global select, .btn rule already had both properties correctly.
-- Bug: Results tab Debut badge not showing on first swim of events with multiple swims.
-  Root cause: v17 changed debut detection to swimCount===1 (only events swum once ever).
-  This broke the original behaviour: the chronologically first swim of any event should
-  show Debut in the Δ Prev column regardless of how many later swims exist.
-  Fixed: reverted to r.deltaPrev===null — processData() sets deltaPrev=null for the first
-  chronological swim of each event+course, which is the correct debut indicator here.
-  Removed the now-unused swimCounts declaration from renderResults.
-- UX: Added localStorage note below Save Race buttons in Add Race modal:
-  "Data is stored in your browser's local storage on this device only. Use ⚙️ → ⬇️ Download
-  to save permanently."
+## v20.1 (latest)
+- Bug: Progression "Latest Swim" mode showed Debut badge when PB is the most recent swim.
+  Root cause: the `refSwim === pb` debut guard (added in v18 for backdated entries) fired
+  for ALL compare modes, including 'latest'. When the overall PB is also the latest swim
+  (the normal case for an improving swimmer), getLatestSwims() returns the PB itself as
+  the reference, refSwim === pb triggers, and Debut is shown incorrectly.
+  Fix: the refSwim===pb guard now only fires when compareMode !== 'latest'. For 'latest'
+  mode a self-reference means "PB is the most recent swim" — shows "— PB is latest" row.
+  Same fix applied to both Improvement Summary forEach and BvF table forEach.
+  Genuine debut detection for single-swim events (swims===1) and missing references
+  (!refSwim) is unchanged and unaffected.
+
+- Optimization: AI Pacing Coach "New Best" badge replaced with "Current PB" logic.
+  Previously: statusLabel showed NEW BEST whenever swim.timeInSec < prevPB.timeInSec
+  (faster than the previous benchmark), which is true for every swim that set a new PB
+  at the time — including historical PBs that have since been beaten.
+  Now: statusLabel uses swim.isPB (set by processData) — only the current fastest-ever
+  swim for that event+course gets the green badge. All other non-debut swims show "Above PB".
+
+- Optimization: County QT and Regional QT table headers responsive on mobile.
+  Added .col-full (visible on desktop, hidden on mobile) and .col-abbr (hidden on desktop,
+  visible on mobile) CSS classes. Applied to four column headers in both QT tables:
+  "Qualify Time" → QT, "Consideration Time" → CT,
+  "Gap to Qualify" → Gap to QT, "Gap to Consider" → Gap to CT.
+  Desktop shows full strings; mobile shows abbreviations.
+
+## v20
+- init() localStorage-first: RAW from localStorage authoritative; QT fetched from GitHub
+  if not cached. RAW only fetched from GitHub if localStorage empty.
+- updateData(newRaw): central state management function for all data mutations.
+- Split parsing: timeToSec() replaces parseFloat(); !isFinite guard replaces isNaN.
+- Time regex relaxed: allows single-digit seconds.
+- renderPBs: removed dead "slower than PB" branch.
+- finishDiff: fixed for 50m 2-lap races; midPaceAvg uses slice(1,-1).
+- strokeOrder: 'Other' added to both qualifying sort arrays.
+- sortDir default: -1 (newest-first).
+
+## v19
+- CSS: paired appearance:none with -webkit-appearance in Add Race modal.
+- Results: Debut reverted to deltaPrev===null.
+- UX: localStorage note in Add Race modal.
 
 ## v18
-- Bug: Splits tab compared every swim against course PB not previous PB.
-  analyzeSwim reverted to r.date < swim.date filter (v17 change overcorrected).
-- Bug: Oldest swim no longer showed as Debut in Splits (same v17 overcorrection).
-- Bug: Backdated PB (first and fastest swim) showed dash in Progression Improvement
-  Summary and compared to itself in BvF.
-  Fixed: debut guard extended to !refSwim || swims===1 || refSwim===pb in both
-  Improvement Summary forEach and BvF table forEach.
+- analyzeSwim reverted to date filter; refSwim===pb debut guard added.
 
 ## v17
-- Bug: Backdated race broke Progression/Personal Bests benchmark lookups.
-  getPreviousSwims: r !== pb (not date filter); newest non-PB swim.
-  getPreviousBestSwims: r !== pb; fastest non-PB swim (second-best overall).
-  Overview Recent PBs debut: swimCount===1 (not deltaPrev===null).
-  Results Δ Prev debut: swimCount===1 [REVERTED in v19 — deltaPrev===null is correct].
+- getPreviousSwims/getPreviousBestSwims: r !== pb identity filter.
 
-## v16
-- Bugs: paceChart null crash; saveNewRace missing renderRegionalQualifying;
-  stale scatter comment; renderRegionalQualifying used DATA.forEach not getPBs;
-  lap delta string comparison; county QT CC.legend on ticks; resetResultsFilters
-  sort state; county QT colspan 7 with 8-column table.
-- Improvement: renderRegionalQualifying added to init() pre-render.
-
-## v15
-- Regional QT default SC; stat card mobile font; Remove Race ✕ button;
-  Add Race FAB centred; Time Progression at HTML bottom; Splits empty states;
-  Pacing Profile Y-axis reversed.
-
-## v14
-- Tabs = btn.sec colour; stat cards centred; BvF/QT table mobile fonts;
-  buildQtStatCards() shared helper with event lists.
-
-## v13
-- Regional QT tab (se_london_qt.json); QT PB Date column; progression ghost fix;
-  sortedForPace; mobile tab override.
-
-## v12
-- Progression debut stable wrapper; single-race callout; horizontal bar split chart;
-  sorted pacing; Overview charts bigger; grid overflow fix.
-
-## v11
-- null.closest() → splitBarChartWrap; downloadRaceData; fab-data.
-
-## v10
-- Real BPSC PNG; CC.grid; PALETTE; multiple bug fixes.
-
-## v9
-- Light theme; BPSC blue; debut badges; Add Race FAB.
+## v16–v9 — see earlier entries

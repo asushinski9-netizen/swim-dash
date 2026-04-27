@@ -933,6 +933,24 @@ function invalidateCache() {
 }
 
 // ============================================================
+// STATE MANAGEMENT
+// ============================================================
+function updateData(newRaw) {
+  RAW = newRaw;
+  localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+  invalidateCache();
+  DATA = processData(RAW);
+  populateSelects();
+  renderOverview();
+  renderProgression();
+  renderPBs();
+  renderResults();
+  renderQualifying();
+  renderRegionalQualifying();
+  updateSortHeaders();
+}
+
+// ============================================================
 // DATA MANAGER MODAL
 // ============================================================
 function showDataModal() {
@@ -1650,8 +1668,6 @@ function renderPBs() {
     let impHTML = '';
     if (imp !== null && imp > 0) {
       impHTML = `<div class="pb-imp">▼ ${imp.toFixed(2)}s faster than ${refLabel} (${ref.time})</div>`;
-    } else if (imp !== null && imp < 0) {
-      impHTML = `<div class="pb-imp" style="color:var(--red)">▲ ${Math.abs(imp).toFixed(2)}s slower than ${refLabel} (${ref.time})</div>`;
     } else {
       impHTML = `<div class="pb-imp" style="color:var(--gold)">— Same as ${refLabel} / Debut</div>`;
     }
@@ -1965,13 +1981,18 @@ function analyzeSwim(index) {
     if (fastLaps.length > 0) adviceNotes.push(`<strong>Pacing:</strong> Fast output on Lap(s) ${fastLaps.join(', ')}.`);
     if (slowLaps.length > 0) adviceNotes.push(`<strong>Fatigue:</strong> Drop-off on Lap(s) ${slowLaps.join(', ')}.`);
 
-    const midPaceAvg = legs.slice(1).reduce((a, b) => a + b, 0) / (legs.length - 1);
-    const finishDiff = legs[legs.length - 1] - midPaceAvg;
-
+    let finishDiff;
     if (legs.length > 2) {
-      if (finishDiff > 0.8)  adviceNotes.push(`<strong>Finish:</strong> Heavy drop-off (+${finishDiff.toFixed(2)}s).`);
-      else if (finishDiff < -0.2) adviceNotes.push(`<strong>Finish:</strong> Strong negative split finish!`);
+      // Exclude first and last lap; compare last lap to mid-race average
+      const midPaceAvg = legs.slice(1, -1).reduce((a, b) => a + b, 0) / (legs.length - 2);
+      finishDiff = legs[legs.length - 1] - midPaceAvg;
+    } else {
+      // 2-lap race (e.g. 50m): compare second lap to first
+      finishDiff = legs[1] - legs[0];
     }
+
+    if (finishDiff > 0.8)  adviceNotes.push(`<strong>Finish:</strong> Heavy drop-off (+${finishDiff.toFixed(2)}s).`);
+    else if (finishDiff < -0.2) adviceNotes.push(`<strong>Finish:</strong> Strong negative split finish!`);
   }
 
   // Header rendering
@@ -2011,7 +2032,7 @@ function analyzeSwim(index) {
 // ALL RESULTS TAB
 // ============================================================
 let sortCol = 'date';
-let sortDir = 1;
+let sortDir = -1; // Default: newest first
 
 function sortResults(col) {
   if (sortCol === col) sortDir *= -1;
@@ -2217,7 +2238,7 @@ function renderQualifying() {
     }
     return { ...qt, pb, pbSec, gapQ, gapC, status };
   }).sort((a,b) => {
-    const strokeOrder = ['Free','Back','Breast','Fly','IM'];
+    const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
     const strokeA = strokeOrder.indexOf(getStroke(a.event));
     const strokeB = strokeOrder.indexOf(getStroke(b.event));
     if (strokeA !== strokeB) return strokeA - strokeB;
@@ -2405,40 +2426,52 @@ async function init() {
   document.getElementById('hMeets').textContent      = '…';
   document.getElementById('hSpan').textContent       = '…';
 
-  try {
-    const [raceRes, qtRes, seQtRes] = await Promise.all([
-      fetch(RACE_DATA_URL),
-      fetch(QT_DATA_URL),
-      fetch(SE_QT_DATA_URL)
-    ]);
+  // Load RAW from localStorage first — preserves manually added/removed races
+  const localRaw   = localStorage.getItem('swimDash_RAW');
+  const localQt    = localStorage.getItem('swimDash_QT');
+  const localSeQt  = localStorage.getItem('swimDash_SE_QT');
 
-    if (!raceRes.ok || !qtRes.ok) throw new Error('Fetch failed');
+  if (localRaw) {
+    RAW = JSON.parse(localRaw);
+  }
 
-    RAW       = await raceRes.json();
-    QT_DATA   = await qtRes.json();
-    SE_QT_DATA = seQtRes.ok ? await seQtRes.json() : [];
-
-    localStorage.setItem('swimDash_RAW',   JSON.stringify(RAW));
-    localStorage.setItem('swimDash_QT',    JSON.stringify(QT_DATA));
-    localStorage.setItem('swimDash_SE_QT', JSON.stringify(SE_QT_DATA));
-
-  } catch (err) {
-    console.warn('Remote fetch failed, falling back to localStorage:', err);
-    RAW        = JSON.parse(localStorage.getItem('swimDash_RAW'))   || [];
-    QT_DATA    = JSON.parse(localStorage.getItem('swimDash_QT'))    || [];
-    SE_QT_DATA = JSON.parse(localStorage.getItem('swimDash_SE_QT')) || [];
-
-    if (RAW.length === 0) {
-      document.getElementById('dataModal').style.display = 'flex';
-      return;
+  // Always attempt to fetch QT data from GitHub if not cached locally
+  // (QT data never has user edits so fresh fetch is always safe)
+  if (!localQt || !localSeQt) {
+    try {
+      const fetches = [];
+      if (!localQt)   fetches.push(fetch(QT_DATA_URL).then(r => r.ok ? r.json() : null));
+      if (!localSeQt) fetches.push(fetch(SE_QT_DATA_URL).then(r => r.ok ? r.json() : null));
+      const results = await Promise.all(fetches);
+      let ri = 0;
+      if (!localQt)   { QT_DATA    = results[ri++] || []; localStorage.setItem('swimDash_QT',    JSON.stringify(QT_DATA)); }
+      if (!localSeQt) { SE_QT_DATA = results[ri++] || []; localStorage.setItem('swimDash_SE_QT', JSON.stringify(SE_QT_DATA)); }
+    } catch (err) {
+      console.warn('QT fetch failed, using empty:', err);
     }
-    if (QT_DATA.length === 0)    console.warn('No County QT data — County Qualifying tab will be empty.');
-    if (SE_QT_DATA.length === 0) console.warn('No SE Regional QT data — Regional Qualifying tab will be empty.');
+  } else {
+    QT_DATA    = JSON.parse(localQt);
+    SE_QT_DATA = JSON.parse(localSeQt);
+  }
+
+  // If no RAW data anywhere, attempt GitHub fetch as fallback then show modal
+  if (!localRaw) {
+    try {
+      const raceRes = await fetch(RACE_DATA_URL);
+      if (!raceRes.ok) throw new Error('Fetch failed');
+      RAW = await raceRes.json();
+      localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+    } catch (err) {
+      console.warn('Remote fetch failed:', err);
+      if (RAW.length === 0) {
+        document.getElementById('dataModal').style.display = 'flex';
+        return;
+      }
+    }
   }
 
   invalidateCache();
   DATA = processData(RAW);
-
   populateSelects();
   renderOverview();
   renderProgression();
@@ -2446,6 +2479,7 @@ async function init() {
   renderResults();
   renderQualifying();
   renderRegionalQualifying();
+  updateSortHeaders();
 }
 
 // ============================================================
@@ -2483,34 +2517,24 @@ function saveNewRace() {
   // Validation
   if (!date) { showError('Please enter a date.'); return; }
   if (!timeStr) { showError('Please enter a time (e.g. 2:55.68 or 38.10).'); return; }
-  if (!/^\d+(:\d{2}\.\d{2}|\.\d{2})$/.test(timeStr)) {
-    showError('Time must be in mm:ss.hh format (e.g. 2:55.68) or ss.hh format (e.g. 38.10).'); return;
+  if (!/^(\d{1,2}:)?\d{1,2}\.\d{2}$/.test(timeStr)) {
+    showError('Time must be mm:ss.hh (e.g. 2:55.68) or ss.hh (e.g. 38.10).'); return;
   }
 
-  // Parse splits
   let splits = [];
   if (splitsRaw) {
-    splits = splitsRaw.split(',').map(s => parseFloat(s.trim()));
-    if (splits.some(isNaN)) { showError('Splits must be comma-separated numbers in seconds (e.g. 41.88, 46.55).'); return; }
+    splits = splitsRaw.split(',').map(s => timeToSec(s.trim()));
+    if (splits.some(s => !isFinite(s) || s <= 0)) {
+      showError('Splits must be valid comma-separated times in seconds (e.g. 41.88, 46.55) or mm:ss.hh format (e.g. 1:45.32).'); return;
+    }
   }
 
   // Build new entry
   const newEntry = { course, event, date, competition, venue, time: timeStr, splits };
 
-  // Append to RAW and persist
+  // Append to RAW and re-render everything via updateData
   RAW.push(newEntry);
-  localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
-
-  // Re-process data and re-render all tabs
-  invalidateCache();
-  DATA = processData(RAW);
-  populateSelects();
-  renderOverview();
-  renderProgression();
-  renderPBs();
-  renderResults();
-  renderQualifying();
-  renderRegionalQualifying();
+  updateData(RAW);
 
   hideAddRaceModal();
 
@@ -2533,17 +2557,7 @@ function removeRace(date, event, course, time) {
   if (idx === -1) { alert('Race not found — it may have already been removed.'); return; }
 
   RAW.splice(idx, 1);
-  localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
-
-  invalidateCache();
-  DATA = processData(RAW);
-  populateSelects();
-  renderOverview();
-  renderProgression();
-  renderPBs();
-  renderResults();
-  renderQualifying();
-  renderRegionalQualifying();
+  updateData(RAW);
 }
 
 function resetRegionalFilters() {
@@ -2584,7 +2598,7 @@ function renderRegionalQualifying() {
   const pbMap = {};
   allPBs.forEach(r => { pbMap[r.event] = r; });
 
-  const strokeOrder = ['Free','Back','Breast','Fly','IM'];
+  const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
   const matched = qtRows.map(qt => {
     const pb    = pbMap[qt.event] || null;
     const pbSec = pb ? pb.timeInSec : null;
