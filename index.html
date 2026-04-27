@@ -219,6 +219,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 .sc-lbl { font-size: 0.62rem; color: var(--text3); display: block; }
 .sc-val { font-weight: 600; font-variant-numeric: tabular-nums; }
 
+/* Responsive table column headers — full text on desktop, abbreviated on mobile */
+.col-abbr { display: none; }
+.col-full  { display: inline; }
+
 /* PROGRESS */
 .prog-bar { height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-top: 4px; }
 .prog-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 1s ease; }
@@ -400,6 +404,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-results th, #tab-results td { padding: 6px 5px !important; white-space: nowrap; }
   #tab-results .badge { padding: 1px 4px !important; font-size: 0.55rem !important; }
   #tab-results .tc { font-size: 0.7rem !important; }
+
+  /* QT table column header abbreviation on mobile */
+  .col-abbr { display: inline !important; }
+  .col-full  { display: none !important; }
 
   /* 12. County QT event table — scale down on mobile */
   #tab-qualifying .tbl-wrap table { font-size: 0.60rem !important; }
@@ -747,10 +755,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
               <th>Event</th>
               <th>PB</th>
               <th>PB Date</th>
-              <th>Qualify Time</th>
-              <th>Consideration Time</th>
-              <th>Gap to Qualify</th>
-              <th>Gap to Consider</th>
+              <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
+              <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
+              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap to QT</span></th>
+              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap to CT</span></th>
               <th>Status</th>
             </tr>
           </thead>
@@ -822,10 +830,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
               <th>Event</th>
               <th>PB</th>
               <th>PB Date</th>
-              <th>Qualify Time</th>
-              <th>Consideration Time</th>
-              <th>Gap to Qualify</th>
-              <th>Gap to Consider</th>
+              <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
+              <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
+              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap to QT</span></th>
+              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap to CT</span></th>
               <th>Status</th>
             </tr>
           </thead>
@@ -1556,9 +1564,16 @@ function renderProgression() {
       const refSwim = refSwims[key];
       const swims = swimCounts[key] || 1;
 
-      // Show debut when: only one swim ever, no ref found, or ref IS the PB itself
-      // (last case: backdated entry is both first and fastest — comparing to itself)
-      if (!refSwim || swims === 1 || refSwim === pb) {
+      // Debut conditions:
+      // - swims === 1: only one swim ever recorded
+      // - !refSwim: lookup returned nothing (prevSwim/prevBest with no other swims)
+      // - refSwim === pb AND mode is NOT 'latest': backdated entry is both first and fastest.
+      //   For 'latest' mode, refSwim===pb simply means the PB is also the most recent swim —
+      //   a common normal case (e.g. latest race set a new PB). Show neutral, not Debut.
+      const isSelfRef = refSwim === pb;
+      const isGenuineDebut = swims === 1 || !refSwim || (isSelfRef && compareMode !== 'latest');
+
+      if (isGenuineDebut) {
         improvHTML += `
           <div style="padding:10px 0;border-bottom:1px solid var(--border)">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
@@ -1567,6 +1582,21 @@ function renderProgression() {
             </div>
             <div style="font-size:0.72rem;color:var(--text3)">
               Only swim: ${pb.time} on ${fmtDateShort(pb.date)} — no previous benchmark
+            </div>
+          </div>`;
+        return;
+      }
+
+      // Self-reference in 'latest' mode: PB is the most recent swim
+      if (isSelfRef) {
+        improvHTML += `
+          <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-weight:700">${pb.event} <span class="badge ${pb.course}">${pb.course}</span></span>
+              <span style="color:var(--gold);font-weight:600;">— PB is latest</span>
+            </div>
+            <div style="font-size:0.72rem;color:var(--text3)">
+              ${pb.time} on ${fmtDateShort(pb.date)} is both the best and most recent swim
             </div>
           </div>`;
         return;
@@ -1611,9 +1641,15 @@ function renderProgression() {
     const swims = swimCounts[pb.event + '|' + pb.course] || 1;
     const imp = refSwim ? refSwim.timeInSec - pb.timeInSec : 0;
 
+    const isSelfRefBvF = refSwim === pb;
+    const isGenuineDebutBvF = swims === 1 || !refSwim || (isSelfRefBvF && compareMode !== 'latest');
+
     let deltaCell = '';
-    if (swims === 1 || !refSwim || refSwim === pb) {
+    if (isGenuineDebutBvF) {
       deltaCell = `<td><span class="badge debut">Debut</span></td>`;
+    } else if (isSelfRefBvF) {
+      // latest mode and PB is the latest swim
+      deltaCell = `<td style="color:var(--gold);font-weight:600;">— Latest</td>`;
     } else if (imp === 0) {
       deltaCell = `<td style="color:var(--gold); font-weight:600;">—</td>`;
     } else {
@@ -1997,11 +2033,11 @@ function analyzeSwim(index) {
 
   // Header rendering
   const courseDisplay = swim.course === 'S' ? 'SC' : 'LC';
-  let statusLabel = isDebut ? 
-    `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>` :
-    (swim.timeInSec < prevPB.timeInSec ? 
-      `<span class="badge pb" style="background:var(--green); color:white; font-size:0.65rem;">⭐ NEW BEST</span>` : 
-      `<span class="badge" style="background:var(--surface3); color:var(--text2); font-size:0.65rem;">ABOVE PB</span>`);
+  let statusLabel = isDebut
+    ? `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>`
+    : swim.isPB
+      ? `<span class="badge pb" style="background:var(--green); color:white; font-size:0.65rem;">⭐ CURRENT PB</span>`
+      : `<span class="badge" style="background:var(--surface3); color:var(--text2); font-size:0.65rem;">ABOVE PB</span>`;
 
   aiContent.innerHTML = `
     <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
