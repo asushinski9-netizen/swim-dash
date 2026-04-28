@@ -1,57 +1,56 @@
 # Session Log
-## v20.2 (latest)
-- Bug: AI Pacing Agent tagged all historical PBs as "Current PB" in the Splits tab.
-  Root cause: The logic relied on `swim.isPB`, which is calculated in `processData()` as a running minimum. This meant every race that was a PB *at the time it was swum* remained flagged as true, cluttering the UI for improving swimmers.
-  Fix: Changed `analyzeSwim` to use `getPBs().includes(swim)`. This ensures only the absolute fastest current swim for that specific Event + Course is tagged. Using the `getPBs()` master list also ensures that Short Course and Long Course PBs are both correctly recognized when the Course filter is set to "Both".
 
-- UX: Refined AI Coach badge visibility. Removed the "Above PB" badge for standard races. The AI Pacing Coach now only renders a badge for "🚀 DEBUT" or "⭐ CURRENT PB", leaving non-record swims untagged to reduce visual noise and highlight significant achievements.
+## v21 (latest)
+Full audit of v20.2 — six bugs fixed, one inconsistency resolved, one security improvement:
 
-## v20.1 
-- Bug: Progression "Latest Swim" mode showed Debut badge when PB is the most recent swim.
-  Root cause: the `refSwim === pb` debut guard (added in v18 for backdated entries) fired
-  for ALL compare modes, including 'latest'. When the overall PB is also the latest swim
-  (the normal case for an improving swimmer), getLatestSwims() returns the PB itself as
-  the reference, refSwim === pb triggers, and Debut is shown incorrectly.
-  Fix: the refSwim===pb guard now only fires when compareMode !== 'latest'. For 'latest'
-  mode a self-reference means "PB is the most recent swim" — shows "— PB is latest" row.
-  Same fix applied to both Improvement Summary forEach and BvF table forEach.
-  Genuine debut detection for single-swim events (swims===1) and missing references
-  (!refSwim) is unchanged and unaffected.
+- Bug: "PBs this year" stat card counted historical isPB swims (any swim that was a PB
+  when swum), not current PBs. An improving swimmer with a 200 Back PB beaten in Feb 2026
+  still had their Jan 2025 swim counted. Fixed: pbs.filter(r => r.date >= currentYearStart)
+  where pbs = getPBs() — counts only current overall PBs set this year.
 
-- Optimization: AI Pacing Coach "New Best" badge replaced with "Current PB" logic.
-  Previously: statusLabel showed NEW BEST whenever swim.timeInSec < prevPB.timeInSec
-  (faster than the previous benchmark), which is true for every swim that set a new PB
-  at the time — including historical PBs that have since been beaten.
-  Now: statusLabel uses swim.isPB (set by processData) — only the current fastest-ever
-  swim for that event+course gets the green badge. All other non-debut swims show "Above PB".
+- Bug: "Recent Personal Bests" in Overview showed up to 6 historical isPB swims (same
+  issue — DATA.filter(r => r.isPB) includes old beaten PBs). Fixed: getPBs().sort by date
+  descending, take first 6 — always shows the 6 most recently set current PBs.
 
-- Optimization: County QT and Regional QT table headers responsive on mobile.
-  Added .col-full (visible on desktop, hidden on mobile) and .col-abbr (hidden on desktop,
-  visible on mobile) CSS classes. Applied to four column headers in both QT tables:
-  "Qualify Time" → QT, "Consideration Time" → CT,
-  "Gap to Qualify" → Gap to QT, "Gap to Consider" → Gap to CT.
-  Desktop shows full strings; mobile shows abbreviations.
+- Bug: processData sort was unstable for same-date same-event entries across SC/LC.
+  Two swims on the same date for the same event (e.g. 200 Back S and L) would sort
+  indeterminately, causing non-deterministic deltaPrev and isPB values. Fixed: added
+  || a.course.localeCompare(b.course) as a final sort tiebreaker.
+
+- Bug: Doughnut chart in Overview used borderColor '#111827' (dark navy from the old dark
+  theme). On the white light-theme surface this showed as dark segment dividers. Fixed to
+  '#ffffff' so segment borders blend cleanly with the white card background.
+
+- Improvement: eventsWithSplits was recomputed on every populateSelects() call (which runs
+  on every updateData()). Added uniqueEventsWithSplits() memoised helper alongside the
+  other unique* functions; populateSelects() now uses the cached result.
+
+- UX: Del column header in All Results given cursor:default so it doesn't appear clickable
+  like the sortable headers. All other th elements inherit cursor:pointer from the CSS rule.
+
+- Security: Added escapeHtml() utility function. Applied to all user-supplied strings
+  rendered into innerHTML: competition and venue in AI Coach, Results table (competition
+  and venue columns), Overview Recent PBs (venue), and Splits tab Split Detail (venue).
+  Prevents XSS if a malformed entry containing HTML tags is entered via Add Race modal.
+  Note: low real-world risk since this is a personal dashboard with no server.
+
+Changes NOT applied (reviewed and kept as-is):
+- eventPieChart groups SC+LC together (display choice, not a bug)
+- analyzeSwim prevPB already filters by swim.course, not the tab filter (correct)
+- sortDir behaviour when switching columns via header click (acceptable UX tradeoff)
+- getPBs().includes() O(n) scan is fine at this data scale
+
+## v20.2
+- AI Coach: getPBs().includes(swim) for CURRENT PB badge (not swim.isPB)
+- Removed ABOVE PB badge — no badge for ordinary swims
+- resetResultsFilters: sortDir set to -1 (newest-first consistent with default)
+
+## v20.1
+- Progression: latest mode self-reference shows "PB is latest" not Debut
+- QT table headers: col-full/col-abbr responsive classes
 
 ## v20
-- init() localStorage-first: RAW from localStorage authoritative; QT fetched from GitHub
-  if not cached. RAW only fetched from GitHub if localStorage empty.
-- updateData(newRaw): central state management function for all data mutations.
-- Split parsing: timeToSec() replaces parseFloat(); !isFinite guard replaces isNaN.
-- Time regex relaxed: allows single-digit seconds.
-- renderPBs: removed dead "slower than PB" branch.
-- finishDiff: fixed for 50m 2-lap races; midPaceAvg uses slice(1,-1).
-- strokeOrder: 'Other' added to both qualifying sort arrays.
-- sortDir default: -1 (newest-first).
+- init() localStorage-first; updateData(); timeToSec splits; regex relaxed;
+  dead PBs branch removed; finishDiff fixed; strokeOrder Other; sortDir -1
 
-## v19
-- CSS: paired appearance:none with -webkit-appearance in Add Race modal.
-- Results: Debut reverted to deltaPrev===null.
-- UX: localStorage note in Add Race modal.
-
-## v18
-- analyzeSwim reverted to date filter; refSwim===pb debut guard added.
-
-## v17
-- getPreviousSwims/getPreviousBestSwims: r !== pb identity filter.
-
-## v16–v9 — see earlier entries
+## v19–v9 — see earlier entries
