@@ -1122,7 +1122,11 @@ function uniqueYears() {
 function uniqueEventsWithSplits() {
   if (cache.uniqueEventsWithSplits) return cache.uniqueEventsWithSplits;
   cache.uniqueEventsWithSplits = [...new Set(DATA.filter(r => r.splits.length > 0).map(r => r.event))]
-    .sort((a, b) => getDistance(a) - getDistance(b));
+    .sort((a, b) => {
+      const da = getDistance(a), db = getDistance(b);
+      if (da !== db) return da - db;
+      return a.localeCompare(b);
+    });
   return cache.uniqueEventsWithSplits;
 }
 
@@ -1485,7 +1489,7 @@ function renderProgression() {
 
   destroyChart('progChart');
 
-  // Fix 3: Single-race selection → show debut callout instead of 1-dot chart
+  // Handle single-race debut state
   const totalPoints = datasets.reduce((sum, ds) => sum + ds.data.length, 0);
   if (totalPoints === 1) {
     const onlyRow = datasets[0].data[0].row;
@@ -1641,7 +1645,7 @@ function renderProgression() {
             ${refLabel}: ${refSwim.time} (${fmtDateShort(refSwim.date)}) → Best: ${pb.time} (${fmtDateShort(pb.date)})
           </div>
           <div class="prog-bar" style="margin-top:5px">
-            <div class="prog-fill" style="width:${Math.min(Math.abs(parseFloat(impPct)) * 5, 100)}%"></div>
+            <div class="prog-fill" style="width:${Math.min(Math.abs(parseFloat(impPct)) * 12.5, 100)}%"></div>
           </div>
         </div>`;
     });
@@ -1739,7 +1743,7 @@ function renderPBs() {
           </div>
         </div>
         ${impHTML}
-        <div class="pb-info">📅 ${fmtDate(pb.date)} · 📍 ${pb.venue}</div>
+        <div class="pb-info">📅 ${fmtDate(pb.date)} · 📍 ${escapeHtml(pb.venue)}</div>
       </div>`;
   }).join('');
 }
@@ -2204,8 +2208,8 @@ function renderResults() {
 
 // ============================================================
 // SHARED QT STAT CARD BUILDER (county + regional)
-// Fix 6/7/8: Qualified lists events; Consideration lists event+PB+gap to qualify;
-//            Outside lists event+PB+gap to consideration
+// ============================================================
+// STAT CARD BUILDER — shared by County QT and Regional QT tabs
 // ============================================================
 function buildQtStatCards(matched, statsElId) {
   const qualified     = matched.filter(r => r.status === 'Qualified');
@@ -2251,15 +2255,120 @@ function buildQtStatCards(matched, statsElId) {
 }
 
 // ============================================================
-// RENDER QUALIFYING TAB
+// SHARED QT CHART + TABLE RENDERER
+// Called by both renderQualifying() and renderRegionalQualifying()
+// ============================================================
+function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
+  const statusColor = s =>
+    s === 'Qualified' ? '#10b981' : s === 'Consideration' ? '#f59e0b' :
+    s === 'Outside'   ? '#ef4444' : '#64748b';
+  const statusBg = s =>
+    s === 'Qualified' ? 'rgba(16,185,129,0.85)' : s === 'Consideration' ? 'rgba(245,158,11,0.85)' :
+    s === 'Outside'   ? 'rgba(239,68,68,0.85)'  : 'rgba(100,116,139,0.4)';
+  const statusBgBorder = s => statusBg(s).replace('0.85','1').replace('0.4','0.8');
+  const statusIcon = s =>
+    s === 'Qualified' ? '✅' : s === 'Consideration' ? '🔶' : s === 'Outside' ? '❌' : '—';
+
+  if (!matched.length) {
+    destroyChart(chartId);
+    document.getElementById(legendId).innerHTML = '';
+    document.getElementById(tableBodyId).innerHTML =
+      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
+    return;
+  }
+
+  // Bar + line chart
+  destroyChart(chartId);
+  const ctx = document.getElementById(chartId).getContext('2d');
+  charts[chartId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: matched.map(r => r.event),
+      datasets: [
+        {
+          label: "Swimmer's PB",
+          data: matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null),
+          backgroundColor: matched.map(r => statusBg(r.status)),
+          borderColor:     matched.map(r => statusBgBorder(r.status)),
+          borderWidth: 1, borderRadius: 4, order: 1
+        },
+        {
+          label: 'Qualify time',
+          data: matched.map(r => r.qualify !== null ? parseFloat(r.qualify.toFixed(2)) : null),
+          type: 'line', borderColor: '#10b981', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [6,3], pointRadius: 4,
+          pointBackgroundColor: '#10b981', order: 0, tension: 0
+        },
+        {
+          label: 'Consideration time',
+          data: matched.map(r => r.consider !== null ? parseFloat(r.consider.toFixed(2)) : null),
+          type: 'line', borderColor: '#f59e0b', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [4,4], pointRadius: 4,
+          pointBackgroundColor: '#f59e0b', order: 0, tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: item => {
+          const r = matched[item.dataIndex];
+          if (item.dataset.label === "Swimmer's PB")
+            return r.pbSec === null ? ' No PB recorded' : ` PB: ${secToTime(r.pbSec)} (${r.status})`;
+          if (item.dataset.label === 'Qualify time') return ` Qualify: ${secToTime(r.qualify)}`;
+          return ` Consideration: ${secToTime(r.consider)}`;
+        }}}
+      },
+      scales: {
+        x: { ticks: { color: CC.tick, font: { size: 11 } }, grid: { color: CC.grid } },
+        y: { ticks: { color: CC.tick, callback: v => secToTime(v) }, grid: { color: CC.grid } }
+      }
+    }
+  });
+
+  // Legend
+  document.getElementById(legendId).innerHTML = `
+    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #10b981;background:none"></div> Qualify time</div>
+    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #f59e0b;background:none"></div> Consideration time</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(16,185,129,0.85);border-radius:2px"></div> PB — Qualified</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(245,158,11,0.85);border-radius:2px"></div> PB — Consideration</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(239,68,68,0.85);border-radius:2px"></div> PB — Outside</div>
+    <div class="cl-item"><div class="cl-dot" style="background:rgba(100,116,139,0.4);border-radius:2px"></div> No PB</div>`;
+
+  // Table rows
+  document.getElementById(tableBodyId).innerHTML = matched.map(r => {
+    const pbStr  = r.pbSec !== null
+      ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
+      : '<span style="color:var(--text3)">—</span>';
+    const gapQStr = r.gapQ !== null
+      ? `<span class="${r.gapQ <= 0 ? 'dpos' : 'dneg'}">${r.gapQ <= 0 ? '▼' : '▲'}${Math.abs(r.gapQ).toFixed(2)}s</span>`
+      : '<span style="color:var(--text3)">—</span>';
+    const gapCStr = r.gapC !== null
+      ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
+      : '<span style="color:var(--text3)">—</span>';
+    return `<tr>
+      <td style="font-weight:600;color:var(--text)">${r.event}</td>
+      <td>${pbStr}</td>
+      <td style="color:var(--text3);font-size:0.78rem">${r.pb ? fmtDateShort(r.pb.date) : '—'}</td>
+      <td class="tc">${secToTime(r.qualify)}</td>
+      <td class="tc">${secToTime(r.consider)}</td>
+      <td>${gapQStr}</td>
+      <td>${gapCStr}</td>
+      <td><span style="color:${statusColor(r.status)};font-weight:600">${statusIcon(r.status)} ${r.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// RENDER COUNTY QUALIFYING TAB
 // ============================================================
 function renderQualifying() {
-  const gender  = document.getElementById('qtGender').value;
-  const age     = document.getElementById('qtAge').value;
-  const course  = document.getElementById('qtCourse').value;
-  const stroke  = document.getElementById('qtStroke').value;
+  const gender = document.getElementById('qtGender').value;
+  const age    = document.getElementById('qtAge').value;
+  const course = document.getElementById('qtCourse').value;
+  const stroke = document.getElementById('qtStroke').value;
 
-  // Guard: no QT data loaded
   if (QT_DATA.length === 0) {
     document.getElementById('qtStats').innerHTML = '';
     document.getElementById('qtLegend').innerHTML = '';
@@ -2272,194 +2381,86 @@ function renderQualifying() {
     return;
   }
 
-  // Filter QT rows — exclude rows where both times are null (event not offered for age group)
-  let qtRows = QT_DATA.filter(r =>
-    r.gender === gender && r.age === age && r.course === course &&
-    !(r.qualify === null && r.consider === null)
-  );
-  if (stroke) qtRows = qtRows.filter(r => r.event.includes(stroke));
-
-  // Get swimmer's PBs for matching course using memoised lookup
   const dashCourse = course === 'Short Course' ? 'S' : 'L';
-  const allPBs = getPBs().filter(r => r.course === dashCourse);
   const pbMap = {};
-  allPBs.forEach(r => { pbMap[r.event] = r; });
+  getPBs().filter(r => r.course === dashCourse).forEach(r => { pbMap[r.event] = r; });
 
-  // Build matched rows
-  const matched = qtRows.map(qt => {
-    const pb    = pbMap[qt.event] || null;
-    const pbSec = pb ? pb.timeInSec : null;
-    const gapQ  = pbSec !== null && qt.qualify  !== null ? pbSec - qt.qualify  : null;
-    const gapC  = pbSec !== null && qt.consider !== null ? pbSec - qt.consider : null;
-    let status = 'No PB';
-    if (pbSec !== null) {
-      if (qt.qualify  !== null && pbSec <= qt.qualify)  status = 'Qualified';
-      else if (qt.consider !== null && pbSec <= qt.consider) status = 'Consideration';
-      else status = 'Outside';
-    }
-    return { ...qt, pb, pbSec, gapQ, gapC, status };
-  }).sort((a,b) => {
-    const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
-    const strokeA = strokeOrder.indexOf(getStroke(a.event));
-    const strokeB = strokeOrder.indexOf(getStroke(b.event));
-    if (strokeA !== strokeB) return strokeA - strokeB;
-    return parseInt(a.event) - parseInt(b.event);
-  });
+  const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
+  let matched = QT_DATA
+    .filter(r => r.gender === gender && r.age === age && r.course === course &&
+      !(r.qualify === null && r.consider === null))
+    .filter(r => !stroke || r.event.includes(stroke))
+    .map(qt => {
+      const pb = pbMap[qt.event] || null;
+      const pbSec = pb ? pb.timeInSec : null;
+      const gapQ  = pbSec !== null && qt.qualify  !== null ? pbSec - qt.qualify  : null;
+      const gapC  = pbSec !== null && qt.consider !== null ? pbSec - qt.consider : null;
+      let status = 'No PB';
+      if (pbSec !== null) {
+        if (qt.qualify  !== null && pbSec <= qt.qualify)       status = 'Qualified';
+        else if (qt.consider !== null && pbSec <= qt.consider) status = 'Consideration';
+        else status = 'Outside';
+      }
+      return { ...qt, pb, pbSec, gapQ, gapC, status };
+    })
+    .sort((a, b) => {
+      const sa = strokeOrder.indexOf(getStroke(a.event));
+      const sb = strokeOrder.indexOf(getStroke(b.event));
+      return sa !== sb ? sa - sb : parseInt(a.event) - parseInt(b.event);
+    });
 
-  // Stat cards — with event lists (fixes 6/7/8)
   buildQtStatCards(matched, 'qtStats');
+  renderQTChartAndTable(matched, 'qtBarChart', 'qtLegend', 'qtTableBody');
+}
 
-  // If no events match the filter, clear chart and show table message
-  if (!matched.length) {
-    destroyChart('qtBarChart');
-    document.getElementById('qtLegend').innerHTML = '';
-    document.getElementById('qtTableBody').innerHTML =
-      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
+// ============================================================
+// RENDER REGIONAL QUALIFYING TAB (SE London)
+// ============================================================
+function renderRegionalQualifying() {
+  if (!SE_QT_DATA.length) {
+    document.getElementById('rqStats').innerHTML = '';
+    document.getElementById('rqTableBody').innerHTML =
+      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">
+        No SE London QT data. Upload se_london_qt.json via ⚙️ Data Manager.
+      </td></tr>`;
     return;
   }
 
-  // Bar chart datasets
-  const labels   = matched.map(r => r.event);
-  const pbData   = matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null);
-  const qualData = matched.map(r => r.qualify !== null ? parseFloat(r.qualify.toFixed(2)) : null);
-  const consData = matched.map(r => r.consider !== null ? parseFloat(r.consider.toFixed(2)) : null);
+  const gender = document.getElementById('rqGender').value;
+  const age    = document.getElementById('rqAge').value;
+  const course = document.getElementById('rqCourse').value;
+  const stroke = document.getElementById('rqStroke').value;
 
-  const pbColors = matched.map(r => {
-    if (r.status === 'Qualified')     return 'rgba(16,185,129,0.85)';
-    if (r.status === 'Consideration') return 'rgba(245,158,11,0.85)';
-    if (r.status === 'Outside')       return 'rgba(239,68,68,0.85)';
-    return 'rgba(100,116,139,0.4)';
-  });
-  const pbBorders = matched.map(r => {
-    if (r.status === 'Qualified')     return 'rgba(16,185,129,1)';
-    if (r.status === 'Consideration') return 'rgba(245,158,11,1)';
-    if (r.status === 'Outside')       return 'rgba(239,68,68,1)';
-    return 'rgba(100,116,139,0.8)';
-  });
+  const dashCourse = course === 'Short Course' ? 'S' : 'L';
+  const pbMap = {};
+  getPBs().filter(r => r.course === dashCourse).forEach(r => { pbMap[r.event] = r; });
 
-  destroyChart('qtBarChart');
-  const ctx = document.getElementById('qtBarChart').getContext('2d');
-  charts['qtBarChart'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Swimmer's PB",
-          data: pbData,
-          backgroundColor: pbColors,
-          borderColor: pbBorders,
-          borderWidth: 1,
-          borderRadius: 4,
-          order: 1
-        },
-        {
-          label: 'Qualify time',
-          data: qualData,
-          type: 'line',
-          borderColor: '#10b981',
-          backgroundColor: 'transparent',
-          borderWidth: 2,
-          borderDash: [6,3],
-          pointRadius: 4,
-          pointBackgroundColor: '#10b981',
-          order: 0,
-          tension: 0
-        },
-        {
-          label: 'Consideration time',
-          data: consData,
-          type: 'line',
-          borderColor: '#f59e0b',
-          backgroundColor: 'transparent',
-          borderWidth: 2,
-          borderDash: [4,4],
-          pointRadius: 4,
-          pointBackgroundColor: '#f59e0b',
-          order: 0,
-          tension: 0
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (item) => {
-              const r = matched[item.dataIndex];
-              if (item.dataset.label === "Swimmer's PB") {
-                if (r.pbSec === null) return " No PB recorded";
-                return ` PB: ${secToTime(r.pbSec)} (${r.status})`;
-              }
-              if (item.dataset.label === 'Qualify time') return ` Qualify: ${secToTime(r.qualify)}`;
-              return ` Consideration: ${secToTime(r.consider)}`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: { ticks: { color: CC.tick, font: { size: 11 } }, grid: { color: CC.grid } },
-        y: {
-          ticks: {
-            color: CC.tick,
-            callback: v => secToTime(v)
-          },
-          grid: { color: CC.grid }
-        }
+  const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
+  let matched = SE_QT_DATA
+    .filter(r => r.gender === gender && r.age === age && r.course === course)
+    .filter(r => !stroke || r.event.includes(stroke))
+    .map(qt => {
+      const pb = pbMap[qt.event] || null;
+      const pbSec = pb ? pb.timeInSec : null;
+      const gapQ  = pbSec !== null ? pbSec - qt.qualify  : null;
+      const gapC  = pbSec !== null ? pbSec - qt.consider : null;
+      let status = 'No PB';
+      if (pbSec !== null) {
+        if (pbSec <= qt.qualify)       status = 'Qualified';
+        else if (pbSec <= qt.consider) status = 'Consideration';
+        else status = 'Outside';
       }
-    }
-  });
+      return { ...qt, pb, pbSec, gapQ, gapC, status };
+    })
+    .sort((a, b) => {
+      const sa = strokeOrder.indexOf(getStroke(a.event));
+      const sb = strokeOrder.indexOf(getStroke(b.event));
+      return sa !== sb ? sa - sb : parseInt(a.event) - parseInt(b.event);
+    });
 
-  // Custom legend
-  document.getElementById('qtLegend').innerHTML = `
-    <div class="cl-item"><div class="cl-dot" style="background:#10b981;border-radius:2px;width:24px;height:3px;border-top:2px dashed #10b981;background:none"></div> Qualify time</div>
-    <div class="cl-item"><div class="cl-dot" style="background:#f59e0b;border-radius:2px;width:24px;height:3px;border-top:2px dashed #f59e0b;background:none"></div> Consideration time</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(16,185,129,0.85);border-radius:2px"></div> PB — Qualified</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(245,158,11,0.85);border-radius:2px"></div> PB — Consideration</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(239,68,68,0.85);border-radius:2px"></div> PB — Outside</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(100,116,139,0.4);border-radius:2px"></div> No PB</div>
-  `;
-
-  // Table
-  const tbody = document.getElementById('qtTableBody');
-  tbody.innerHTML = matched.map(r => {
-    const pbStr = r.pbSec !== null
-      ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
-      : '<span style="color:var(--text3)">—</span>';
-
-    const gapQStr = r.gapQ !== null
-      ? `<span class="${r.gapQ <= 0 ? 'dpos' : 'dneg'}">${r.gapQ <= 0 ? '▼' : '▲'}${Math.abs(r.gapQ).toFixed(2)}s</span>`
-      : '<span style="color:var(--text3)">—</span>';
-
-    const gapCStr = r.gapC !== null
-      ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
-      : '<span style="color:var(--text3)">—</span>';
-
-    const statusColor = r.status === 'Qualified' ? '#10b981'
-      : r.status === 'Consideration' ? '#f59e0b'
-      : r.status === 'Outside' ? '#ef4444'
-      : '#64748b';
-
-    const statusIcon = r.status === 'Qualified' ? '✅'
-      : r.status === 'Consideration' ? '🔶'
-      : r.status === 'Outside' ? '❌' : '—';
-
-    return `<tr>
-      <td style="font-weight:600;color:var(--text)">${r.event}</td>
-      <td>${pbStr}</td>
-      <td style="color:var(--text3);font-size:0.78rem">${r.pb ? fmtDateShort(r.pb.date) : '—'}</td>
-      <td class="tc">${secToTime(r.qualify)}</td>
-      <td class="tc">${secToTime(r.consider)}</td>
-      <td>${gapQStr}</td>
-      <td>${gapCStr}</td>
-      <td><span style="color:${statusColor};font-weight:600">${statusIcon} ${r.status}</span></td>
-    </tr>`;
-  }).join('');
+  buildQtStatCards(matched, 'rqStats');
+  renderQTChartAndTable(matched, 'rqBarChart', 'rqLegend', 'rqTableBody');
 }
-
 // ============================================================
 // TAB SWITCHING
 // ============================================================
@@ -2629,158 +2630,6 @@ function resetRegionalFilters() {
   renderRegionalQualifying();
 }
 
-// ============================================================
-// REGIONAL QUALIFYING TAB (SE London)
-// ============================================================
-function renderRegionalQualifying() {
-  if (!SE_QT_DATA.length) {
-    document.getElementById('rqStats').innerHTML = '';
-    document.getElementById('rqTableBody').innerHTML =
-      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">
-        No SE London QT data. Upload se_london_qt.json via ⚙️ Data Manager.
-      </td></tr>`;
-    return;
-  }
-
-  const gender = document.getElementById('rqGender').value;
-  const age    = document.getElementById('rqAge').value;
-  const course = document.getElementById('rqCourse').value;
-  const stroke = document.getElementById('rqStroke').value;
-
-  // SE London QT has no null values, so no null filtering needed
-  let qtRows = SE_QT_DATA.filter(r =>
-    r.gender === gender && r.age === age && r.course === course
-  );
-  if (stroke) qtRows = qtRows.filter(r => r.event.includes(stroke));
-
-  // Get swimmer's PBs for matching course code — use memoised lookup for consistency
-  const dashCourse = course === 'Short Course' ? 'S' : 'L';
-  const allPBs = getPBs().filter(r => r.course === dashCourse);
-  const pbMap = {};
-  allPBs.forEach(r => { pbMap[r.event] = r; });
-
-  const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
-  const matched = qtRows.map(qt => {
-    const pb    = pbMap[qt.event] || null;
-    const pbSec = pb ? pb.timeInSec : null;
-    const gapQ  = pbSec !== null ? pbSec - qt.qualify  : null;
-    const gapC  = pbSec !== null ? pbSec - qt.consider : null;
-    let status = 'No PB';
-    if (pbSec !== null) {
-      if (pbSec <= qt.qualify)       status = 'Qualified';
-      else if (pbSec <= qt.consider) status = 'Consideration';
-      else                           status = 'Outside';
-    }
-    return { ...qt, pb, pbSec, gapQ, gapC, status };
-  }).sort((a, b) => {
-    const sa = strokeOrder.indexOf(getStroke(a.event));
-    const sb = strokeOrder.indexOf(getStroke(b.event));
-    if (sa !== sb) return sa - sb;
-    return parseInt(a.event) - parseInt(b.event);
-  });
-
-  // Stat cards — with event lists (fixes 6/7/8)
-  buildQtStatCards(matched, 'rqStats');
-
-  if (!matched.length) {
-    document.getElementById('rqTableBody').innerHTML =
-      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
-    destroyChart('rqBarChart');
-    return;
-  }
-
-  // Bar chart
-  const pbColors  = matched.map(r => {
-    if (r.status === 'Qualified')     return 'rgba(16,185,129,0.85)';
-    if (r.status === 'Consideration') return 'rgba(245,158,11,0.85)';
-    if (r.status === 'Outside')       return 'rgba(239,68,68,0.85)';
-    return 'rgba(100,116,139,0.4)';
-  });
-
-  destroyChart('rqBarChart');
-  const ctx = document.getElementById('rqBarChart').getContext('2d');
-  charts['rqBarChart'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: matched.map(r => r.event),
-      datasets: [
-        {
-          label: "Swimmer's PB",
-          data: matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null),
-          backgroundColor: pbColors,
-          borderColor: pbColors.map(c => c.replace('0.85','1').replace('0.4','0.8')),
-          borderWidth: 1, borderRadius: 4, order: 1
-        },
-        {
-          label: 'Qualify time',
-          data: matched.map(r => parseFloat(r.qualify.toFixed(2))),
-          type: 'line', borderColor: '#10b981', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [6,3], pointRadius: 4,
-          pointBackgroundColor: '#10b981', order: 0, tension: 0
-        },
-        {
-          label: 'Consideration time',
-          data: matched.map(r => parseFloat(r.consider.toFixed(2))),
-          type: 'line', borderColor: '#f59e0b', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [4,4], pointRadius: 4,
-          pointBackgroundColor: '#f59e0b', order: 0, tension: 0
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: (item) => {
-          const r = matched[item.dataIndex];
-          if (item.dataset.label === "Swimmer's PB")
-            return r.pbSec === null ? ' No PB recorded' : ` PB: ${secToTime(r.pbSec)} (${r.status})`;
-          if (item.dataset.label === 'Qualify time') return ` Qualify: ${secToTime(r.qualify)}`;
-          return ` Consideration: ${secToTime(r.consider)}`;
-        }}}
-      },
-      scales: {
-        x: { ticks: { color: CC.tick, font: { size: 11 } }, grid: { color: CC.grid } },
-        y: { ticks: { color: CC.tick, callback: v => secToTime(v) }, grid: { color: CC.grid } }
-      }
-    }
-  });
-
-  document.getElementById('rqLegend').innerHTML = `
-    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #10b981;background:none"></div> Qualify time</div>
-    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #f59e0b;background:none"></div> Consideration time</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(16,185,129,0.85);border-radius:2px"></div> PB — Qualified</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(245,158,11,0.85);border-radius:2px"></div> PB — Consideration</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(239,68,68,0.85);border-radius:2px"></div> PB — Outside</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(100,116,139,0.4);border-radius:2px"></div> No PB</div>`;
-
-  // Table
-  document.getElementById('rqTableBody').innerHTML = matched.map(r => {
-    const pbStr  = r.pbSec !== null
-      ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
-      : '<span style="color:var(--text3)">—</span>';
-    const gapQStr = r.gapQ !== null
-      ? `<span class="${r.gapQ <= 0 ? 'dpos' : 'dneg'}">${r.gapQ <= 0 ? '▼' : '▲'}${Math.abs(r.gapQ).toFixed(2)}s</span>`
-      : '<span style="color:var(--text3)">—</span>';
-    const gapCStr = r.gapC !== null
-      ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
-      : '<span style="color:var(--text3)">—</span>';
-    const statusColor = r.status === 'Qualified' ? '#10b981' : r.status === 'Consideration' ? '#f59e0b'
-      : r.status === 'Outside' ? '#ef4444' : '#64748b';
-    const statusIcon  = r.status === 'Qualified' ? '✅' : r.status === 'Consideration' ? '🔶'
-      : r.status === 'Outside' ? '❌' : '—';
-    return `<tr>
-      <td style="font-weight:600;color:var(--text)">${r.event}</td>
-      <td>${pbStr}</td>
-      <td style="color:var(--text3);font-size:0.78rem">${r.pb ? fmtDateShort(r.pb.date) : '—'}</td>
-      <td class="tc">${secToTime(r.qualify)}</td>
-      <td class="tc">${secToTime(r.consider)}</td>
-      <td>${gapQStr}</td>
-      <td>${gapCStr}</td>
-      <td><span style="color:${statusColor};font-weight:600">${statusIcon} ${r.status}</span></td>
-    </tr>`;
-  }).join('');
-}
 
 document.addEventListener('DOMContentLoaded', init);
 </script>

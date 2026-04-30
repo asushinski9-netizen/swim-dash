@@ -43,6 +43,11 @@ divider lines between segments. Fixed to '#ffffff'.
 competition and venue fields from RAW were rendered directly into innerHTML without escaping,
 creating an XSS vector. Fixed: escapeHtml() utility applied to all user-supplied string
 rendering: AI Coach, Results table, Overview Recent PBs, Splits Split Detail.
+### Missing escapeHtml in renderPBs (v21.1)
+The v21 escapeHtml() sweep covered AI Coach, Results table, Overview Recent PBs, and
+Splits Split Detail — but missed pb.venue in the renderPBs() pb-info line.
+Fixed: escapeHtml(pb.venue) applied.
+
 
 ## WATCH-OUT AREAS
 
@@ -92,3 +97,29 @@ Ensures SC and LC PBs are always separate benchmarks regardless of the tab's cou
 ### removeRace: first findIndex match on date+event+course+time
 ### Pacing Profile Y-axis: reverse:true intentional
 ### Time Progression: last in HTML source — no CSS ordering rules needed
+
+### Missing escapeHtml in renderPBs (v22)
+pb.venue was rendered directly into innerHTML in Personal Bests tab cards.
+Fixed: escapeHtml(pb.venue). All user-supplied strings now escaped everywhere.
+
+### uniqueEventsWithSplits sort non-deterministic for same-distance events (v22)
+Sort used only getDistance() with no tiebreaker. uniqueEvents() had localeCompare(b) as
+tiebreaker but uniqueEventsWithSplits() did not. Fixed: added localeCompare(b) tiebreaker
+for consistency and deterministic ordering.
+
+### Progress bar scale too coarse (v22)
+impPct * 5 cap 100% → any improvement ≥ 20% filled the bar. 20% is an unrealistic
+threshold for competitive swimming. Updated to impPct * 12.5 so 8% fills the bar.
+Better reflects the practical competitive improvement range and gives visual granularity.
+
+## WATCH-OUT AREAS (additions for v22)
+
+### escapeHtml must be applied to all user-supplied strings in innerHTML
+Fully applied as of v22: pb.venue (renderPBs), swim.competition/swim.venue (analyzeSwim),
+r.competition/r.venue (renderResults), r.venue (renderOverview recent PBs), swim.venue
+(renderSplits split detail). Any new field from RAW rendered into innerHTML needs escaping.
+
+### renderQTChartAndTable is the single source of truth for QT chart and table (v22)
+Used by both renderQualifying() and renderRegionalQualifying(). Changes to chart format,
+table columns, or tooltip text only need to be made here. Do NOT duplicate logic back into
+the two tab functions.

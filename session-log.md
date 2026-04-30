@@ -1,56 +1,57 @@
 # Session Log
 
-## v21 (latest)
-Full audit of v20.2 — six bugs fixed, one inconsistency resolved, one security improvement:
+## v22 (latest)
+Based on Gemini code review of v21. All suggested changes evaluated and implemented.
 
-- Bug: "PBs this year" stat card counted historical isPB swims (any swim that was a PB
-  when swum), not current PBs. An improving swimmer with a 200 Back PB beaten in Feb 2026
-  still had their Jan 2025 swim counted. Fixed: pbs.filter(r => r.date >= currentYearStart)
-  where pbs = getPBs() — counts only current overall PBs set this year.
+- Security: escapeHtml() applied to pb.venue in renderPBs() — the one remaining unescaped
+  user-supplied string across the entire codebase. Now all user-supplied strings rendered
+  into innerHTML are escaped: competition and venue in AI Coach, Results table, Recent PBs,
+  Splits Split Detail, and Personal Bests cards.
 
-- Bug: "Recent Personal Bests" in Overview showed up to 6 historical isPB swims (same
-  issue — DATA.filter(r => r.isPB) includes old beaten PBs). Fixed: getPBs().sort by date
-  descending, take first 6 — always shows the 6 most recently set current PBs.
+- Comments: Two stale patch-era comments cleaned:
+  "Fix 3: Single-race selection → show debut callout..." → "Handle single-race debut state"
+  "Fix 6/7/8: Qualified lists events..." → "STAT CARD BUILDER — shared by County QT and Regional QT tabs"
 
-- Bug: processData sort was unstable for same-date same-event entries across SC/LC.
-  Two swims on the same date for the same event (e.g. 200 Back S and L) would sort
-  indeterminately, causing non-deterministic deltaPrev and isPB values. Fixed: added
-  || a.course.localeCompare(b.course) as a final sort tiebreaker.
+- Bug: uniqueEventsWithSplits() sort was missing the alphabetical tiebreaker present in
+  uniqueEvents(). Events at the same distance that both have splits (100 Back / 100 Free,
+  200 Back / 200 Free) sorted non-deterministically in the Splits tab dropdown.
+  Note: no sub-100m events have splits in the current data, so the "50 Back / 50 Free"
+  framing in the Gemini review was a moot example — but the fix is valid for 100m and 200m
+  pairs. Fixed: added localeCompare(b) tiebreaker matching uniqueEvents().
 
-- Bug: Doughnut chart in Overview used borderColor '#111827' (dark navy from the old dark
-  theme). On the white light-theme surface this showed as dark segment dividers. Fixed to
-  '#ffffff' so segment borders blend cleanly with the white card background.
+- DRY refactor: renderQualifying() and renderRegionalQualifying() shared ~150 lines of
+  identical chart/table logic. Extracted into renderQTChartAndTable(matched, chartId,
+  legendId, tableBodyId). Both tab functions now handle only their filter/data setup (~15
+  lines each) and delegate chart creation, legend, and table rendering to the shared helper.
+  Any future changes to QT chart/table now only need to be made in one place.
+  Net reduction: 150 lines (2787 → 2636 lines).
 
-- Improvement: eventsWithSplits was recomputed on every populateSelects() call (which runs
-  on every updateData()). Added uniqueEventsWithSplits() memoised helper alongside the
-  other unique* functions; populateSelects() now uses the cached result.
+- Progress bar scale: The Improvement Summary bar used impPct * 5, capped at 100% —
+  meaning any improvement ≥ 20% filled the bar. 20% is an unrealistic threshold for
+  competitive swimming (equivalent to going from 3:00 to 2:24 in 200 Back). Updated to
+  impPct * 12.5, so 8% improvement fills the bar. This better reflects the practical range
+  of competitive improvements (0–8%) and gives more granular visual feedback for smaller
+  but meaningful improvements.
 
-- UX: Del column header in All Results given cursor:default so it doesn't appear clickable
-  like the sortable headers. All other th elements inherit cursor:pointer from the CSS rule.
-
-- Security: Added escapeHtml() utility function. Applied to all user-supplied strings
-  rendered into innerHTML: competition and venue in AI Coach, Results table (competition
-  and venue columns), Overview Recent PBs (venue), and Splits tab Split Detail (venue).
-  Prevents XSS if a malformed entry containing HTML tags is entered via Add Race modal.
-  Note: low real-world risk since this is a personal dashboard with no server.
-
-Changes NOT applied (reviewed and kept as-is):
-- eventPieChart groups SC+LC together (display choice, not a bug)
-- analyzeSwim prevPB already filters by swim.course, not the tab filter (correct)
-- sortDir behaviour when switching columns via header click (acceptable UX tradeoff)
-- getPBs().includes() O(n) scan is fine at this data scale
+## v21
+- Security: escapeHtml() utility + applied to competition/venue across AI Coach, Results,
+  Recent PBs, Split Detail (renderPBs missed — fixed in v22).
+- Bug: Overview "PBs this year" and "Recent PBs" used isPB (historical); fixed to getPBs().
+- Bug: processData sort unstable for same-date same-event SC/LC; added course tiebreaker.
+- Bug: Doughnut chart border was dark navy from old dark theme; fixed to #ffffff.
+- Improvement: uniqueEventsWithSplits() memoised helper.
+- UX: Del column header cursor:default.
 
 ## v20.2
-- AI Coach: getPBs().includes(swim) for CURRENT PB badge (not swim.isPB)
-- Removed ABOVE PB badge — no badge for ordinary swims
-- resetResultsFilters: sortDir set to -1 (newest-first consistent with default)
+- getPBs().includes(swim) for CURRENT PB badge; removed ABOVE PB badge.
+- resetResultsFilters sortDir -1.
 
 ## v20.1
-- Progression: latest mode self-reference shows "PB is latest" not Debut
-- QT table headers: col-full/col-abbr responsive classes
+- Progression latest mode: "PB is latest" not Debut.
+- QT table: col-full/col-abbr responsive headers.
 
 ## v20
 - init() localStorage-first; updateData(); timeToSec splits; regex relaxed;
-  dead PBs branch removed; finishDiff fixed; strokeOrder Other; sortDir -1
+  finishDiff fixed; strokeOrder Other; sortDir -1.
 
 ## v19–v9 — see earlier entries

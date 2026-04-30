@@ -2,8 +2,8 @@
 
 ## File
 Single HTML file: swimming_dash_vN.html
-Current version: v21
-~2787 lines total
+Current version: v22
+~2636 lines total
 
 ## Script section layout (in order)
 1.  CONFIGURATION — RACE_DATA_URL, QT_DATA_URL, SE_QT_DATA_URL
@@ -24,8 +24,9 @@ Current version: v21
 11. POPULATE SELECTS — populateSelects()
 12. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
                   renderSplits(), renderSplitCharts(), analyzeSwim(),
-                  renderResults(), buildQtStatCards(), renderQualifying(),
-                  renderRegionalQualifying()
+                  renderResults(), buildQtStatCards(),
+                  renderQTChartAndTable() [shared QT chart+table helper],
+                  renderQualifying(), renderRegionalQualifying()
 13. TAB SWITCHING — showTab()
 14. INIT — async init()
 15. ADD RACE — showAddRaceModal(), hideAddRaceModal(), saveNewRace()
@@ -71,6 +72,17 @@ Does NOT call renderSplits().
 ## init() data loading priority
 1. RAW: localStorage → GitHub fallback → upload modal
 2. QT/SE_QT: localStorage → GitHub fetch if either missing
+
+
+## DRY QT Rendering (v22)
+renderQTChartAndTable(matched, chartId, legendId, tableBodyId) — shared helper
+Contains all chart creation, legend, and table row rendering for qualifying tabs.
+renderQualifying() and renderRegionalQualifying() handle only filter/data setup (~15 lines
+each) and call this helper. Any change to chart format or table columns: edit here only.
+
+## Progress bar scale (v22)
+width = Math.min(impPct * 12.5, 100)%
+8% improvement = full bar. Reflects practical competitive swimming improvement range.
 
 ## Security: escapeHtml()
 Applied to all user-supplied fields in innerHTML: competition, venue.
