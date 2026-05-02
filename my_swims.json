@@ -37,5 +37,6 @@
   {"course":"L","event":"50 Back","date":"2026-02-08","competition":"2026 Middlesex County Championships","venue":"London","time":"0:39.37","splits":[]},
   {"course":"L","event":"200 Back","date":"2026-02-14","competition":"2026 Middlesex County Championships","venue":"London","time":"2:57.15","splits":[42.29,47.12,46.40,41.34]},
   {"course":"S","event":"400 Free","date":"2026-03-15","competition":"City of St Albans Spring Meet 2026","venue":"St Albans","time":"5:34.46","splits":[38.09,40.67,43.05,43.46,43.27,43.68,44.18,38.06]},
-  {"course":"S","event":"50 Back","date":"2026-03-15","competition":"City of St Albans Spring Meet 2026","venue":"St Albans","time":"0:38.00","splits":[]}
+  {"course":"S","event":"50 Back","date":"2026-03-15","competition":"City of St Albans Spring Meet 2026","venue":"St Albans","time":"0:38.00","splits":[]},
+    {"course":"L","event":"50 Back","date":"2026-05-02","competition":"SE London Summer Championships 2026","venue":"London","time":"0:37.53","splits":[]}
 ]
