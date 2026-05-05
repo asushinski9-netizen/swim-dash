@@ -2,36 +2,37 @@
 
 ## File
 Single HTML file: swimming_dash_vN.html
-Current version: v22
-~2636 lines total
+Current version: v23
+~2733 lines total
 
 ## Script section layout (in order)
 1.  CONFIGURATION — RACE_DATA_URL, QT_DATA_URL, SE_QT_DATA_URL
 2.  DATA globals — RAW, QT_DATA, SE_QT_DATA, DATA, cache{}
-3.  STATE MANAGEMENT — invalidateCache(), updateData(newRaw)
-4.  DATA MANAGER MODAL — showDataModal(), hideDataModal(), saveDataToBrowser(),
+3.  THEME — getCC(), getPalette(), applyTheme(), toggleTheme()
+4.  STATE MANAGEMENT — invalidateCache(), updateData(newRaw)
+5.  DATA MANAGER MODAL — showDataModal(), hideDataModal(), saveDataToBrowser(),
                           resetDashboard(), downloadRaceData()
-5.  UTILITIES — escapeHtml(), timeToSec(), secToTime(), parseLocalDate(),
+6.  UTILITIES — escapeHtml(), timeToSec(), secToTime(), parseLocalDate(),
                 fmtDate(), fmtDateShort(), getStroke(), getDistance(), processData()
-6.  Derived helpers — uniqueEvents(), uniqueVenues(), uniqueYears(),
+7.  Derived helpers — uniqueEvents(), uniqueVenues(), uniqueYears(),
                       uniqueEventsWithSplits() — all memoised via cache{}
-7.  PALETTE + CC chart colour tokens
-8.  MEMOISED LOOKUPS — getPBs(), getFirstSwims(), getLatestSwims(),
+8.  PALETTE_LIGHT/DARK + getCC()/getPalette() — theme-aware chart tokens
+9.  MEMOISED LOOKUPS — getPBs(), getFirstSwims(), getLatestSwims(),
                        getPreviousSwims(), getPreviousBestSwims(), getSwimCounts()
-9.  FILTER RESET HELPERS — resetProgressionFilters(), resetQualifyingFilters(),
+10. FILTER RESET HELPERS — resetProgressionFilters(), resetQualifyingFilters(),
                             resetRegionalFilters()
-10. CHARTS REGISTRY — charts{}, destroyChart()
-11. POPULATE SELECTS — populateSelects()
-12. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
+11. CHARTS REGISTRY — charts{}, destroyChart()
+12. POPULATE SELECTS — populateSelects()
+13. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
                   renderSplits(), renderSplitCharts(), analyzeSwim(),
                   renderResults(), buildQtStatCards(),
                   renderQTChartAndTable() [shared QT chart+table helper],
                   renderQualifying(), renderRegionalQualifying()
-13. TAB SWITCHING — showTab()
-14. INIT — async init()
-15. ADD RACE — showAddRaceModal(), hideAddRaceModal(), saveNewRace()
-16. REMOVE RACE — removeRace(date, event, course, time)
-17. DOMContentLoaded → init()
+14. TAB SWITCHING — showTab()
+15. INIT — async init()
+16. ADD RACE — showAddRaceModal(), hideAddRaceModal(), saveNewRace()
+17. REMOVE RACE — removeRace(date, event, course, time)
+18. DOMContentLoaded → init()
 
 ## processData() sort order (v21)
 date ASC → event name ASC → course ASC (S before L)

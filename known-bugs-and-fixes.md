@@ -123,3 +123,32 @@ r.competition/r.venue (renderResults), r.venue (renderOverview recent PBs), swim
 Used by both renderQualifying() and renderRegionalQualifying(). Changes to chart format,
 table columns, or tooltip text only need to be made here. Do NOT duplicate logic back into
 the two tab functions.
+
+## WATCH-OUT AREAS (additions for v23)
+
+### getCC() and getPalette() must be called inside render functions, not at module level
+The old `const CC = {...}` was a module-level constant evaluated once at load time.
+The new `getCC()` and `getPalette()` are functions that read body.classList at call time.
+Every render function injects `const CC = getCC(); const PALETTE = getPalette();` at its top.
+If you add a new render function that uses chart colours, you MUST add this line.
+DO NOT use the old pattern `const CC = { grid: '#cbd5e1', ... }` as a module-level constant.
+
+### toggleTheme() re-renders chart tabs but does NOT call processData()
+DATA is unchanged when the theme switches — only colours change. toggleTheme() calls:
+renderOverview(), renderProgression(), renderSplits(), renderQualifying(), renderRegionalQualifying()
+It does NOT call renderPBs() or renderResults() because those tabs have no Chart.js charts.
+CSS variable changes propagate instantly to non-chart elements (cards, tables, badges).
+
+### Theme is applied in two stages to prevent flash
+1. IIFE before DOMContentLoaded: reads swimDash_theme from localStorage, adds body.dark
+   class immediately. This prevents the white flash before JS fully loads.
+2. init() calls applyTheme(savedTheme): syncs the 🌙/☀️ FAB button icon once DOM is ready.
+
+### swimDash_theme localStorage key
+'light' (default) or 'dark'. Set by applyTheme(). Read by the IIFE and init().
+Does not affect RAW data. Safe to clear independently.
+
+### --tab-active and --header-start/--header-end CSS variables
+Light: --tab-active: #4f86d8, --header-start: #1a56c4, --header-end: #0ea5d4
+Dark:  --tab-active: #3b82f6, --header-start: #0f172a, --header-end: #1e3a5f
+These variables replace hardcoded hex in .tab.active and .header background rules.

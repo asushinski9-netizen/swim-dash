@@ -22,6 +22,29 @@
   --text2: #334155;
   --text3: #64748b;
   --border: #cbd5e1;
+  --tab-active: #4f86d8;
+  --header-start: #1a56c4;
+  --header-end: #0ea5d4;
+}
+
+body.dark {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2236;
+  --surface3: #243049;
+  --accent: #3b82f6;
+  --accent2: #06b6d4;
+  --accent3: #8b5cf6;
+  --gold: #f59e0b;
+  --green: #10b981;
+  --red: #ef4444;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --border: #1e293b;
+  --tab-active: #3b82f6;
+  --header-start: #0f172a;
+  --header-end: #1e3a5f;
 }
 
 .split-detail-row {
@@ -44,7 +67,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 
 /* HEADER */
 .header {
-  background: linear-gradient(135deg, #1a56c4 0%, #1e6fd4 60%, #0ea5d4 100%);
+  background: linear-gradient(135deg, var(--header-start) 0%, var(--header-start) 60%, var(--header-end) 100%);
   border-bottom: none;
   padding: 14px 28px;
   display: flex; align-items: center; gap: 16px;
@@ -78,8 +101,8 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 }
 .tab:hover { background: var(--surface3); color: var(--text); border-color: var(--accent); }
 .tab.active {
-  background: #4f86d8;
-  color: white; border-color: #4f86d8;
+  background: var(--tab-active);
+  color: white; border-color: var(--tab-active);
   box-shadow: 0 2px 8px rgba(26,86,196,0.25);
 }
 
@@ -146,6 +169,17 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
   transition: transform 0.2s;
 }
 .fab-data:hover { transform: scale(1.08); color: var(--accent); }
+
+.fab-theme {
+  position: fixed; bottom: 152px; right: 24px; z-index: 200;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--surface); color: var(--text2); border: 1px solid var(--border);
+  font-size: 1.3rem; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.fab-theme:hover { transform: scale(1.08); color: var(--accent); }
 
 /* DEBUT badge */
 .badge.debut { background: rgba(26,86,196,0.12); color: var(--accent); font-size: 0.62rem; }
@@ -288,9 +322,9 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     color: var(--text2) !important;
   }
   .tab.active {
-    background: #4f86d8 !important;
+    background: var(--tab-active) !important;
     color: white !important;
-    border-color: #4f86d8 !important;
+    border-color: var(--tab-active) !important;
   }
   .tab:last-child { flex: 1 1 100% !important; }
 
@@ -398,6 +432,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   /* FAB position on mobile */
   .fab-add { bottom: 16px; right: 16px; width: 50px; height: 50px; font-size: 1.4rem; }
   .fab-data { bottom: 74px; right: 16px; width: 50px; height: 50px; font-size: 1.2rem; }
+  .fab-theme { bottom: 132px; right: 16px; width: 50px; height: 50px; font-size: 1.2rem; }
 
   /* 11. Results table — scale down on mobile for horizontal fit */
   #tab-results table { font-size: 0.65rem !important; }
@@ -848,6 +883,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 <!-- ADD RACE FAB -->
 <button class="fab-add" onclick="showAddRaceModal()" title="Add new race result">＋</button>
 <button class="fab-data" onclick="showDataModal()" title="Data Manager">⚙️</button>
+<button class="fab-theme" id="fabTheme" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
 
 <!-- ADD RACE MODAL -->
 <div id="addRaceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:998; align-items:center; justify-content:center; padding:16px;">
@@ -938,6 +974,38 @@ const cache = {};
 function invalidateCache() {
   Object.keys(cache).forEach(k => delete cache[k]);
   overviewRendered = false;
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function getCC() {
+  const dark = document.body.classList.contains('dark');
+  return {
+    grid:   dark ? '#1e293b' : '#cbd5e1',
+    tick:   dark ? '#64748b' : '#475569',
+    legend: dark ? '#94a3b8' : '#334155',
+  };
+}
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.body.classList.toggle('dark', isDark);
+  const btn = document.getElementById('fabTheme');
+  if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('swimDash_theme', theme);
+}
+
+function toggleTheme() {
+  const isDark = document.body.classList.contains('dark');
+  applyTheme(isDark ? 'light' : 'dark');
+  // Re-render all chart-bearing tabs so they pick up the new CC token colours
+  overviewRendered = false;
+  renderOverview();
+  renderProgression();
+  renderSplits();
+  renderQualifying();
+  renderRegionalQualifying();
 }
 
 // ============================================================
@@ -1130,17 +1198,24 @@ function uniqueEventsWithSplits() {
   return cache.uniqueEventsWithSplits;
 }
 
-const PALETTE = [
+const PALETTE_LIGHT = [
   '#1a56c4','#0891b2','#7c3aed','#059669','#d97706',
   '#dc2626','#db2777','#ea580c','#0d9488','#9333ea'
 ];
+const PALETTE_DARK = [
+  '#3b82f6','#06b6d4','#8b5cf6','#10b981','#f59e0b',
+  '#ef4444','#ec4899','#f97316','#14b8a6','#a855f7'
+];
+function getPalette() {
+  return document.body.classList.contains('dark') ? PALETTE_DARK : PALETTE_LIGHT;
+}
 
-// Chart colour tokens — matches CSS variables for light theme
-const CC = {
-  grid:   '#cbd5e1',
-  tick:   '#475569',
-  legend: '#334155',
-};
+// Chart colour tokens — dynamic so re-renders pick up theme changes
+function getCC() {
+  return document.body.classList.contains('dark')
+    ? { grid: '#1e293b', tick: '#64748b', legend: '#94a3b8' }
+    : { grid: '#cbd5e1', tick: '#475569', legend: '#334155' };
+}
 
 // ============================================================
 // MEMOISED DATA LOOKUPS
@@ -1279,6 +1354,7 @@ function populateSelects() {
 let overviewRendered = false;
 
 function renderOverview() {
+  const CC = getCC(); const PALETTE = getPalette();
   if (overviewRendered) return;
   // Header stats
   const meets = new Set(DATA.map(r => r.competition + '|' + r.date)).size;
@@ -1443,6 +1519,7 @@ function renderOverview() {
 // PROGRESSION TAB
 // ============================================================
 function renderProgression() {
+  const CC = getCC(); const PALETTE = getPalette();
   const eventFilter = document.getElementById('progEvent').value;
   const courseFilter = document.getElementById('progCourse').value;
   const pbOnly = document.getElementById('progPBOnly').value === '1';
@@ -1696,6 +1773,7 @@ function renderProgression() {
 // PERSONAL BESTS TAB
 // ============================================================
 function renderPBs() {
+  const CC = getCC(); const PALETTE = getPalette();
   const courseFilter = document.getElementById('pbCourse').value;
   const strokeFilter = document.getElementById('pbStroke').value;
   const compareMode = document.getElementById('pbCompare').value;
@@ -1757,6 +1835,7 @@ let splitBarChart = null;
 let paceChart = null;
 
 function renderSplits() {
+  const CC = getCC(); const PALETTE = getPalette();
   const eventFilter = document.getElementById('splitsEvent').value;
   const courseFilter = document.getElementById('splitsCourse').value;
   const splitDetail = document.getElementById('splitDetail');
@@ -1823,6 +1902,7 @@ function renderSplits() {
 }
 
 function renderSplitCharts(filtered, truePB) {
+  const CC = getCC(); const PALETTE = getPalette();
   // Ensure canvases exist in stable wrappers (may have been replaced by empty-state messages)
   const wrap = document.getElementById('splitBarChartWrap');
   if (!wrap.querySelector('canvas')) {
@@ -1921,6 +2001,7 @@ function renderSplitCharts(filtered, truePB) {
 }
 
 function analyzeSwim(index) {
+  const CC = getCC(); const PALETTE = getPalette();
   const swim = currentEventFiltered[index];
   if (!swim) return;
 
@@ -2137,6 +2218,7 @@ function updateSortHeaders() {
 }
 
 function renderResults() {
+  const CC = getCC(); const PALETTE = getPalette();
   const eventFilter  = document.getElementById('resEvent').value;
   const courseFilter = document.getElementById('resCourse').value;
   const venueFilter = document.getElementById('resVenue').value;
@@ -2212,6 +2294,7 @@ function renderResults() {
 // STAT CARD BUILDER — shared by County QT and Regional QT tabs
 // ============================================================
 function buildQtStatCards(matched, statsElId) {
+  const CC = getCC(); const PALETTE = getPalette();
   const qualified     = matched.filter(r => r.status === 'Qualified');
   const consideration = matched.filter(r => r.status === 'Consideration');
   const outside       = matched.filter(r => r.status === 'Outside');
@@ -2259,6 +2342,7 @@ function buildQtStatCards(matched, statsElId) {
 // Called by both renderQualifying() and renderRegionalQualifying()
 // ============================================================
 function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
+  const CC = getCC(); const PALETTE = getPalette();
   const statusColor = s =>
     s === 'Qualified' ? '#10b981' : s === 'Consideration' ? '#f59e0b' :
     s === 'Outside'   ? '#ef4444' : '#64748b';
@@ -2364,6 +2448,7 @@ function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
 // RENDER COUNTY QUALIFYING TAB
 // ============================================================
 function renderQualifying() {
+  const CC = getCC(); const PALETTE = getPalette();
   const gender = document.getElementById('qtGender').value;
   const age    = document.getElementById('qtAge').value;
   const course = document.getElementById('qtCourse').value;
@@ -2417,6 +2502,7 @@ function renderQualifying() {
 // RENDER REGIONAL QUALIFYING TAB (SE London)
 // ============================================================
 function renderRegionalQualifying() {
+  const CC = getCC(); const PALETTE = getPalette();
   if (!SE_QT_DATA.length) {
     document.getElementById('rqStats').innerHTML = '';
     document.getElementById('rqTableBody').innerHTML =
@@ -2483,6 +2569,10 @@ function showTab(name, target) {
 // INIT
 // ============================================================
 async function init() {
+  // Sync theme toggle button icon with saved theme
+  const savedTheme = localStorage.getItem('swimDash_theme') || 'light';
+  applyTheme(savedTheme);
+
   document.getElementById('hTotalRaces').textContent = '…';
   document.getElementById('hEvents').textContent     = '…';
   document.getElementById('hMeets').textContent      = '…';
@@ -2630,6 +2720,13 @@ function resetRegionalFilters() {
   renderRegionalQualifying();
 }
 
+
+// Apply body class immediately to avoid flash of wrong theme
+// Button icon is updated inside init() once DOM is ready
+(function() {
+  const saved = localStorage.getItem('swimDash_theme') || 'light';
+  if (saved === 'dark') document.body.classList.add('dark');
+})();
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
