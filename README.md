@@ -185,4 +185,4 @@ Public domain (no restrictions). Feel free to fork, modify, and redistribute.
 ---
 
 **Last Updated:** May 2026  
-**Version:** 13 (7-tab dashboard with AI coaching, full offline support, light/dark theme)
+**Version:** 23 (7-tab dashboard with AI coaching, full offline support, light/dark theme)
