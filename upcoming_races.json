@@ -1,0 +1,34 @@
+[
+    {
+        "date": "2026-05-16",
+        "competition": "The Claire Houchin Skills Development Meet",
+        "venue": "Watford",
+        "course": "S",
+        "events": [
+        { "event": "100 IM" },
+        { "event": "100 Breast" }
+    ]
+    },
+    {
+        "date": "2026-06-14",
+        "competition": "Hillingdon Swimming Club Summer Spectacular Meet 2026",
+        "venue": "Uxbridge",
+        "course": "S",
+        "events": [
+        { "event": "100 Back" },
+        { "event": "50 Breast" },
+        { "event": "100 Free" }
+        ]
+    },
+    {
+        "date": "2026-07-05",
+        "competition": "Putteridge End of Season Summer Open 2026",
+        "venue": "Luton",
+        "course": "S",
+        "events": [
+        { "event": "100 Free" },
+        { "event": "100 IM" },
+        { "event": "200 Back" }
+        ]
+    }
+]
