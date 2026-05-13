@@ -1,6 +1,37 @@
 # Session Log
 
-## v23 (latest)
+## v24.1 (latest)
+
+### New features (v24)
+- **Schedule tab (🗓️)**: Upcoming races from `upcoming_races.json`; one row per event.
+  - Columns: Date, Days Until, Competition (truncated), Venue, Course, Event, Current PB, County Status, County Gap, Regional Status, Regional Gap.
+  - 48-hour grace period — past meets drop off automatically.
+  - Footer note shows which age bracket was used for each competition.
+- **Targets tab (🎯)**: Two sections.
+  - Section 1 — PBs Due for Renewal: one row per event (fastest PB across all courses), flagged if older than configurable threshold (3/6/9/12 months). Columns: Event, Fastest PB, Course, Set date, Age, County Status, County Gap, Regional Status, Regional Gap, Upcoming Race, Status badge. Oldest PBs sort first.
+  - Section 2 — Events Not Yet Swum: all 18 standard events with no recorded result, displayed as a responsive flex card grid with stroke-colour-coded left borders. Shows next scheduled race if available.
+- **Swimmer Settings modal (👤 FAB)**: DOB and Gender stored in localStorage (`swimDash_DOB`, `swimDash_GENDER`). Saving re-syncs QT dropdowns and re-renders Schedule, Targets, QT tabs, and Overview.
+- **Auto age-bracket selection**: `getCountyAgeBracket()` and `getRegionalAgeBracket()` compute correct age bracket from DOB + championship last-day dates. Post-championship, next season's bracket is used automatically.
+- **Upcoming races data**: New `swimDash_UPCOMING` localStorage key; fetched from `UPCOMING_DATA_URL` on first load; uploadable via Data Manager (4th file slot).
+- **Overview expanded to 6 stat cards** (`.grid6`): added Upcoming Races (→ Schedule) and PBs to Renew (→ Targets, 6-month threshold).
+- **`renderQTCells(s)`**: Returns `[statusCell, gapCell]` pair for two-column QT layout. Gap logic: Outside → gap to CT; Consideration → gap to QT; Qualified → ✓. No inline font-size — inherits from table CSS for consistent mobile scaling.
+- **Competition column truncation**: 30 chars on desktop, 20 chars on mobile (`.comp-full` / `.comp-short` CSS classes).
+- **QT filter defaults** now call `resetQualifyingFilters()` / `resetRegionalFilters()` which use computed age brackets rather than hardcoded values.
+
+### Fixes (v24.1 rounds)
+- **Logo**: MIME type corrected from `image/png` to `image/jpeg`; spurious `fffd` byte before JPEG EOI stripped.
+- **Schedule stat cards removed**: four key-metric cards gone from Schedule tab (info is in QT tabs).
+- **"Upcoming Events" → "Upcoming Races"** on Overview stat card.
+- **PB column (Schedule)**: Now one line — `0:49.19 (S)` format.
+- **Schedule note**: Rewritten to `County QT: age X bracket · Regional QT: age X bracket. [season note if applicable].`
+- **Renewal note**: Identical wording added below Targets renewal table.
+- **Venue removed** from Targets upcoming race cell.
+- **Status badge font size (Targets)**: Replaced `<span class="badge">` (which carried its own `font-size: 0.62rem`) with a plain `<span>` that inherits table font at all breakpoints — fixes both desktop (too small) and mobile (too large) inconsistencies.
+- **Never-swum table** replaced with flex card grid for better desktop UX.
+- **`100 IM` added** to `ALL_EVENTS` and to the Add Race dropdown.
+- **All inline `font-size` removed** from `renderQTCells()` spans so mobile CSS `0.60rem !important` rule applies uniformly.
+
+## v23
 - Feature: Dark / light theme toggle
   - body.dark CSS class overrides all :root variables with dark equivalents
   - Two new CSS variables --tab-active and --header-start/--header-end so tab

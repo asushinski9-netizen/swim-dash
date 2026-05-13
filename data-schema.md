@@ -24,7 +24,7 @@
 
 ### Valid event strings
 50/100/200/400/800/1500 Free | 50/100/200 Back | 50/100/200 Breast
-50/100/200 Fly | 200/400 IM
+50/100/200 Fly | 100/200/400 IM
 
 ## Processed DATA row (after processData())
 Same as RAW plus:
@@ -50,16 +50,57 @@ Same as RAW plus:
 - age: "11/12","13","14","15","16","17","18+"
 - qualify/consider: always float, never null
 
+## Upcoming races entry (upcoming_races.json)
+```json
+{
+  "date": "2026-06-14",
+  "competition": "Hillingdon Swimming Club Summer Spectacular Meet 2026",
+  "venue": "Uxbridge",
+  "course": "S",
+  "events": [
+    { "event": "100 Back" },
+    { "event": "50 Breast" },
+    { "event": "100 Free" }
+  ]
+}
+```
+- date: ISO 8601, YYYY-MM-DD
+- course: "S" or "L" (matches RAW swim course codes)
+- events: array of { "event": "<event string>" } objects
+  Event strings must match the valid event strings above
+- Multiple meets are stored as an array of these objects
+
+### Upcoming races display logic
+- Meets are flattened into one row per event for the Schedule table
+- 48-hour grace period: meets with date < today-2 are excluded
+- daysUntil = ceil((meetDate - today) / 86400000); ≤0 shows "Today", 1 shows "Tomorrow"
+- upcomingMap (built in renderSchedule and renderTargets): { eventName: nearestFutureMeet }
+  Used to populate "Upcoming Race" cells in Schedule and Targets tabs
+
+## Swimmer profile (localStorage, v24)
+- swimDash_DOB: ISO 8601 date string, e.g. "2014-10-12"
+  Default (if not set): "2014-10-12"
+  Read by getSwimmerDOB()
+- swimDash_GENDER: "Boys" or "Girls"
+  Default (if not set): "Boys"
+  Read by getSwimmerGender()
+  Must match the gender field in county_qt.json and se_london_qt.json exactly
+
 ## Course code conversion
 RAW/DATA: "S"/"L" ↔ QT files: "Short Course"/"Long Course"
 Conversion: course === 'Short Course' ? 'S' : 'L'
 
 ## GitHub URLs
-RACE_DATA_URL:  .../asushinski9-netizen/swim-dash/main/my_swims.json
-QT_DATA_URL:    .../asushinski9-netizen/swim-dash/main/county_qt.json
-SE_QT_DATA_URL: .../asushinski9-netizen/swim-dash/main/se_london_qt.json
+RACE_DATA_URL:    .../asushinski9-netizen/swim-dash/main/my_swims.json
+QT_DATA_URL:      .../asushinski9-netizen/swim-dash/main/county_qt.json
+SE_QT_DATA_URL:   .../asushinski9-netizen/swim-dash/main/se_london_qt.json
+UPCOMING_DATA_URL:.../asushinski9-netizen/swim-dash/main/upcoming_races.json
 
-## localStorage authority
-swimDash_RAW    — USER AUTHORITATIVE (never overwritten by GitHub)
-swimDash_QT     — GitHub authoritative (re-fetched from GitHub if missing)
-swimDash_SE_QT  — GitHub authoritative (re-fetched from GitHub if missing)
+## localStorage keys
+swimDash_RAW      — USER AUTHORITATIVE (never overwritten by GitHub)
+swimDash_QT       — GitHub authoritative (re-fetched from GitHub if missing)
+swimDash_SE_QT    — GitHub authoritative (re-fetched from GitHub if missing)
+swimDash_UPCOMING — GitHub authoritative (re-fetched from GitHub if missing)
+swimDash_theme    — 'light' (default) or 'dark'. Set by applyTheme().
+swimDash_DOB      — Swimmer date of birth. Set by Settings modal.
+swimDash_GENDER   — Swimmer gender. Set by Settings modal.
