@@ -12,28 +12,20 @@
   "splits": [41.88, 46.55, 46.78, 40.47]
 }
 ```
-
-### Field rules
 - course: "S" = Short Course 25m, "L" = Long Course 50m
 - date: ISO 8601, YYYY-MM-DD
-- time: "mm:ss.hh" or "ss.hh" for sub-60s
-  Regex: /^(\d{1,2}:)?\d{1,2}\.\d{2}$/ — single-digit seconds allowed (e.g. 1:2.50)
-- splits: INDIVIDUAL LAP TIMES in seconds — NOT cumulative
-  Accepted formats in Add Race modal: plain seconds (41.88) or mm:ss.hh (1:45.32)
-  Parsed via timeToSec(); validated with !isFinite(s) || s <= 0
+- time: "mm:ss.hh" or "ss.hh". Regex: /^(\d{1,2}:)?\d{1,2}\.\d{2}$/
+- splits: INDIVIDUAL LAP TIMES in seconds (not cumulative). Parsed via timeToSec().
 
-### Valid event strings
+### Valid event strings (18 total)
 50/100/200/400/800/1500 Free | 50/100/200 Back | 50/100/200 Breast
 50/100/200 Fly | 100/200/400 IM
 
 ## Processed DATA row (after processData())
 Same as RAW plus:
-- timeInSec: number — total time in seconds
-- isPB: boolean — true only for the current fastest-ever swim of that event+course
-  (running minimum; exactly one swim per event+course has isPB=true at any time)
-- deltaPrev: number|null — seconds vs chronologically previous swim (negative = faster)
-  null = first chronological swim of that event+course
-  deltaPrev===null means debut only in Results tab context — see architecture.md
+- timeInSec: number
+- isPB: boolean — fastest at time of swimming (historical)
+- deltaPrev: number|null — seconds vs previous swim of same event+course
 
 ## County QT entry (county_qt.json)
 ```json
@@ -41,7 +33,7 @@ Same as RAW plus:
 ```
 - course: "Short Course"/"Long Course" (NOT "S"/"L")
 - age: "10+11","12","13","14","15","16","17+"
-- qualify/consider: float seconds; null for events not offered to 10+11 age group
+- qualify/consider: float seconds; null for events not offered to 10+11
 
 ## SE London Regional QT entry (se_london_qt.json)
 ```json
@@ -59,36 +51,23 @@ Same as RAW plus:
   "course": "S",
   "events": [
     { "event": "100 Back" },
-    { "event": "50 Breast" },
-    { "event": "100 Free" }
+    { "event": "50 Breast" }
   ]
 }
 ```
-- date: ISO 8601, YYYY-MM-DD
-- course: "S" or "L" (matches RAW swim course codes)
-- events: array of { "event": "<event string>" } objects
-  Event strings must match the valid event strings above
-- Multiple meets are stored as an array of these objects
-
-### Upcoming races display logic
-- Meets are flattened into one row per event for the Schedule table
+- course: "S" or "L"
+- events: array of { "event": "<event string>" }
+- Meets are flattened to one row per event in the Schedule table
 - 48-hour grace period: meets with date < today-2 are excluded
-- daysUntil = ceil((meetDate - today) / 86400000); ≤0 shows "Today", 1 shows "Tomorrow"
-- upcomingMap (built in renderSchedule and renderTargets): { eventName: nearestFutureMeet }
-  Used to populate "Upcoming Race" cells in Schedule and Targets tabs
+- upcomingMap: { eventName: nearestFutureMeet } built in renderSchedule/renderTargets
 
-## Swimmer profile (localStorage, v24)
-- swimDash_DOB: ISO 8601 date string, e.g. "2014-10-12"
-  Default (if not set): "2014-10-12"
-  Read by getSwimmerDOB()
-- swimDash_GENDER: "Boys" or "Girls"
-  Default (if not set): "Boys"
-  Read by getSwimmerGender()
-  Must match the gender field in county_qt.json and se_london_qt.json exactly
+## Swimmer profile (localStorage)
+- swimDash_DOB: ISO 8601 date, e.g. "2014-10-12". Default if unset.
+- swimDash_GENDER: "Boys" or "Girls". Must match QT JSON gender field exactly.
+Both read via getSwimmerDOB() / getSwimmerGender() — not module-level constants.
 
 ## Course code conversion
 RAW/DATA: "S"/"L" ↔ QT files: "Short Course"/"Long Course"
-Conversion: course === 'Short Course' ? 'S' : 'L'
 
 ## GitHub URLs
 RACE_DATA_URL:    .../asushinski9-netizen/swim-dash/main/my_swims.json
@@ -98,9 +77,9 @@ UPCOMING_DATA_URL:.../asushinski9-netizen/swim-dash/main/upcoming_races.json
 
 ## localStorage keys
 swimDash_RAW      — USER AUTHORITATIVE (never overwritten by GitHub)
-swimDash_QT       — GitHub authoritative (re-fetched from GitHub if missing)
-swimDash_SE_QT    — GitHub authoritative (re-fetched from GitHub if missing)
-swimDash_UPCOMING — GitHub authoritative (re-fetched from GitHub if missing)
-swimDash_theme    — 'light' (default) or 'dark'. Set by applyTheme().
-swimDash_DOB      — Swimmer date of birth. Set by Settings modal.
-swimDash_GENDER   — Swimmer gender. Set by Settings modal.
+swimDash_QT       — GitHub authoritative (re-fetched if missing)
+swimDash_SE_QT    — GitHub authoritative (re-fetched if missing)
+swimDash_UPCOMING — GitHub authoritative (re-fetched if missing)
+swimDash_theme    — 'light' or 'dark'
+swimDash_DOB      — Swimmer date of birth
+swimDash_GENDER   — Swimmer gender

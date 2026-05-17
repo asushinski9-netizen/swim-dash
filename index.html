@@ -143,47 +143,59 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .stat-label { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
 .stat-sub { font-size: 0.7rem; color: var(--text3); margin-top: 4px; }
 
-/* FABs */
-.fab-add {
-  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+/* ── Speed Dial FAB (v25) ──────────────────────────────────── */
+.fab-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 198;
+  background: rgba(0,0,0,0.35);
+}
+.fab-backdrop.open { display: block; }
+
+.fab-dial {
+  position: fixed; bottom: 24px; right: 24px; z-index: 199;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+}
+
+.fab-parent {
   width: 56px; height: 56px; border-radius: 50%;
   background: var(--accent); color: white; border: none;
-  font-size: 1.8rem; line-height: 1; cursor: pointer;
+  font-size: 1.8rem; cursor: pointer;
   box-shadow: 0 4px 16px rgba(26,86,196,0.4);
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.25s, box-shadow 0.25s, background 0.2s;
+  position: relative; z-index: 201;
 }
-.fab-add:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(26,86,196,0.5); }
-.fab-data {
-  position: fixed; bottom: 88px; right: 24px; z-index: 200;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--surface); color: var(--text2); border: 1px solid var(--border);
-  font-size: 1.3rem; cursor: pointer;
+.fab-parent:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(26,86,196,0.5); }
+.fab-parent.open { background: var(--text2); transform: rotate(45deg); }
+
+.fab-children {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+  pointer-events: none;
+}
+.fab-child-row {
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  margin-right: 4px;
+}
+.fab-child-row:nth-child(1) { transition-delay: 0.00s; }
+.fab-child-row:nth-child(2) { transition-delay: 0.05s; }
+.fab-child-row:nth-child(3) { transition-delay: 0.10s; }
+.fab-child-row:nth-child(4) { transition-delay: 0.15s; }
+.fab-children.open { pointer-events: auto; }
+.fab-children.open .fab-child-row { opacity: 1; transform: translateY(0); }
+
+.fab-child {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--surface); color: var(--text2);
+  border: 1px solid var(--border);
+  font-size: 1.2rem; cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s;
+  transition: transform 0.2s, color 0.2s;
 }
-.fab-data:hover { transform: scale(1.08); color: var(--accent); }
-.fab-theme {
-  position: fixed; bottom: 152px; right: 24px; z-index: 200;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--surface); color: var(--text2); border: 1px solid var(--border);
-  font-size: 1.3rem; cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s;
-}
-.fab-theme:hover { transform: scale(1.08); color: var(--accent); }
-.fab-settings {
-  position: fixed; bottom: 216px; right: 24px; z-index: 200;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--surface); color: var(--text2); border: 1px solid var(--border);
-  font-size: 1.3rem; cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s;
-}
-.fab-settings:hover { transform: scale(1.08); color: var(--accent); }
+.fab-child:hover { transform: scale(1.1); color: var(--accent); }
 
 /* DEBUT badge */
 .badge.debut { background: rgba(26,86,196,0.12); color: var(--accent); font-size: 0.62rem; }
@@ -335,10 +347,9 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-regional .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
   #tab-regional .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
 
-  .fab-add { bottom: 16px; right: 16px; width: 50px; height: 50px; font-size: 1.4rem; }
-  .fab-data { bottom: 74px; right: 16px; width: 50px; height: 50px; font-size: 1.2rem; }
-  .fab-theme { bottom: 132px; right: 16px; width: 50px; height: 50px; font-size: 1.2rem; }
-  .fab-settings { bottom: 190px; right: 16px; width: 50px; height: 50px; font-size: 1.2rem; }
+  .fab-dial { bottom: 16px; right: 16px; }
+  .fab-parent { width: 50px; height: 50px; font-size: 1.5rem; }
+  .fab-child { width: 44px; height: 44px; font-size: 1.1rem; }
 
 
   #tab-results table { font-size: 0.65rem !important; }
@@ -866,11 +877,25 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
 </div><!-- /container -->
 
-<!-- FABs -->
-<button class="fab-add" onclick="showAddRaceModal()" title="Add new race result">＋</button>
-<button class="fab-data" onclick="showDataModal()" title="Data Manager">⚙️</button>
-<button class="fab-theme" id="fabTheme" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
-<button class="fab-settings" id="fabSettings" onclick="showSettingsModal()" title="Swimmer settings">👤</button>
+<!-- Speed Dial FAB (v25) -->
+<div class="fab-backdrop" id="fabBackdrop" onclick="closeFabDial()"></div>
+<div class="fab-dial">
+  <div class="fab-children" id="fabChildren">
+    <div class="fab-child-row">
+  <button class="fab-child" id="fabSettings" onclick="showSettingsModal()" title="Swimmer settings">👤</button>
+    </div>
+    <div class="fab-child-row">
+  <button class="fab-child" id="fabTheme" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    </div>
+    <div class="fab-child-row">
+  <button class="fab-child" onclick="showDataModal()" title="Data Manager">⚙️</button>
+    </div>
+    <div class="fab-child-row">
+  <button class="fab-child" id="fabAddRace" onclick="showAddRaceModal()" title="Add new race result">⏱️</button>
+    </div>
+  </div>
+  <button class="fab-parent" id="fabParent" onclick="toggleFabDial()" title="Actions">＋</button>
+</div>
 
 <!-- ADD RACE MODAL -->
 <div id="addRaceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:998; align-items:center; justify-content:center; padding:16px;">
@@ -997,6 +1022,7 @@ function applyTheme(theme) {
 }
 
 function toggleTheme() {
+  closeFabDial();
   const isDark = document.body.classList.contains('dark');
   applyTheme(isDark ? 'light' : 'dark');
   overviewRendered = false;
@@ -1030,7 +1056,7 @@ function updateData(newRaw) {
 // ============================================================
 // DATA MANAGER MODAL
 // ============================================================
-function showDataModal() { document.getElementById('dataModal').style.display = 'flex'; }
+function showDataModal() { closeFabDial(); document.getElementById('dataModal').style.display = 'flex'; }
 function hideDataModal()  { document.getElementById('dataModal').style.display = 'none'; }
 
 function saveDataToBrowser() {
@@ -2705,6 +2731,7 @@ async function init() {
 // ADD RACE MODAL
 // ============================================================
 function showAddRaceModal() {
+  closeFabDial();
   document.getElementById('ar-date').value        = new Date().toISOString().slice(0, 10);
   document.getElementById('ar-error').style.display = 'none';
   document.getElementById('ar-time').value        = '';
@@ -2746,10 +2773,17 @@ function saveNewRace() {
   updateData(RAW);
   hideAddRaceModal();
 
-  const fab = document.querySelector('.fab-add');
-  fab.textContent = '✓';
-  fab.style.background = 'var(--green)';
-  setTimeout(() => { fab.textContent = '＋'; fab.style.background = ''; }, 2000);
+  const fabChild = document.getElementById('fabAddRace');
+  if (fabChild) {
+    fabChild.textContent = '✓';
+    fabChild.style.background = 'var(--green)';
+    fabChild.style.color = 'white';
+    setTimeout(() => {
+      fabChild.textContent = '⏱️';
+      fabChild.style.background = '';
+      fabChild.style.color = '';
+    }, 2000);
+  }
 }
 
 // ============================================================
@@ -2764,10 +2798,35 @@ function removeRace(date, event, course, time) {
 }
 
 
+
+// ============================================================
+// SPEED DIAL FAB (v25)
+// ============================================================
+let fabDialOpen = false;
+
+function toggleFabDial() {
+  fabDialOpen ? closeFabDial() : openFabDial();
+}
+
+function openFabDial() {
+  fabDialOpen = true;
+  document.getElementById('fabChildren').classList.add('open');
+  document.getElementById('fabParent').classList.add('open');
+  document.getElementById('fabBackdrop').classList.add('open');
+}
+
+function closeFabDial() {
+  fabDialOpen = false;
+  document.getElementById('fabChildren').classList.remove('open');
+  document.getElementById('fabParent').classList.remove('open');
+  document.getElementById('fabBackdrop').classList.remove('open');
+}
+
 // ============================================================
 // SETTINGS MODAL
 // ============================================================
 function showSettingsModal() {
+  closeFabDial();
   document.getElementById('cfg-dob').value    = getSwimmerDOB();
   document.getElementById('cfg-gender').value = getSwimmerGender();
   document.getElementById('settingsModal').style.display = 'flex';

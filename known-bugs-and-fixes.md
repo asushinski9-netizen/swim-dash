@@ -22,48 +22,41 @@
 ### AI Coach tagged historical PBs as Current PB (v20.2) — getPBs().includes(swim)
 ### resetResultsFilters sorted oldest-first after reset (v20.2) — fixed to sortDir=-1
 
-### Overview "PBs this year" and "Recent PBs" included historical isPB swims (v21)
-isPB is set by processData() for every swim that was fastest at time of swimming, including
-ones since beaten. Fixed: both now use getPBs() which returns only the current fastest swim
-per event+course.
+### Overview "PBs this year" / "Recent PBs" used isPB not getPBs() (v21)
+Fixed: both now use getPBs() which returns only the current fastest per event+course.
 
-### processData sort unstable for same-date same-event SC/LC (v21)
-Fixed: added course.localeCompare as tiebreaker → stable: same date + same event + S before L.
+### processData sort unstable for same-date SC/LC (v21)
+Fixed: course.localeCompare tiebreaker — S always before L.
 
-### Doughnut chart border was dark navy (v21)
+### Doughnut chart border dark navy (v21)
 Fixed to '#ffffff'.
 
-### User-supplied strings unescaped in innerHTML (v21)
-Fixed: escapeHtml() applied everywhere.
+### User-supplied strings unescaped in innerHTML (v21/v22)
+Fixed: escapeHtml() applied to competition, venue everywhere.
 
-### Missing escapeHtml in renderPBs (v21.1 / v22)
-pb.venue fixed.
-
-### uniqueEventsWithSplits sort non-deterministic (v22)
-localeCompare tiebreaker added.
-
-### Progress bar scale too coarse (v22)
-Updated to impPct * 12.5 so 8% fills the bar.
-
-### Logo MIME type mismatch (v24.1)
-The embedded image data is a JPEG but the src attribute said `data:image/png;base64`.
-Fixed to `data:image/jpeg;base64`. Additionally a spurious `fffd` byte (JPEG COM marker)
-had been introduced before the EOI `ffd9` marker during a prior repair attempt; stripped
-by scanning backward to the last clean ffd9.
+### Logo MIME type mismatch + base64 corruption (v24.1)
+The embedded image data was a JPEG but src said data:image/png.
+Additionally a spurious fffd byte was introduced during a repair attempt.
+Final fix: removed all embedded base64; replaced with GitHub raw URL:
+  src="https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/bpsc_logo.png"
+onerror hides the element gracefully if offline.
 
 ### Status badge font size inconsistency in Targets renewal table (v24.1)
-The ⏰ Renew status used `<span class="badge">` which carries `font-size: 0.62rem` via
-CSS. This made it too small on desktop and immune to the mobile `0.60rem !important`
-override. Replaced with a plain `<span>` using only colour/padding inline styles so
-font-size inherits from the table at all breakpoints.
+badge class carries font-size:0.62rem overriding table CSS.
+Fixed: plain span with colour/padding only; font-size inherits from table.
 
 ### renderQTCells() inline font-size overrode mobile table scaling (v24.1)
-All `font-size:0.8rem` inline styles removed from renderQTCells() spans.
-The function now returns clean spans that inherit from the table's CSS rule.
+All font-size:0.8rem inline styles removed. Spans inherit from table CSS.
 
 ### 100 IM missing from ALL_EVENTS and Add Race dropdown (v24.1)
-Added to both. Full event list now: 50/100/200/400/800/1500 Free,
+Added to both. Full list now: 50/100/200/400/800/1500 Free,
 50/100/200 Back, 50/100/200 Breast, 50/100/200 Fly, 100/200/400 IM.
+
+### Confirmation flash on wrong element (v25)
+Was targeting .fab-add (the old parent button). Moved to #fabAddRace child button.
+
+### Four stacked FABs cluttering screen (v25)
+Replaced with Speed Dial: single ➕ parent, four child actions fan upward on tap.
 
 
 ## WATCH-OUT AREAS
@@ -75,36 +68,23 @@ Added to both. Full event list now: 50/100/200/400/800/1500 Free,
 | getPBs().includes(swim)  | Swim is the current fastest ever       | "Is this the PB right now?"       |
 
 ### Debut detection — four contexts
-| Context                  | Method                                                    | Reason                          |
-|--------------------------|-----------------------------------------------------------|---------------------------------|
-| Results Δ Prev           | r.deltaPrev === null                                      | First chronological swim        |
-| Overview Recent PBs      | swimCount === 1                                           | Only swim ever for event+course |
-| Progression Improv / BvF | swims===1 || !refSwim || (ref===pb && mode!='latest')     | No meaningful reference         |
-| Splits analyzeSwim       | prevPB===null (date filtered)                             | No earlier swim with splits     |
-
-### refSwim===pb guard is mode-aware (v20.1)
-latest mode: refSwim===pb → "PB is latest" (normal case).
-first/prevSwim/prevBest modes: refSwim===pb → Debut (backdated first+fastest).
+| Context                  | Method                                                |
+|--------------------------|-------------------------------------------------------|
+| Results Δ Prev           | r.deltaPrev === null                                  |
+| Overview Recent PBs      | swimCount === 1                                       |
+| Progression Improv / BvF | swims===1 || !refSwim || (ref===pb && mode!='latest') |
+| Splits analyzeSwim       | prevPB===null (date filtered)                         |
 
 ### processData sort order (v21)
 Stable: date ASC → event name ASC → course ASC (S before L).
-deltaPrev and isPB calculations depend on this order being deterministic.
+deltaPrev and isPB depend on this order.
 
-### escapeHtml must be applied to ALL user-supplied strings in innerHTML (v21)
-competition, venue from RAW; any future RAW fields rendered into HTML need escaping.
-Event and course are dropdown-constrained and safe.
+### escapeHtml must be applied to ALL user-supplied strings in innerHTML
+competition, venue from RAW. Any new RAW field rendered into HTML needs escaping.
+Event and course are dropdown-constrained — safe without escaping.
 
-### analyzeSwim prevPB filters by swim.course
-Ensures SC and LC PBs are always separate benchmarks regardless of the tab's course filter.
-
-### init() data priority
-1. RAW: localStorage → GitHub fallback → modal
-2. QT / SE_QT / UPCOMING: localStorage → GitHub fetch if any are missing
-
-### updateData() does NOT call renderSplits(), renderSchedule(), or renderTargets()
-renderSplits() is omitted by design (no full re-render needed on data change).
-renderSchedule() and renderTargets() depend on UPCOMING which only changes via
-file upload/page reload, not via RAW data edits.
+### updateData() does NOT call renderSplits(), renderSchedule(), renderTargets()
+renderSchedule/renderTargets depend on UPCOMING which only changes via upload/reload.
 
 ### split validation: !isFinite not isNaN
 ### fmtDate/fmtDateShort: always use parseLocalDate()
@@ -114,48 +94,42 @@ file upload/page reload, not via RAW data edits.
 ### progChartWrap restoration: querySelector → restore → destroyChart → create/replace
 ### removeRace: first findIndex match on date+event+course+time
 ### Pacing Profile Y-axis: reverse:true intentional
-### Time Progression: last in HTML source — no CSS ordering rules needed
 
-### getCC() and getPalette() must be called inside render functions, not at module level (v23)
-Every render function that uses chart colours must inject at its top:
+### getCC() and getPalette() must be called inside render functions (v23)
+Never at module level. Every chart render function injects at top:
   const CC = getCC(); const PALETTE = getPalette();
-DO NOT use module-level constants — they evaluate once and miss theme changes.
 
-### toggleTheme() re-renders chart tabs but does NOT call processData()
-DATA is unchanged when theme switches. toggleTheme() calls:
-renderOverview(), renderProgression(), renderSplits(), renderQualifying(), renderRegionalQualifying()
-Does NOT call renderPBs(), renderResults(), renderSchedule(), renderTargets().
-
-### swimDash_DOB and swimDash_GENDER (v24)
-Read by getSwimmerDOB() and getSwimmerGender(). NOT module-level constants.
-Default values applied if localStorage keys are absent.
-saveSettings() persists them and re-renders all affected tabs.
+### getSwimmerDOB() / getSwimmerGender() (v24)
+NOT constants — functions that read localStorage. Do not cache at module level.
+saveSettings() persists and re-renders all affected tabs.
 
 ### getCountyAgeBracket() / getRegionalAgeBracket() (v24)
-Called at render time — do not cache at module level. They depend on getSwimmerDOB()
-which reads from localStorage and may change between renders (after saveSettings()).
+Called at render time — not cacheable. Depend on getSwimmerDOB() which may change.
 
 ### renderQTCells() — no inline font-size (v24.1)
-Returns [statusCell, gapCell] pair. Both cells must NOT have inline font-size so
-the mobile CSS font-size override applies uniformly across all table cells.
-Gap logic: Outside → CT gap; Consideration → QT gap; Qualified → ✓ check.
+Returns [statusCell, gapCell]. No font-size on spans — mobile table CSS must apply.
+Gap: Outside → CT gap; Consideration → QT gap; Qualified → ✓.
 
-### ALL_EVENTS list (v24.1)
-Must match Add Race modal dropdown options exactly.
-Current list (18 events): 50/100/200/400/800/1500 Free, 50/100/200 Back,
-50/100/200 Breast, 50/100/200 Fly, 100/200/400 IM.
-If a new event is added to either list, update BOTH.
+### ALL_EVENTS list must stay in sync with Add Race dropdown (v24.1)
+Current: 50/100/200/400/800/1500 Free, 50/100/200 Back, 50/100/200 Breast,
+50/100/200 Fly, 100/200/400 IM (18 events total).
 
-### Competition column truncation (v24)
-Uses .comp-full (30 chars, desktop) and .comp-short (20 chars, mobile) CSS classes.
-Both are rendered as adjacent <span> elements in each schedule table row.
-The CSS display:none/inline swap happens at the 500px breakpoint.
+### Speed Dial FAB — closeFabDial() must be called first (v25)
+Every function that opens a modal or triggers a UI action must call closeFabDial()
+at its very top. Currently: showAddRaceModal, showDataModal, showSettingsModal,
+toggleTheme. Any new action added to the dial must follow the same pattern.
+
+### fabTheme id must stay on the child button (v25)
+applyTheme() uses document.getElementById('fabTheme') to sync the 🌙/☀️ icon.
+Do not remove or rename this id.
+
+### Logo (v24.1+)
+Loaded via GitHub raw URL — not embedded. Works online; hidden gracefully offline.
+Do not re-embed as base64 without fixing MIME type (must be image/jpeg not image/png)
+and verifying the full JPEG is intact using Pillow before encoding.
 
 ### Upcoming races 48-hour grace period
-cutoff = today - 2 days. Meets before cutoff are excluded in both renderSchedule()
-and renderTargets(). This prevents stale meets from appearing for ~48hrs after they occur.
+cutoff = today - 2 days. Applied in both renderSchedule() and renderTargets().
 
-### Logo (v24.1)
-Embedded as data:image/jpeg;base64 (NOT image/png).
-Data is a valid 180x180 JPEG: starts ffd8, ends ffd9, no intermediate fffd bytes.
-Logo is fetched at runtime — works when online, hidden gracefully (onerror) when offline.
+### Competition column truncation (v24)
+.comp-full (30 chars desktop) / .comp-short (20 chars mobile). Adjacent spans in each row.
