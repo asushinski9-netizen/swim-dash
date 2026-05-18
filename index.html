@@ -183,6 +183,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .fab-child-row:nth-child(2) { transition-delay: 0.05s; }
 .fab-child-row:nth-child(3) { transition-delay: 0.10s; }
 .fab-child-row:nth-child(4) { transition-delay: 0.15s; }
+.fab-child-row:nth-child(5) { transition-delay: 0.20s; }
 .fab-children.open { pointer-events: auto; }
 .fab-children.open .fab-child-row { opacity: 1; transform: translateY(0); }
 
@@ -294,6 +295,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 /* Competition column: full text on desktop, truncated on mobile */
 .comp-short { display: none; }
 .comp-full  { display: inline; }
+
 /* --- MOBILE OPTIMIZATIONS --- */
 @media (max-width: 500px) {
   .container { padding: 12px 8px !important; overflow-x: hidden; }
@@ -303,7 +305,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   .hstat-val { font-size: 1.1rem !important; }
   .hstat-label { font-size: 0.65rem !important; }
 
-  /* 9 tabs: 4 rows of 2 + 1 full width */
   .tabs { flex-wrap: wrap !important; background: transparent !important; }
   .tab {
     flex: 1 1 45% !important;
@@ -351,7 +352,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   .fab-parent { width: 50px; height: 50px; font-size: 1.5rem; }
   .fab-child { width: 44px; height: 44px; font-size: 1.1rem; }
 
-
   #tab-results table { font-size: 0.65rem !important; }
   #tab-results th, #tab-results td { padding: 6px 5px !important; white-space: nowrap; }
   #tab-results .badge { padding: 1px 4px !important; font-size: 0.55rem !important; }
@@ -374,6 +374,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-schedule .tbl-wrap table { font-size: 0.60rem !important; }
   #tab-schedule .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
   #tab-schedule .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-schedule .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
 
   /* Targets table */
   #tab-targets .tbl-wrap table { font-size: 0.60rem !important; }
@@ -425,6 +426,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     </div>
     <button class="btn" style="width:100%" onclick="saveDataToBrowser()">💾 Save to Browser</button>
     <button class="btn sec" style="width:100%; margin-top:8px;" onclick="downloadRaceData()">⬇️ Download my_swims.json</button>
+    <button class="btn sec" style="width:100%; margin-top:8px;" onclick="downloadUpcomingData()">⬇️ Download upcoming_races.json</button>
     <button class="btn sec" style="width:100%; margin-top:8px; border-color:var(--red); color:var(--red);" onclick="resetDashboard()">🗑️ Reset Dashboard</button>
     <div style="margin-top:15px; font-size:0.75rem; color:var(--text3); text-align:center;">
       Data is stored in your browser's local storage on this device only.
@@ -813,6 +815,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
               <th>County Gap</th>
               <th>Regional Status</th>
               <th>Regional Gap</th>
+              <th style="cursor:default;color:var(--text3)">Del</th>
             </tr>
           </thead>
           <tbody id="scheduleBody"></tbody>
@@ -877,52 +880,52 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
 </div><!-- /container -->
 
-<!-- Speed Dial FAB (v25) -->
+<!-- Speed Dial FAB (v26: 5 children) -->
 <div class="fab-backdrop" id="fabBackdrop" onclick="closeFabDial()"></div>
 <div class="fab-dial">
   <div class="fab-children" id="fabChildren">
+    <!-- Top (5th) -->
     <div class="fab-child-row">
-  <button class="fab-child" id="fabSettings" onclick="showSettingsModal()" title="Swimmer settings">👤</button>
+      <button class="fab-child" id="fabSettings" onclick="showSettingsModal()" title="Swimmer settings">👤</button>
     </div>
+    <!-- 4th -->
     <div class="fab-child-row">
-  <button class="fab-child" id="fabTheme" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      <button class="fab-child" id="fabTheme" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     </div>
+    <!-- 3rd -->
     <div class="fab-child-row">
-  <button class="fab-child" onclick="showDataModal()" title="Data Manager">⚙️</button>
+      <button class="fab-child" onclick="showDataModal()" title="Data Manager">⚙️</button>
     </div>
+    <!-- 2nd — NEW: Add Upcoming Race -->
     <div class="fab-child-row">
-  <button class="fab-child" id="fabAddRace" onclick="showAddRaceModal()" title="Add new race result">⏱️</button>
+      <button class="fab-child" id="fabAddUpcoming" onclick="showAddUpcomingModal()" title="Add upcoming race">📅</button>
+    </div>
+    <!-- 1st (closest to thumb) -->
+    <div class="fab-child-row">
+      <button class="fab-child" id="fabAddRace" onclick="showAddRaceModal()" title="Add new race result">⏱️</button>
     </div>
   </div>
   <button class="fab-parent" id="fabParent" onclick="toggleFabDial()" title="Actions">＋</button>
 </div>
 
-<!-- ADD RACE MODAL -->
+<!-- ADD RACE MODAL (v26: multi-event) -->
 <div id="addRaceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:998; align-items:center; justify-content:center; padding:16px;">
   <div class="card" style="width:520px; max-width:100%; max-height:90vh; overflow-y:auto; background:var(--surface);">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
       <h2 style="font-size:1.1rem; font-weight:700; color:var(--text);">➕ Add Race Result</h2>
       <button class="btn sec" style="min-width:auto; padding:4px 10px;" onclick="hideAddRaceModal()">✕</button>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+
+    <!-- Shared fields -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
       <div class="fg" style="grid-column:1/span 2;">
         <label class="fl" for="ar-date">Date</label>
         <input type="date" id="ar-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
       </div>
       <div class="fg">
-        <label class="fl" for="ar-event">Event</label>
-        <select id="ar-event" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
-          <option value="50 Free">50 Free</option><option value="100 Free">100 Free</option>
-          <option value="200 Free">200 Free</option><option value="400 Free">400 Free</option>
-          <option value="800 Free">800 Free</option><option value="1500 Free">1500 Free</option>
-          <option value="50 Back">50 Back</option><option value="100 Back">100 Back</option>
-          <option value="200 Back" selected>200 Back</option>
-          <option value="50 Breast">50 Breast</option><option value="100 Breast">100 Breast</option>
-          <option value="200 Breast">200 Breast</option>
-          <option value="50 Fly">50 Fly</option><option value="100 Fly">100 Fly</option>
-          <option value="200 Fly">200 Fly</option>
-          <option value="100 IM">100 IM</option><option value="200 IM">200 IM</option><option value="400 IM">400 IM</option>
-        </select>
+        <label class="fl" for="ar-venue">Venue</label>
+        <input type="text" id="ar-venue" placeholder="e.g. Watford"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
       </div>
       <div class="fg">
         <label class="fl" for="ar-course">Course</label>
@@ -931,36 +934,114 @@ tr:hover td { background: var(--surface2); color: var(--text); }
           <option value="L">Long Course (50m)</option>
         </select>
       </div>
-      <div class="fg">
-        <label class="fl" for="ar-time">Time (mm:ss.hh or ss.hh)</label>
-        <input type="text" id="ar-time" placeholder="e.g. 2:55.68 or 38.10"
-          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
-      </div>
-      <div class="fg">
-        <label class="fl" for="ar-venue">Venue</label>
-        <input type="text" id="ar-venue" placeholder="e.g. Watford"
-          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
-      </div>
       <div class="fg" style="grid-column:1/span 2;">
         <label class="fl" for="ar-competition">Competition Name</label>
         <input type="text" id="ar-competition" placeholder="e.g. Watford SC County Qualifier 2025"
           style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
       </div>
-      <div class="fg" style="grid-column:1/span 2;">
-        <label class="fl" for="ar-splits">Splits — individual lap times in seconds, comma-separated (optional)</label>
-        <input type="text" id="ar-splits" placeholder="e.g. 41.88, 46.55, 46.78, 40.47"
-          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
-      </div>
     </div>
+
+    <!-- Per-event rows -->
+    <div class="fl" style="margin-bottom:8px;">Events</div>
+    <div id="ar-events-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;"></div>
+    <button type="button" onclick="addRaceEventRow()"
+      style="background:none;border:1px dashed var(--border);color:var(--accent);border-radius:8px;padding:8px;width:100%;cursor:pointer;font-size:0.83rem;">
+      ＋ Add another event
+    </button>
+
     <div id="ar-error" style="display:none;margin-top:12px;padding:10px;background:rgba(220,38,38,0.1);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:0.82rem;"></div>
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn sec" style="flex:1;" onclick="hideAddRaceModal()">Cancel</button>
       <button class="btn" style="flex:2;" onclick="saveNewRace()">💾 Save Race</button>
     </div>
     <div style="margin-top:12px;font-size:0.72rem;color:var(--text3);text-align:center;">
-      Data is stored in your browser's local storage on this device only.<br>
-      Use ⚙️ → ⬇️ Download to save permanently.
+      For multi-day meets, add results separately per day.<br>
+      Data is stored in your browser's local storage only. Use ⚙️ → ⬇️ Download to save permanently.
     </div>
+  </div>
+</div>
+
+<!-- ADD UPCOMING RACE MODAL -->
+<div id="addUpcomingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:998; align-items:center; justify-content:center; padding:16px;">
+  <div class="card" style="width:560px; max-width:100%; max-height:90vh; overflow-y:auto; background:var(--surface);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 style="font-size:1.1rem; font-weight:700; color:var(--text);">📅 Add Upcoming Race</h2>
+      <button class="btn sec" style="min-width:auto; padding:4px 10px;" onclick="hideAddUpcomingModal()">✕</button>
+    </div>
+
+    <!-- Shared meet fields -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+      <div class="fg" style="grid-column:1/span 2;">
+        <label class="fl" for="au-date">Date</label>
+        <input type="date" id="au-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+      <div class="fg" style="grid-column:1/span 2;">
+        <label class="fl" for="au-competition">Competition Name</label>
+        <input type="text" id="au-competition" placeholder="e.g. Hillingdon SC Summer Spectacular 2026"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+      <div class="fg">
+        <label class="fl" for="au-venue">Venue</label>
+        <input type="text" id="au-venue" placeholder="e.g. Uxbridge"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+      </div>
+      <div class="fg">
+        <label class="fl" for="au-course">Course</label>
+        <select id="au-course" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
+          <option value="S">Short Course (25m)</option>
+          <option value="L">Long Course (50m)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Per-event rows -->
+    <div class="fl" style="margin-bottom:8px;">Events</div>
+    <div id="au-events-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+    <button type="button" onclick="addUpcomingEventRow()"
+      style="background:none;border:1px dashed var(--border);color:var(--accent);border-radius:8px;padding:8px;width:100%;cursor:pointer;font-size:0.83rem;">
+      ＋ Add another event
+    </button>
+
+    <div id="au-error" style="display:none;margin-top:12px;padding:10px;background:rgba(220,38,38,0.1);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:0.82rem;"></div>
+
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn sec" style="flex:1;" onclick="hideAddUpcomingModal()">Cancel</button>
+      <button class="btn" style="flex:2;" onclick="saveNewUpcoming()">💾 Save</button>
+    </div>
+    <div style="margin-top:12px;font-size:0.72rem;color:var(--text3);text-align:center;">
+      For multi-day meets, add a separate entry per day.<br>
+      Data is stored in your browser's local storage only. Use ⚙️ → ⬇️ Download to save permanently.
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+  <div class="card" style="width:380px; max-width:92%; background:var(--surface);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 style="font-size:1.1rem; font-weight:700; color:var(--text);">👤 Swimmer Settings</h2>
+      <button class="btn sec" style="min-width:auto; padding:4px 10px;" onclick="hideSettingsModal()">✕</button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div class="fg">
+        <label class="fl" for="cfg-dob">Date of Birth</label>
+        <input type="date" id="cfg-dob" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
+        <span style="font-size:0.7rem;color:var(--text3);margin-top:2px;">Used to auto-select your age bracket in County &amp; Regional QT tabs, and in Schedule &amp; Targets.</span>
+      </div>
+      <div class="fg">
+        <label class="fl" for="cfg-gender">Gender</label>
+        <select id="cfg-gender" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+        </select>
+        <span style="font-size:0.7rem;color:var(--text3);margin-top:2px;">Matches the gender field in the qualifying time data.</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn sec" style="flex:1;" onclick="hideSettingsModal()">Cancel</button>
+      <button class="btn" style="flex:2;" onclick="saveSettings()">💾 Save Settings</button>
+    </div>
+    <div style="margin-top:12px;font-size:0.72rem;color:var(--text3);text-align:center;">Settings are stored in your browser's local storage.</div>
   </div>
 </div>
 
@@ -971,22 +1052,19 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 const RACE_DATA_URL   = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json';
 const QT_DATA_URL     = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/county_qt.json';
 const SE_QT_DATA_URL  = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/se_london_qt.json';
+const UPCOMING_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/upcoming_races.json';
+
+// Championship last days — used to compute age brackets
+const COUNTY_CHAMPS_DATE   = '2026-02-15';
+const REGIONAL_CHAMPS_DATE = '2026-05-04';
+
+// v26: Season configuration
+const SEASON_START_MONTH = 9; // September (1-indexed)
 
 // ── Swimmer profile ──────────────────────────────────────────
-// Read from localStorage so they can be overridden via the Settings modal
 function getSwimmerDOB()    { return localStorage.getItem('swimDash_DOB')    || '2014-10-12'; }
 function getSwimmerGender() { return localStorage.getItem('swimDash_GENDER') || 'Boys'; }
-// Convenience aliases used throughout the codebase
 const getSwimmerProfile = () => ({ dob: getSwimmerDOB(), gender: getSwimmerGender() });
-
-// ── Championship last days ───────────────────────────────────
-// Used to determine which season's age bracket applies.
-// Once a championship date has passed, the NEXT season's bracket is used.
-const COUNTY_CHAMPS_DATE   = '2026-02-15'; // Last day of Middlesex County Champs
-const REGIONAL_CHAMPS_DATE = '2026-05-04'; // Last day of SE London Regional Champs
-
-// ── Upcoming races ───────────────────────────────────────────
-const UPCOMING_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/upcoming_races.json';
 
 // ============================================================
 // DATA GLOBALS
@@ -997,7 +1075,6 @@ let SE_QT_DATA= JSON.parse(localStorage.getItem('swimDash_SE_QT'))    || [];
 let UPCOMING  = JSON.parse(localStorage.getItem('swimDash_UPCOMING')) || [];
 let DATA = [];
 
-// Cache for expensive computed lookups — invalidated on each data load
 const cache = {};
 function invalidateCache() {
   Object.keys(cache).forEach(k => delete cache[k]);
@@ -1050,7 +1127,7 @@ function updateData(newRaw) {
   renderRegionalQualifying();
   updateSortHeaders();
   // NOTE: renderSchedule() and renderTargets() NOT called here —
-  // they depend on UPCOMING which only changes via file upload
+  // they depend on UPCOMING which only changes via file upload or removeUpcomingEvent
 }
 
 // ============================================================
@@ -1108,6 +1185,16 @@ function downloadRaceData() {
   URL.revokeObjectURL(url);
 }
 
+// v26: Download current in-memory UPCOMING data
+function downloadUpcomingData() {
+  const json = JSON.stringify(UPCOMING, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'upcoming_races.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -1137,20 +1224,36 @@ function parseLocalDate(d) {
   return new Date(y, m - 1, day);
 }
 
-// Returns swimmer's age at 31 December of a given year
+function fmtDate(d) {
+  return parseLocalDate(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function fmtDateShort(d) {
+  return parseLocalDate(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+}
+
+function getStroke(event) {
+  if (event.includes('Free'))   return 'Free';
+  if (event.includes('Back'))   return 'Back';
+  if (event.includes('Breast')) return 'Breast';
+  if (event.includes('Fly'))    return 'Fly';
+  if (event.includes('IM'))     return 'IM';
+  return 'Other';
+}
+
+function getDistance(event) { return parseInt(event.split(' ')[0]); }
+
+// ── Age & season helpers ─────────────────────────────────────
 function getAgeAtEndOfYear(year) {
   return year - parseLocalDate(getSwimmerDOB()).getFullYear();
 }
 
-// Returns the QT season year for a given championship's last day.
-// If the championship has already passed, next year's bracket applies.
 function getQTSeasonYear(champDateStr) {
   return new Date() > parseLocalDate(champDateStr)
     ? parseLocalDate(champDateStr).getFullYear() + 1
     : parseLocalDate(champDateStr).getFullYear();
 }
 
-// Returns the county QT age bracket string for the current season
 function getCountyAgeBracket() {
   const age = getAgeAtEndOfYear(getQTSeasonYear(COUNTY_CHAMPS_DATE));
   if (age <= 11) return '10+11';
@@ -1158,7 +1261,6 @@ function getCountyAgeBracket() {
   return String(age);
 }
 
-// Returns the SE London regional QT age bracket string for the current season
 function getRegionalAgeBracket() {
   const age = getAgeAtEndOfYear(getQTSeasonYear(REGIONAL_CHAMPS_DATE));
   if (age <= 12) return '11/12';
@@ -1166,15 +1268,24 @@ function getRegionalAgeBracket() {
   return String(age);
 }
 
-// Returns QT status for a given event, course ('S'/'L'), and PB time in seconds.
+// v26: Returns the Date for the start of the current swim season (Sept 1).
+function getSeasonStart() {
+  const now = new Date();
+  const year = now.getMonth() + 1 >= SEASON_START_MONTH
+    ? now.getFullYear()
+    : now.getFullYear() - 1;
+  return new Date(year, SEASON_START_MONTH - 1, 1);
+}
+
+// ── QT Status helpers ─────────────────────────────────────────
 function getQTStatusForEvent(event, course, pbSec) {
   const qtCourse = course === 'S' ? 'Short Course' : 'Long Course';
 
   const lookupStatus = (qtData, ageBracket) => {
     const qt = qtData.find(r =>
       r.gender === getSwimmerGender() &&
-      r.age    === ageBracket     &&
-      r.course === qtCourse       &&
+      r.age    === ageBracket         &&
+      r.course === qtCourse           &&
       r.event  === event
     );
     if (!qt) return { status: 'No Data', qualify: null, consider: null, gapQ: null, gapC: null };
@@ -1188,14 +1299,11 @@ function getQTStatusForEvent(event, course, pbSec) {
   };
 
   return {
-    county:   lookupStatus(QT_DATA,     getCountyAgeBracket()),
-    regional: lookupStatus(SE_QT_DATA,  getRegionalAgeBracket()),
+    county:   lookupStatus(QT_DATA,    getCountyAgeBracket()),
+    regional: lookupStatus(SE_QT_DATA, getRegionalAgeBracket()),
   };
 }
 
-// Helper: render a QT status table cell with colour and gap info
-// Returns [statusCell, gapCell] as separate strings for two-column layout
-// No inline font-size — inherits from table CSS so mobile scaling works correctly
 function renderQTCells(s) {
   if (s.status === 'No Data') {
     return ['<span style="color:var(--text3)">—</span>',
@@ -1217,25 +1325,6 @@ function renderQTCells(s) {
   }
   return [statusCell, gapCell];
 }
-
-function fmtDate(d) {
-  return parseLocalDate(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function fmtDateShort(d) {
-  return parseLocalDate(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
-}
-
-function getStroke(event) {
-  if (event.includes('Free'))   return 'Free';
-  if (event.includes('Back'))   return 'Back';
-  if (event.includes('Breast')) return 'Breast';
-  if (event.includes('Fly'))    return 'Fly';
-  if (event.includes('IM'))     return 'IM';
-  return 'Other';
-}
-
-function getDistance(event) { return parseInt(event.split(' ')[0]); }
 
 // ============================================================
 // PROCESS DATA
@@ -1369,6 +1458,34 @@ function getSwimCounts() {
 }
 
 // ============================================================
+// v26: Best Season Improvement
+// ============================================================
+function getBestSeasonImprovement() {
+  const seasonStart    = getSeasonStart();
+  const seasonStartStr = seasonStart.toISOString().slice(0, 10);
+  let best = null; // { improvement, event, course }
+
+  const keys = [...new Set(DATA.map(r => r.event + '|' + r.course))];
+  keys.forEach(key => {
+    const [event, course] = key.split('|');
+    // All swims this season, sorted chronologically (DATA is already sorted)
+    const seasonSwims = DATA.filter(r =>
+      r.event === event && r.course === course && r.date >= seasonStartStr
+    );
+    if (seasonSwims.length < 2) return; // need at least 2 swims this season
+    const firstOfSeason = seasonSwims[0];
+    const currentPB = getPBs().find(p => p.event === event && p.course === course);
+    if (!currentPB) return;
+    const improvement = firstOfSeason.timeInSec - currentPB.timeInSec;
+    if (improvement <= 0) return; // no improvement
+    if (!best || improvement > best.improvement) {
+      best = { improvement, event, course };
+    }
+  });
+  return best;
+}
+
+// ============================================================
 // FILTER RESET HELPERS
 // ============================================================
 function resetProgressionFilters() {
@@ -1425,7 +1542,7 @@ function populateSelects() {
 }
 
 // ============================================================
-// OVERVIEW TAB
+// OVERVIEW TAB (v26: all cards interactive, "Events" → "Best Improvement")
 // ============================================================
 let overviewRendered = false;
 
@@ -1450,7 +1567,6 @@ function renderOverview() {
   const currentYearStart = `${new Date().getFullYear()}-01-01`;
   const pbsThisYear    = pbs.filter(r => r.date >= currentYearStart).length;
   const withSplits     = DATA.filter(r => r.splits.length > 0).length;
-  const events         = uniqueEvents().length;
 
   // Upcoming events count (48hr grace period)
   const upcomingCount = (() => {
@@ -1459,7 +1575,7 @@ function renderOverview() {
       parseLocalDate(m.date) >= cutoff ? n + m.events.length : n, 0);
   })();
 
-  // PBs older than 6 months (using fastest per event across courses)
+  // PBs older than 6 months
   const renewalCount = (() => {
     const threshold = new Date(); threshold.setMonth(threshold.getMonth() - 6);
     const eventBestMap = {};
@@ -1472,26 +1588,34 @@ function renderOverview() {
     ).length;
   })();
 
+  // v26: Best Season Improvement
+  const seasonBest      = getBestSeasonImprovement();
+  const seasonBestVal   = seasonBest ? `▼ ${seasonBest.improvement.toFixed(1)}s` : '—';
+  const seasonBestSub   = seasonBest
+    ? `${seasonBest.event} (${seasonBest.course === 'S' ? 'SC' : 'LC'})`
+    : 'This season';
+  const seasonBestColor = seasonBest ? 'var(--green)' : 'var(--text3)';
+
   document.getElementById('overviewStats').innerHTML = `
-    <div class="stat-card">
+    <div class="stat-card" onclick="showTab('results', document.querySelector('[onclick*=results]'))" style="cursor:pointer">
       <div class="stat-icon">🏊</div>
       <div class="stat-val" style="color:var(--accent2)">${DATA.length}</div>
       <div class="stat-label">Total Races</div>
       <div class="stat-sub">${scCount} SC · ${lcCount} LC</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="showTab('pbs', document.querySelector('[onclick*=pbs]'))" style="cursor:pointer">
       <div class="stat-icon">🏆</div>
       <div class="stat-val" style="color:var(--gold)">${pbs.length}</div>
       <div class="stat-label">Current PBs</div>
       <div class="stat-sub">${pbsThisYear} set in ${new Date().getFullYear()}+</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">🎯</div>
-      <div class="stat-val" style="color:var(--accent3)">${events}</div>
-      <div class="stat-label">Events</div>
-      <div class="stat-sub">Across ${uniqueVenues().length} venues</div>
+    <div class="stat-card" onclick="showTab('progression', document.querySelector('[onclick*=progression]'))" style="cursor:pointer">
+      <div class="stat-icon">📈</div>
+      <div class="stat-val" style="color:${seasonBestColor}">${seasonBestVal}</div>
+      <div class="stat-label">Best Improvement</div>
+      <div class="stat-sub">${seasonBestSub}</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="showTab('splits', document.querySelector('[onclick*=splits]'))" style="cursor:pointer">
       <div class="stat-icon">⚡</div>
       <div class="stat-val" style="color:var(--green)">${withSplits}</div>
       <div class="stat-label">Races with Splits</div>
@@ -1763,7 +1887,7 @@ function renderProgression() {
     const refSwim  = refSwims[key];
     const swims    = swimCounts[pb.event + '|' + pb.course] || 1;
     const imp      = refSwim ? refSwim.timeInSec - pb.timeInSec : 0;
-    const isSelfRefBvF     = refSwim === pb;
+    const isSelfRefBvF      = refSwim === pb;
     const isGenuineDebutBvF = swims === 1 || !refSwim || (isSelfRefBvF && compareMode !== 'latest');
 
     let deltaCell = '';
@@ -1854,7 +1978,6 @@ function renderSplits() {
 
   if (filtered.length === 0) { splitDetail.innerHTML = '<div class="empty">No split data found for this selection.</div>'; return; }
 
-  const latest      = filtered[filtered.length - 1];
   const courseLabel = courseFilter === 'S' ? 'SC' : courseFilter === 'L' ? 'LC' : 'SC/LC';
   document.getElementById('splitChartTitle').textContent = `⚡ Split Comparison — ${eventFilter} (${courseLabel})`;
 
@@ -2067,7 +2190,7 @@ function analyzeSwim(index) {
   const courseDisplay = swim.course === 'S' ? 'SC' : 'LC';
   const isCurrentPB  = getPBs().includes(swim);
   let statusLabel = '';
-  if (isDebut)       statusLabel = `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>`;
+  if (isDebut)          statusLabel = `<span class="badge" style="background:var(--gold); color:#000; font-size:0.65rem;">🚀 DEBUT</span>`;
   else if (isCurrentPB) statusLabel = `<span class="badge pb" style="background:var(--green); color:white; font-size:0.65rem;">⭐ CURRENT PB</span>`;
 
   aiContent.innerHTML = `
@@ -2239,10 +2362,10 @@ function buildQtStatCards(matched, statsElId) {
 // ============================================================
 function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
   const CC = getCC();
-  const statusColor   = s => s === 'Qualified' ? '#10b981' : s === 'Consideration' ? '#f59e0b' : s === 'Outside' ? '#ef4444' : '#64748b';
-  const statusBg      = s => s === 'Qualified' ? 'rgba(16,185,129,0.85)' : s === 'Consideration' ? 'rgba(245,158,11,0.85)' : s === 'Outside' ? 'rgba(239,68,68,0.85)' : 'rgba(100,116,139,0.4)';
-  const statusBgBorder= s => statusBg(s).replace('0.85','1').replace('0.4','0.8');
-  const statusIcon    = s => s === 'Qualified' ? '✅' : s === 'Consideration' ? '🔶' : s === 'Outside' ? '❌' : '—';
+  const statusColor    = s => s === 'Qualified' ? '#10b981' : s === 'Consideration' ? '#f59e0b' : s === 'Outside' ? '#ef4444' : '#64748b';
+  const statusBg       = s => s === 'Qualified' ? 'rgba(16,185,129,0.85)' : s === 'Consideration' ? 'rgba(245,158,11,0.85)' : s === 'Outside' ? 'rgba(239,68,68,0.85)' : 'rgba(100,116,139,0.4)';
+  const statusBgBorder = s => statusBg(s).replace('0.85','1').replace('0.4','0.8');
+  const statusIcon     = s => s === 'Qualified' ? '✅' : s === 'Consideration' ? '🔶' : s === 'Outside' ? '❌' : '—';
 
   if (!matched.length) {
     destroyChart(chartId);
@@ -2424,17 +2547,33 @@ function renderRegionalQualifying() {
 }
 
 // ============================================================
-// SCHEDULE TAB
+// SCHEDULE TAB (v26: hide swum events + delete button)
 // ============================================================
+
+// v26: Build set of upcoming event keys that have already been swum
+function buildSwumUpcomingSet(upcomingRows) {
+  const swumSet = new Set();
+  upcomingRows.forEach(r => {
+    const upcomingDate = parseLocalDate(r.date);
+    const match = DATA.find(swim =>
+      swim.event  === r.event &&
+      swim.course === r.course &&
+      Math.abs(parseLocalDate(swim.date) - upcomingDate) <= 86400000 // 1 day in ms
+    );
+    if (match) swumSet.add(r.date + '|' + r.event + '|' + r.course);
+  });
+  return swumSet;
+}
+
 function renderSchedule() {
   const today  = new Date();
   const cutoff = new Date(today); cutoff.setDate(cutoff.getDate() - 2);
 
-  // Flatten UPCOMING into one row per event, suppress past entries
+  // Flatten UPCOMING into one row per event, suppress past entries (48hr grace)
   const rows = [];
   UPCOMING.forEach(meet => {
     const meetDate = parseLocalDate(meet.date);
-    if (meetDate < cutoff) return; // 48hr grace period
+    if (meetDate < cutoff) return;
     meet.events.forEach(e => {
       const pb       = getPBs().find(p => p.event === e.event && p.course === meet.course) || null;
       const pbSec    = pb ? pb.timeInSec : null;
@@ -2446,47 +2585,54 @@ function renderSchedule() {
 
   rows.sort((a, b) => a.meetDate - b.meetDate);
 
+  // v26: Filter out already-swum events
+  const swumSet    = buildSwumUpcomingSet(rows);
+  const visibleRows = rows.filter(r => !swumSet.has(r.date + '|' + r.event + '|' + r.course));
+  const hiddenCount = rows.length - visibleRows.length;
+  const hiddenNote  = hiddenCount > 0
+    ? ` · ${hiddenCount} event${hiddenCount > 1 ? 's' : ''} hidden (already in results)`
+    : '';
 
-  if (rows.length === 0) {
+  if (visibleRows.length === 0) {
     document.getElementById('scheduleBody').innerHTML =
-      `<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--text3)">
-        No upcoming races. Upload upcoming_races.json via ⚙️ Data Manager.
+      `<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--text3)">
+        No upcoming races. Upload upcoming_races.json via ⚙️ Data Manager or add one via 📅.
       </td></tr>`;
-    document.getElementById('scheduleNote').textContent = '';
-    return;
+  } else {
+    document.getElementById('scheduleBody').innerHTML = visibleRows.map(r => {
+      const pbStr = r.pb
+        ? `<span class="tc" style="color:var(--gold)">${r.pb.time} (${r.pb.course})</span>`
+        : '<span style="color:var(--text3)">—</span>';
+
+      const daysStr = r.daysUntil <= 0
+        ? '<span style="color:var(--gold);font-weight:600">Today</span>'
+        : r.daysUntil === 1
+          ? '<span style="color:var(--accent)">Tomorrow</span>'
+          : `<span style="color:var(--text2)">in ${r.daysUntil}d</span>`;
+
+      const [ctyStatus, ctyGap] = renderQTCells(r.qtStatus.county);
+      const [rgnStatus, rgnGap] = renderQTCells(r.qtStatus.regional);
+      const compFull  = escapeHtml(r.competition.length > 30 ? r.competition.slice(0, 30) + '…' : r.competition);
+      const compShort = escapeHtml(r.competition.length > 20 ? r.competition.slice(0, 20) + '…' : r.competition);
+
+      return `<tr>
+        <td style="color:var(--text)">${fmtDate(r.date)}</td>
+        <td>${daysStr}</td>
+        <td style="color:var(--text2)"><span class="comp-full">${compFull}</span><span class="comp-short">${compShort}</span></td>
+        <td style="color:var(--text2)">${escapeHtml(r.venue)}</td>
+        <td><span class="badge ${r.course}">${r.course}</span></td>
+        <td style="font-weight:600;color:var(--text)">${r.event}</td>
+        <td>${pbStr}</td>
+        <td>${ctyStatus}</td>
+        <td>${ctyGap}</td>
+        <td>${rgnStatus}</td>
+        <td>${rgnGap}</td>
+        <td><button onclick="removeUpcomingEvent('${r.date}','${r.event}','${r.course}')"
+          style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px;"
+          title="Remove this upcoming event">✕</button></td>
+      </tr>`;
+    }).join('');
   }
-
-  document.getElementById('scheduleBody').innerHTML = rows.map(r => {
-    const pbStr = r.pb
-      ? `<span class="tc" style="color:var(--gold)">${r.pb.time} (${r.pb.course})</span>`
-      : '<span style="color:var(--text3)">—</span>';
-
-    const daysStr = r.daysUntil <= 0
-      ? '<span style="color:var(--gold);font-weight:600">Today</span>'
-      : r.daysUntil === 1
-        ? '<span style="color:var(--accent)">Tomorrow</span>'
-        : `<span style="color:var(--text2)">in ${r.daysUntil}d</span>`;
-
-    const [ctyStatus, ctyGap] = renderQTCells(r.qtStatus.county);
-    const [rgnStatus, rgnGap] = renderQTCells(r.qtStatus.regional);
-    // Competition: full on desktop, truncated to 20 chars on mobile via CSS class
-    const compFull  = escapeHtml(r.competition.length > 30 ? r.competition.slice(0, 30) + '…' : r.competition);
-    const compShort = escapeHtml(r.competition.length > 20 ? r.competition.slice(0, 20) + '…' : r.competition);
-
-    return `<tr>
-      <td style="color:var(--text)">${fmtDate(r.date)}</td>
-      <td>${daysStr}</td>
-      <td style="color:var(--text2)"><span class="comp-full">${compFull}</span><span class="comp-short">${compShort}</span></td>
-      <td style="color:var(--text2)">${escapeHtml(r.venue)}</td>
-      <td><span class="badge ${r.course}">${r.course}</span></td>
-      <td style="font-weight:600;color:var(--text)">${r.event}</td>
-      <td>${pbStr}</td>
-      <td>${ctyStatus}</td>
-      <td>${ctyGap}</td>
-      <td>${rgnStatus}</td>
-      <td>${rgnGap}</td>
-    </tr>`;
-  }).join('');
 
   const countyAge   = getCountyAgeBracket();
   const regionalAge = getRegionalAgeBracket();
@@ -2497,7 +2643,7 @@ function renderSchedule() {
     ? ` ${nextYear} season standards not yet published — using ${chamsYear} times.`
     : '';
   document.getElementById('scheduleNote').textContent =
-    `County QT: age ${countyAge} bracket · Regional QT: age ${regionalAge} bracket.${seasonNote}`;
+    `County QT: age ${countyAge} bracket · Regional QT: age ${regionalAge} bracket.${seasonNote}${hiddenNote}`;
 }
 
 // ============================================================
@@ -2508,14 +2654,12 @@ function renderTargets() {
   const threshold = new Date();
   threshold.setMonth(threshold.getMonth() - months);
 
-  // Build map of event → fastest PB across all courses
   const eventBestMap = {};
   getPBs().forEach(pb => {
     if (!eventBestMap[pb.event] || pb.timeInSec < eventBestMap[pb.event].timeInSec)
       eventBestMap[pb.event] = pb;
   });
 
-  // Collect all events offered in QT for current brackets
   const countyAge   = getCountyAgeBracket();
   const regionalAge = getRegionalAgeBracket();
   const offeredEvents = new Set([
@@ -2528,7 +2672,6 @@ function renderTargets() {
     ).map(r => r.event),
   ]);
 
-  // Upcoming race lookup (48hr grace)
   const today  = new Date();
   const cutoff = new Date(today); cutoff.setDate(cutoff.getDate() - 2);
   const upcomingMap = {};
@@ -2540,16 +2683,15 @@ function renderTargets() {
     });
   });
 
-  // Section 1: Renewal — offered events with PB older than threshold
   const renewalRows = [];
   offeredEvents.forEach(event => {
     const best = eventBestMap[event];
-    if (!best) return; // no PB → goes to Section 2
+    if (!best) return;
     const pbDate = parseLocalDate(best.date);
-    if (pbDate >= threshold) return; // recent enough
+    if (pbDate >= threshold) return;
     renewalRows.push(best);
   });
-  renewalRows.sort((a, b) => a.date.localeCompare(b.date)); // oldest first = highest urgency
+  renewalRows.sort((a, b) => a.date.localeCompare(b.date));
 
   document.getElementById('renewalBody').innerHTML = renewalRows.length === 0
     ? `<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--green)">
@@ -2580,20 +2722,14 @@ function renderTargets() {
         </tr>`;
       }).join('');
 
-  // Section 2: All standard events not yet swum (no QT filter)
   const ALL_EVENTS = [
-    // Freestyle
     '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
-    // Backstroke
     '50 Back','100 Back','200 Back',
-    // Breaststroke
     '50 Breast','100 Breast','200 Breast',
-    // Butterfly
     '50 Fly','100 Fly','200 Fly',
-    // Individual Medley
     '100 IM','200 IM','400 IM'
   ];
-  const swumEvents   = new Set(DATA.map(r => r.event));
+  const swumEvents    = new Set(DATA.map(r => r.event));
   const neverSwumRows = ALL_EVENTS.filter(event => !swumEvents.has(event));
 
   document.getElementById('neverSwumBody').innerHTML = neverSwumRows.length === 0
@@ -2619,14 +2755,12 @@ function renderTargets() {
         </div>`;
       }).join('');
 
-  // Renewal note — mirrors schedule tab wording
   const rCountyAge   = getCountyAgeBracket();
   const rRegionalAge = getRegionalAgeBracket();
   const rChamsYear   = parseLocalDate(COUNTY_CHAMPS_DATE).getFullYear();
-  const rNextYear    = rChamsYear + 1;
   const rIsPast      = new Date() > parseLocalDate(COUNTY_CHAMPS_DATE);
   const rSeasonNote  = rIsPast
-    ? ` ${rNextYear} season standards not yet published — using ${rChamsYear} times.`
+    ? ` ${rChamsYear + 1} season standards not yet published — using ${rChamsYear} times.`
     : '';
   const noteEl = document.getElementById('renewalNote');
   if (noteEl) noteEl.textContent =
@@ -2672,7 +2806,6 @@ async function init() {
 
   if (localRaw) RAW = JSON.parse(localRaw);
 
-  // Fetch QT + UPCOMING data from GitHub if not cached
   if (!localQt || !localSeQt || !localUpcoming) {
     try {
       const fetches = [];
@@ -2681,9 +2814,9 @@ async function init() {
       if (!localUpcoming) fetches.push(fetch(UPCOMING_DATA_URL).then(r => r.ok ? r.json() : null));
       const results = await Promise.all(fetches);
       let ri = 0;
-      if (!localQt)       { QT_DATA    = results[ri++] || []; localStorage.setItem('swimDash_QT',        JSON.stringify(QT_DATA)); }
-      if (!localSeQt)     { SE_QT_DATA = results[ri++] || []; localStorage.setItem('swimDash_SE_QT',     JSON.stringify(SE_QT_DATA)); }
-      if (!localUpcoming) { UPCOMING   = results[ri++] || []; localStorage.setItem('swimDash_UPCOMING',  JSON.stringify(UPCOMING)); }
+      if (!localQt)       { QT_DATA    = results[ri++] || []; localStorage.setItem('swimDash_QT',       JSON.stringify(QT_DATA)); }
+      if (!localSeQt)     { SE_QT_DATA = results[ri++] || []; localStorage.setItem('swimDash_SE_QT',    JSON.stringify(SE_QT_DATA)); }
+      if (!localUpcoming) { UPCOMING   = results[ri++] || []; localStorage.setItem('swimDash_UPCOMING', JSON.stringify(UPCOMING)); }
     } catch (err) {
       console.warn('Remote fetch failed:', err);
     }
@@ -2693,7 +2826,6 @@ async function init() {
     UPCOMING   = JSON.parse(localUpcoming);
   }
 
-  // Fetch RAW from GitHub if not in localStorage
   if (!localRaw) {
     try {
       const raceRes = await fetch(RACE_DATA_URL);
@@ -2709,7 +2841,6 @@ async function init() {
     }
   }
 
-  // Auto-set QT dropdowns to computed age brackets
   resetQualifyingFilters();
   resetRegionalFilters();
 
@@ -2728,19 +2859,60 @@ async function init() {
 }
 
 // ============================================================
-// ADD RACE MODAL
+// ADD RACE MODAL (v26: multi-event)
 // ============================================================
 function showAddRaceModal() {
   closeFabDial();
   document.getElementById('ar-date').value        = new Date().toISOString().slice(0, 10);
-  document.getElementById('ar-error').style.display = 'none';
-  document.getElementById('ar-time').value        = '';
   document.getElementById('ar-venue').value       = '';
   document.getElementById('ar-competition').value = '';
-  document.getElementById('ar-splits').value      = '';
+  document.getElementById('ar-course').value      = 'S';
+  document.getElementById('ar-error').style.display = 'none';
+  document.getElementById('ar-events-list').innerHTML = '';
+  addRaceEventRow(); // start with one blank row
   document.getElementById('addRaceModal').style.display = 'flex';
 }
+
 function hideAddRaceModal() { document.getElementById('addRaceModal').style.display = 'none'; }
+
+function addRaceEventRow() {
+  const list = document.getElementById('ar-events-list');
+  if (list.children.length >= 6) return;
+
+  const ALL_EVENT_OPTIONS = [
+    '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
+    '50 Back','100 Back','200 Back',
+    '50 Breast','100 Breast','200 Breast',
+    '50 Fly','100 Fly','200 Fly',
+    '100 IM','200 IM','400 IM'
+  ];
+
+  const row = document.createElement('div');
+  row.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;position:relative;';
+  row.innerHTML = `
+    <button type="button" onclick="this.closest('div').remove()"
+      style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px;"
+      title="Remove this event">✕</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg">
+        <label class="fl">Event</label>
+        <select class="ar-event-select" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:0.83rem;width:100%;-webkit-appearance:none;appearance:none;">
+          ${ALL_EVENT_OPTIONS.map(e => `<option value="${e}">${e}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Time (mm:ss.hh or ss.hh)</label>
+        <input type="text" class="ar-time-input" placeholder="e.g. 2:55.68"
+          style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:0.83rem;width:100%;">
+      </div>
+      <div class="fg" style="grid-column:1/span 2;">
+        <label class="fl">Splits — individual lap times, comma-separated (optional)</label>
+        <input type="text" class="ar-splits-input" placeholder="e.g. 41.88, 46.55, 46.78, 40.47"
+          style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:0.83rem;width:100%;">
+      </div>
+    </div>`;
+  list.appendChild(row);
+}
 
 function saveNewRace() {
   const errEl = document.getElementById('ar-error');
@@ -2748,28 +2920,43 @@ function saveNewRace() {
   const showError = msg => { errEl.textContent = msg; errEl.style.display = 'block'; };
 
   const date        = document.getElementById('ar-date').value.trim();
-  const event       = document.getElementById('ar-event').value;
-  const course      = document.getElementById('ar-course').value;
-  const timeStr     = document.getElementById('ar-time').value.trim();
   const venue       = document.getElementById('ar-venue').value.trim() || 'Unknown';
   const competition = document.getElementById('ar-competition').value.trim() || 'Unknown Meet';
-  const splitsRaw   = document.getElementById('ar-splits').value.trim();
+  const course      = document.getElementById('ar-course').value;
 
-  if (!date)    { showError('Please enter a date.'); return; }
-  if (!timeStr) { showError('Please enter a time (e.g. 2:55.68 or 38.10).'); return; }
-  if (!/^(\d{1,2}:)?\d{1,2}\.\d{2}$/.test(timeStr)) {
-    showError('Time must be mm:ss.hh (e.g. 2:55.68) or ss.hh (e.g. 38.10).'); return;
-  }
+  if (!date) { showError('Please enter a date.'); return; }
 
-  let splits = [];
-  if (splitsRaw) {
-    splits = splitsRaw.split(',').map(s => timeToSec(s.trim()));
-    if (splits.some(s => !isFinite(s) || s <= 0)) {
-      showError('Splits must be valid comma-separated times in seconds (e.g. 41.88, 46.55) or mm:ss.hh format (e.g. 1:45.32).'); return;
+  const eventRows = document.getElementById('ar-events-list').children;
+  if (eventRows.length === 0) { showError('Please add at least one event.'); return; }
+
+  const newEntries = [];
+  for (const row of eventRows) {
+    const event     = row.querySelector('.ar-event-select').value;
+    const timeStr   = row.querySelector('.ar-time-input').value.trim();
+    const splitsRaw = row.querySelector('.ar-splits-input').value.trim();
+
+    if (!timeStr) { showError(`Please enter a time for ${event}.`); return; }
+    if (!/^(\d{1,2}:)?\d{1,2}\.\d{2}$/.test(timeStr)) {
+      showError(`Invalid time format for ${event}. Use mm:ss.hh or ss.hh.`); return;
     }
+
+    let splits = [];
+    if (splitsRaw) {
+      splits = splitsRaw.split(',').map(s => timeToSec(s.trim()));
+      if (splits.some(s => !isFinite(s) || s <= 0)) {
+        showError(`Invalid splits for ${event}. Use seconds (41.88) or mm:ss.hh.`); return;
+      }
+    }
+    newEntries.push({ course, event, date, competition, venue, time: timeStr, splits });
   }
 
-  RAW.push({ course, event, date, competition, venue, time: timeStr, splits });
+  // Check for duplicate event entries in this batch
+  const eventKeys = newEntries.map(e => e.event);
+  if (new Set(eventKeys).size !== eventKeys.length) {
+    showError('Duplicate events detected. Each event should appear only once per entry.'); return;
+  }
+
+  newEntries.forEach(entry => RAW.push(entry));
   updateData(RAW);
   hideAddRaceModal();
 
@@ -2797,7 +2984,23 @@ function removeRace(date, event, course, time) {
   updateData(RAW);
 }
 
+// ============================================================
+// v26: REMOVE UPCOMING EVENT
+// ============================================================
+function removeUpcomingEvent(date, event, course) {
+  if (!confirm(`Remove ${event} (${course}) on ${fmtDate(date)} from upcoming schedule?\n\nTo make this permanent, download upcoming_races.json from the Data Manager and push to GitHub.`)) return;
 
+  for (let i = 0; i < UPCOMING.length; i++) {
+    if (UPCOMING[i].date === date && UPCOMING[i].course === course) {
+      UPCOMING[i].events = UPCOMING[i].events.filter(e => e.event !== event);
+      if (UPCOMING[i].events.length === 0) UPCOMING.splice(i, 1);
+      break;
+    }
+  }
+  localStorage.setItem('swimDash_UPCOMING', JSON.stringify(UPCOMING));
+  renderSchedule();
+  renderTargets();
+}
 
 // ============================================================
 // SPEED DIAL FAB (v25)
@@ -2843,17 +3046,120 @@ function saveSettings() {
   localStorage.setItem('swimDash_DOB',    dob);
   localStorage.setItem('swimDash_GENDER', gender);
   hideSettingsModal();
-  // Re-sync QT dropdowns and re-render affected tabs
   resetQualifyingFilters();
   resetRegionalFilters();
   renderQualifying();
   renderRegionalQualifying();
   renderSchedule();
   renderTargets();
-  // Reset overview so the "PBs to Renew" stat refreshes
   overviewRendered = false;
   renderOverview();
 }
+
+// ============================================================
+// ADD UPCOMING RACE MODAL (v26)
+// ============================================================
+function showAddUpcomingModal() {
+  closeFabDial();
+  document.getElementById('au-date').value        = new Date().toISOString().slice(0, 10);
+  document.getElementById('au-competition').value = '';
+  document.getElementById('au-venue').value       = '';
+  document.getElementById('au-course').value      = 'S';
+  document.getElementById('au-error').style.display = 'none';
+  document.getElementById('au-events-list').innerHTML = '';
+  addUpcomingEventRow();
+  document.getElementById('addUpcomingModal').style.display = 'flex';
+}
+
+function hideAddUpcomingModal() {
+  document.getElementById('addUpcomingModal').style.display = 'none';
+}
+
+function addUpcomingEventRow() {
+  const list     = document.getElementById('au-events-list');
+  const rowCount = list.children.length;
+  if (rowCount >= 6) return;
+
+  const ALL_EVENT_OPTIONS = [
+    '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
+    '50 Back','100 Back','200 Back',
+    '50 Breast','100 Breast','200 Breast',
+    '50 Fly','100 Fly','200 Fly',
+    '100 IM','200 IM','400 IM'
+  ];
+
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  row.innerHTML = `
+    <select style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.83rem;-webkit-appearance:none;appearance:none;">
+      ${ALL_EVENT_OPTIONS.map(e => `<option value="${e}">${e}</option>`).join('')}
+    </select>
+    <button type="button" onclick="this.parentElement.remove()"
+      style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1.1rem;padding:4px 8px;flex-shrink:0;"
+      title="Remove this event">✕</button>`;
+  list.appendChild(row);
+}
+
+function saveNewUpcoming() {
+  const errEl = document.getElementById('au-error');
+  errEl.style.display = 'none';
+  const showError = msg => { errEl.textContent = msg; errEl.style.display = 'block'; };
+
+  const date        = document.getElementById('au-date').value.trim();
+  const competition = document.getElementById('au-competition').value.trim();
+  const venue       = document.getElementById('au-venue').value.trim();
+  const course      = document.getElementById('au-course').value;
+
+  if (!date)        { showError('Please enter a date.');             return; }
+  if (!competition) { showError('Please enter a competition name.'); return; }
+  if (!venue)       { showError('Please enter a venue.');            return; }
+
+  const rows   = document.getElementById('au-events-list').children;
+  const events = [];
+  for (const row of rows) {
+    const select = row.querySelector('select');
+    if (select && select.value) events.push({ event: select.value });
+  }
+  if (events.length === 0) { showError('Please add at least one event.'); return; }
+
+  const eventNames = events.map(e => e.event);
+  if (new Set(eventNames).size !== eventNames.length) {
+    showError('Duplicate events detected. Each event should appear only once per entry.'); return;
+  }
+
+  const existingMeet = UPCOMING.find(m => m.date === date && m.course === course);
+  if (existingMeet) {
+    const existingEventNames = existingMeet.events.map(e => e.event);
+    const newEvents = events.filter(e => !existingEventNames.includes(e.event));
+    if (newEvents.length === 0) {
+      showError('All these events already exist for this date and course.'); return;
+    }
+    existingMeet.events.push(...newEvents);
+    if (!existingMeet.competition) existingMeet.competition = competition;
+    if (!existingMeet.venue)       existingMeet.venue       = venue;
+  } else {
+    UPCOMING.push({ date, competition, venue, course, events });
+    UPCOMING.sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  localStorage.setItem('swimDash_UPCOMING', JSON.stringify(UPCOMING));
+  hideAddUpcomingModal();
+  renderSchedule();
+  renderTargets();
+
+  const fabChild = document.getElementById('fabAddUpcoming');
+  if (fabChild) {
+    fabChild.textContent = '✓';
+    fabChild.style.background = 'var(--green)';
+    fabChild.style.color = 'white';
+    setTimeout(() => {
+      fabChild.textContent = '📅';
+      fabChild.style.background = '';
+      fabChild.style.color = '';
+    }, 2000);
+  }
+}
+
 // Apply theme immediately to avoid flash before DOMContentLoaded
 (function() {
   const saved = localStorage.getItem('swimDash_theme') || 'light';
@@ -2862,35 +3168,5 @@ function saveSettings() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
-
-<!-- SETTINGS MODAL -->
-<div id="settingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
-  <div class="card" style="width:380px; max-width:92%; background:var(--surface);">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <h2 style="font-size:1.1rem; font-weight:700; color:var(--text);">👤 Swimmer Settings</h2>
-      <button class="btn sec" style="min-width:auto; padding:4px 10px;" onclick="hideSettingsModal()">✕</button>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:14px;">
-      <div class="fg">
-        <label class="fl" for="cfg-dob">Date of Birth</label>
-        <input type="date" id="cfg-dob" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
-        <span style="font-size:0.7rem;color:var(--text3);margin-top:2px;">Used to auto-select your age bracket in County &amp; Regional QT tabs, and in Schedule &amp; Targets.</span>
-      </div>
-      <div class="fg">
-        <label class="fl" for="cfg-gender">Gender</label>
-        <select id="cfg-gender" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;-webkit-appearance:none;appearance:none;">
-          <option value="Boys">Boys</option>
-          <option value="Girls">Girls</option>
-        </select>
-        <span style="font-size:0.7rem;color:var(--text3);margin-top:2px;">Matches the gender field in the qualifying time data.</span>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn sec" style="flex:1;" onclick="hideSettingsModal()">Cancel</button>
-      <button class="btn" style="flex:2;" onclick="saveSettings()">💾 Save Settings</button>
-    </div>
-    <div style="margin-top:12px;font-size:0.72rem;color:var(--text3);text-align:center;">Settings are stored in your browser's local storage.</div>
-  </div>
-</div>
 </body>
 </html>

@@ -56,15 +56,26 @@ Same as RAW plus:
 }
 ```
 - course: "S" or "L"
-- events: array of { "event": "<event string>" }
-- Meets are flattened to one row per event in the Schedule table
-- 48-hour grace period: meets with date < today-2 are excluded
-- upcomingMap: { eventName: nearestFutureMeet } built in renderSchedule/renderTargets
+- events: array of { "event": "<event string>" } — each element MUST have an `event` property.
+  removeUpcomingEvent() relies on `e.event` for filtering. saveNewUpcoming() guarantees this.
+- Meets are flattened to one row per event in the Schedule table.
+- 48-hour grace period: meets with date < today-2 days are excluded in renderSchedule/renderTargets.
+- upcomingMap: { eventName: nearestFutureMeet } built in renderTargets().
+- buildSwumUpcomingSet(): cross-references DATA vs upcoming rows within a 1-day date window.
+- v26: UPCOMING is also mutated by saveNewUpcoming() and removeUpcomingEvent().
+  These persist to swimDash_UPCOMING in localStorage but do NOT push to GitHub automatically.
+  User must download upcoming_races.json from Data Manager and commit.
 
 ## Swimmer profile (localStorage)
 - swimDash_DOB: ISO 8601 date, e.g. "2014-10-12". Default if unset.
 - swimDash_GENDER: "Boys" or "Girls". Must match QT JSON gender field exactly.
 Both read via getSwimmerDOB() / getSwimmerGender() — not module-level constants.
+
+## Season configuration (JS constant)
+- SEASON_START_MONTH: integer 1–12, default 9 (September).
+  Used by getSeasonStart() to determine swim season start date.
+  getSeasonStart() returns Sept 1 of current year if today is Sept–Dec,
+  else Sept 1 of the previous year.
 
 ## Course code conversion
 RAW/DATA: "S"/"L" ↔ QT files: "Short Course"/"Long Course"
@@ -79,7 +90,7 @@ UPCOMING_DATA_URL:.../asushinski9-netizen/swim-dash/main/upcoming_races.json
 swimDash_RAW      — USER AUTHORITATIVE (never overwritten by GitHub)
 swimDash_QT       — GitHub authoritative (re-fetched if missing)
 swimDash_SE_QT    — GitHub authoritative (re-fetched if missing)
-swimDash_UPCOMING — GitHub authoritative (re-fetched if missing)
+swimDash_UPCOMING — GitHub authoritative on first load; also mutated locally (v26)
 swimDash_theme    — 'light' or 'dark'
 swimDash_DOB      — Swimmer date of birth
 swimDash_GENDER   — Swimmer gender

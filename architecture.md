@@ -2,20 +2,20 @@
 
 ## File
 Single HTML file: swimming_dash_vN.html
-Current version: v25
-~2896 lines total
+Current version: v26
+~3150 lines total (approx)
 
 ## Script section layout (in order)
 1.  CONFIGURATION — RACE_DATA_URL, QT_DATA_URL, SE_QT_DATA_URL, UPCOMING_DATA_URL,
-                    COUNTY_CHAMPS_DATE, REGIONAL_CHAMPS_DATE
+                    COUNTY_CHAMPS_DATE, REGIONAL_CHAMPS_DATE, SEASON_START_MONTH
 2.  DATA globals — RAW, QT_DATA, SE_QT_DATA, UPCOMING, DATA, cache{}
 3.  THEME — getCC(), getPalette(), applyTheme(), toggleTheme()
 4.  STATE MANAGEMENT — invalidateCache(), updateData(newRaw)
 5.  DATA MANAGER MODAL — showDataModal(), hideDataModal(), saveDataToBrowser(),
-                          resetDashboard(), downloadRaceData()
+                          resetDashboard(), downloadRaceData(), downloadUpcomingData()
 6.  UTILITIES — escapeHtml(), timeToSec(), secToTime(), parseLocalDate(),
                 fmtDate(), fmtDateShort(), getStroke(), getDistance(), processData(),
-                getAgeAtEndOfYear(), getQTSeasonYear(),
+                getAgeAtEndOfYear(), getQTSeasonYear(), getSeasonStart(),
                 getCountyAgeBracket(), getRegionalAgeBracket(),
                 getQTStatusForEvent(), renderQTCells()
 7.  Derived helpers — uniqueEvents(), uniqueVenues(), uniqueYears(),
@@ -23,64 +23,101 @@ Current version: v25
 8.  PALETTE_LIGHT/DARK + getCC()/getPalette() — theme-aware chart tokens
 9.  MEMOISED LOOKUPS — getPBs(), getFirstSwims(), getLatestSwims(),
                        getPreviousSwims(), getPreviousBestSwims(), getSwimCounts()
-10. FILTER RESET HELPERS — resetProgressionFilters(), resetQualifyingFilters(),
+10. v26: getBestSeasonImprovement() — season-start PB delta across all event+course pairs
+11. FILTER RESET HELPERS — resetProgressionFilters(), resetQualifyingFilters(),
                             resetRegionalFilters()
-11. CHARTS REGISTRY — charts{}, destroyChart()
-12. POPULATE SELECTS — populateSelects()
-13. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
+12. CHARTS REGISTRY — charts{}, destroyChart()
+13. POPULATE SELECTS — populateSelects()
+14. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
                   renderSplits(), renderSplitCharts(), analyzeSwim(),
                   renderResults(), buildQtStatCards(),
                   renderQTChartAndTable() [shared QT chart+table helper],
                   renderQualifying(), renderRegionalQualifying(),
-                  renderSchedule(), renderTargets()
-14. TAB SWITCHING — showTab()
-15. INIT — async init()
-16. SPEED DIAL FAB — toggleFabDial(), openFabDial(), closeFabDial()
-17. SETTINGS MODAL — showSettingsModal(), hideSettingsModal(), saveSettings()
-18. ADD RACE — showAddRaceModal(), hideAddRaceModal(), saveNewRace()
-19. REMOVE RACE — removeRace(date, event, course, time)
-20. DOMContentLoaded → init()
+                  buildSwumUpcomingSet(), renderSchedule(), renderTargets()
+15. TAB SWITCHING — showTab()
+16. INIT — async init()
+17. ADD RACE MODAL (multi-event) — showAddRaceModal(), hideAddRaceModal(),
+                                   addRaceEventRow(), saveNewRace()
+18. REMOVE RACE — removeRace(date, event, course, time)
+19. REMOVE UPCOMING EVENT — removeUpcomingEvent(date, event, course)
+20. SPEED DIAL FAB — toggleFabDial(), openFabDial(), closeFabDial()
+21. SETTINGS MODAL — showSettingsModal(), hideSettingsModal(), saveSettings()
+22. ADD UPCOMING RACE MODAL — showAddUpcomingModal(), hideAddUpcomingModal(),
+                               addUpcomingEventRow(), saveNewUpcoming()
+23. DOMContentLoaded → init()
 
-## Speed Dial FAB (v25)
-Single parent ➕ button (bottom-right, always visible) expands 4 child buttons upward.
+## Speed Dial FAB (v26: 5 children)
+Single parent ➕ button (bottom-right, always visible) expands 5 child buttons upward.
 State: `let fabDialOpen = false`
 Functions: toggleFabDial(), openFabDial(), closeFabDial()
 - openFabDial(): adds .open class to #fabChildren, #fabParent, #fabBackdrop
 - closeFabDial(): removes .open classes
-- Every modal/action opener calls closeFabDial() first
-Child button IDs: fabAddRace (⏱️), fabTheme (🌙/☀️), fabSettings (👤)
-No ID on Data Manager child (no external reference needed)
+Child button order (bottom to top, CSS nth-child 1→5):
+  1. ⏱️ fabAddRace    — Add Race (multi-event)
+  2. 📅 fabAddUpcoming — Add Upcoming Race (NEW v26)
+  3. ⚙️ (no id)        — Data Manager
+  4. 🌙 fabTheme        — Toggle Theme
+  5. 👤 fabSettings     — Swimmer Settings
+Stagger delays: nth-child(1)=0s, (2)=0.05s, (3)=0.10s, (4)=0.15s, (5)=0.20s
 fabTheme id retained so applyTheme() can sync the icon text.
-Confirmation flash: on #fabAddRace child, not on parent.
-Alignment: .fab-child-row has margin-right: 4px so 48px children centre on 56px parent.
-Mobile: parent 50px, children 44px, dial anchors bottom:16px right:16px.
+closeFabDial() MUST be called first in every action function.
 
-## Swimmer profile (v24)
-getSwimmerDOB() and getSwimmerGender() read from localStorage (swimDash_DOB / swimDash_GENDER).
-Defaults: '2014-10-12' / 'Boys'. Set via 👤 child FAB → Settings modal.
-saveSettings() persists and re-renders QT tabs, Schedule, Targets, Overview.
+## Overview stat cards (v26)
+6 cards in .grid6, ALL now clickable (onclick → showTab):
+  1. Total Races        → All Results tab
+  2. Current PBs        → Personal Bests tab
+  3. Best Improvement   → Progression tab     (NEW v26: replaces "Events" card)
+  4. Races with Splits  → Splits tab
+  5. Upcoming Races     → Schedule tab
+  6. PBs to Renew       → Targets tab
 
-## Age bracket calculation (v24)
-getAgeAtEndOfYear(year), getQTSeasonYear(champDateStr),
-getCountyAgeBracket(), getRegionalAgeBracket()
-Called at render time — NOT cached at module level.
+## getBestSeasonImprovement() (v26)
+Returns { improvement (seconds), event, course } or null.
+Season start: getSeasonStart() → Sept 1 of current season year (SEASON_START_MONTH=9).
+Requires ≥2 swims this season per event+course. Uses first swim of season as baseline,
+current PB as endpoint. Largest positive delta wins.
+NOT memoised — called in renderOverview() only, which is guarded by overviewRendered flag.
 
-## QT status helpers (v24)
-getQTStatusForEvent(event, course, pbSec) → { county: {...}, regional: {...} }
-renderQTCells(s) → [statusCell, gapCell] — NO inline font-size, inherits from table CSS.
-Gap logic: Outside → CT gap; Consideration → QT gap; Qualified → ✓
+## getSeasonStart() (v26)
+Returns Date for September 1 of the current swim season.
+If today is in Sept-Dec: current year. If Jan-Aug: previous year.
+Controlled by SEASON_START_MONTH constant (1-indexed, default 9).
 
-## Upcoming races (v24)
-localStorage: swimDash_UPCOMING. Fetched from UPCOMING_DATA_URL on first load.
-48-hour grace period in renderSchedule() and renderTargets().
-upcomingMap: { event: nearestFutureMeet } built inside each render function.
+## Add Race modal — multi-event (v26)
+Shared fields: Date, Venue, Course, Competition Name (entered once).
+Per-event rows: dynamically added by addRaceEventRow(), max 6.
+Each row contains: Event select, Time input, Splits input, ✕ remove button.
+saveNewRace() validates all rows, pushes one RAW entry per row.
+Duplicate event detection within a batch → error if same event appears twice.
 
-## ALL_EVENTS (v24.1)
-18 standard events — independent of QT data:
-50/100/200/400/800/1500 Free | 50/100/200 Back | 50/100/200 Breast
-50/100/200 Fly | 100/200/400 IM
-Used in Targets Section 2 (Events Not Yet Swum flex card grid).
-Must stay in sync with Add Race modal dropdown options.
+## Add Upcoming Race modal (v26)
+showAddUpcomingModal() — resets and shows modal, calls addUpcomingEventRow() once.
+addUpcomingEventRow() — appends select + ✕ row, max 6.
+saveNewUpcoming() — validates, merges into existing meet on same date+course, or pushes new.
+UPCOMING sorted by date after each new entry. Persists to swimDash_UPCOMING.
+Calls renderSchedule() + renderTargets() after save. Confirmation flash on #fabAddUpcoming.
+
+## Remove Upcoming Event (v26)
+removeUpcomingEvent(date, event, course) — splices from matching UPCOMING meet's events[].
+If meet.events becomes empty after removal, the meet is also removed from UPCOMING.
+Persists to localStorage. Confirms with user and reminds to download JSON for permanence.
+Re-renders Schedule and Targets.
+
+## Schedule tab — already-swum filter (v26)
+buildSwumUpcomingSet(rows) — cross-references each upcoming row against DATA.
+Match criteria: same event, same course, date within 1 day of meet date (±86400000ms).
+Matched entries are added to swumSet as "date|event|course" strings.
+renderSchedule() filters visibleRows = rows.filter not in swumSet.
+hiddenCount reported in scheduleNote. Empty-state colspan = 12.
+
+## Schedule table — Delete column (v26)
+New 12th column "Del" with a ✕ button per row calling removeUpcomingEvent().
+Empty-state colspan updated from 11 to 12.
+Mobile CSS: #tab-schedule .tbl-wrap .badge scaling (0.50rem).
+
+## downloadUpcomingData() (v26)
+Serialises UPCOMING to JSON blob and triggers download as upcoming_races.json.
+Button in Data Manager modal, immediately after ⬇️ Download my_swims.json.
 
 ## processData() sort order (v21)
 Stable: date ASC → event name ASC → course ASC (S before L)
@@ -93,7 +130,7 @@ Use getPBs() for: AI Coach badge, Overview recent PBs, pbsThisYear count.
 ## Stable DOM wrapper IDs
 splitBarChartWrap / progChartWrap / paceChartWrap
 
-## Debut detection — four contexts
+## Debut detection — four contexts (unchanged from v24)
 | Context                  | Method                                                |
 |--------------------------|-------------------------------------------------------|
 | Results Δ Prev           | r.deltaPrev === null                                  |
@@ -104,24 +141,16 @@ splitBarChartWrap / progChartWrap / paceChartWrap
 ## updateData(newRaw)
 RAW → localStorage → invalidateCache → processData → populateSelects → tab renders
 Does NOT call renderSplits(), renderSchedule(), renderTargets().
-
-## Overview stat grid (v24)
-6 cards in .grid6: Total Races, Current PBs, Events, Races with Splits,
-Upcoming Races (→ Schedule), PBs to Renew (→ Targets, 6-month threshold).
-
-## Competition truncation (v24)
-.comp-full (30 chars, desktop) / .comp-short (20 chars, mobile).
-
-## FAB stack — Speed Dial (v25)
-Parent ➕ at bottom:24px right:24px (desktop), bottom:16px right:16px (mobile).
-Children stack upward inside .fab-dial flex column, gap:12px.
-No individual position coordinates needed — flex layout handles positioning.
+renderSchedule/renderTargets are also called by: saveNewUpcoming(), removeUpcomingEvent(),
+saveSettings(). They are NOT triggered by race data changes.
 
 ## getCC() and getPalette() — call inside render functions (v23)
-Never at module level. Inject at top of every render function using chart colours.
+Never at module level. Every render function injects at top:
+  const CC = getCC(); const PALETTE = getPalette();
 
 ## DRY QT Rendering (v22)
 renderQTChartAndTable() shared by renderQualifying() and renderRegionalQualifying().
 
 ## sortDir default and reset: -1 (newest-first)
 ## Data authority: swimDash_RAW (user) / swimDash_QT / swimDash_SE_QT / swimDash_UPCOMING (GitHub)
+## swimDash_UPCOMING is also mutated locally by saveNewUpcoming() and removeUpcomingEvent().
