@@ -1,6 +1,14 @@
 # Session Log
 
-## v26 (latest)
+## v26.1 (latest)
+- Fix: FAB parent ＋ glyph centred — added line-height:1; padding:0 to .fab-parent.
+- Fix: Schedule Days column — "Today" only on daysUntil===0; "Yesterday" for -1; "Xd ago" for older.
+- UX: Schedule column order — Event, Days, Course, PB, County Status, County Gap,
+  Regional Status, Regional Gap, Date, Competition, Venue, Del.
+- UX: Overview Recent PBs — sub-line shows Competition (full desktop / 30-char mobile)
+  instead of Venue. Reuses existing .comp-full / .comp-short CSS classes.
+
+## v26
 
 ### Feature: Multi-event Add Race modal
 The flat single-entry Add Race form was redesigned so Date, Competition, Venue, and Course

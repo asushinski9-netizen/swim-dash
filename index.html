@@ -159,11 +159,12 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .fab-parent {
   width: 56px; height: 56px; border-radius: 50%;
   background: var(--accent); color: white; border: none;
-  font-size: 1.8rem; cursor: pointer;
+  font-size: 1.8rem; line-height: 1; cursor: pointer;
   box-shadow: 0 4px 16px rgba(26,86,196,0.4);
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.25s, box-shadow 0.25s, background 0.2s;
   position: relative; z-index: 201;
+  padding: 0;
 }
 .fab-parent:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(26,86,196,0.5); }
 .fab-parent.open { background: var(--text2); transform: rotate(45deg); }
@@ -804,17 +805,17 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Days</th>
-              <th>Competition</th>
-              <th>Venue</th>
-              <th>Course</th>
               <th>Event</th>
+              <th>Days</th>
+              <th>Course</th>
               <th>Current PB</th>
               <th>County Status</th>
               <th>County Gap</th>
               <th>Regional Status</th>
               <th>Regional Gap</th>
+              <th>Date</th>
+              <th>Competition</th>
+              <th>Venue</th>
               <th style="cursor:default;color:var(--text3)">Del</th>
             </tr>
           </thead>
@@ -1644,12 +1645,16 @@ function renderOverview() {
       const swimCount = getSwimCounts()[r.event + '|' + r.course] || 1;
       const isDebut = swimCount === 1;
       const imp = !isDebut && r.deltaPrev !== null && r.deltaPrev < 0 ? Math.abs(r.deltaPrev) : null;
+      const compFull  = escapeHtml(r.competition);
+      const compShort = escapeHtml(r.competition.length > 30 ? r.competition.slice(0, 30) + '…' : r.competition);
       return `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
           <div>
             <span style="font-weight:700;font-size:0.9rem">${r.event}</span>
             <span class="badge ${r.course}" style="margin-left:6px">${r.course}</span>
-            <div style="font-size:0.72rem;color:var(--text3);margin-top:2px">${fmtDate(r.date)} · ${escapeHtml(r.venue)}</div>
+            <div style="font-size:0.72rem;color:var(--text3);margin-top:2px">
+              ${fmtDate(r.date)} · <span class="comp-full">${compFull}</span><span class="comp-short">${compShort}</span>
+            </div>
           </div>
           <div style="text-align:right">
             <div class="tc" style="color:var(--gold);font-size:1.1rem">${r.time}</div>
@@ -2604,11 +2609,18 @@ function renderSchedule() {
         ? `<span class="tc" style="color:var(--gold)">${r.pb.time} (${r.pb.course})</span>`
         : '<span style="color:var(--text3)">—</span>';
 
-      const daysStr = r.daysUntil <= 0
-        ? '<span style="color:var(--gold);font-weight:600">Today</span>'
-        : r.daysUntil === 1
-          ? '<span style="color:var(--accent)">Tomorrow</span>'
-          : `<span style="color:var(--text2)">in ${r.daysUntil}d</span>`;
+      let daysStr;
+      if (r.daysUntil === 0) {
+        daysStr = '<span style="color:var(--gold);font-weight:600">Today</span>';
+      } else if (r.daysUntil === 1) {
+        daysStr = '<span style="color:var(--accent)">Tomorrow</span>';
+      } else if (r.daysUntil === -1) {
+        daysStr = '<span style="color:var(--text3)">Yesterday</span>';
+      } else if (r.daysUntil < 0) {
+        daysStr = `<span style="color:var(--text3)">${Math.abs(r.daysUntil)}d ago</span>`;
+      } else {
+        daysStr = `<span style="color:var(--text2)">in ${r.daysUntil}d</span>`;
+      }
 
       const [ctyStatus, ctyGap] = renderQTCells(r.qtStatus.county);
       const [rgnStatus, rgnGap] = renderQTCells(r.qtStatus.regional);
@@ -2616,17 +2628,17 @@ function renderSchedule() {
       const compShort = escapeHtml(r.competition.length > 20 ? r.competition.slice(0, 20) + '…' : r.competition);
 
       return `<tr>
-        <td style="color:var(--text)">${fmtDate(r.date)}</td>
-        <td>${daysStr}</td>
-        <td style="color:var(--text2)"><span class="comp-full">${compFull}</span><span class="comp-short">${compShort}</span></td>
-        <td style="color:var(--text2)">${escapeHtml(r.venue)}</td>
-        <td><span class="badge ${r.course}">${r.course}</span></td>
         <td style="font-weight:600;color:var(--text)">${r.event}</td>
+        <td>${daysStr}</td>
+        <td><span class="badge ${r.course}">${r.course}</span></td>
         <td>${pbStr}</td>
         <td>${ctyStatus}</td>
         <td>${ctyGap}</td>
         <td>${rgnStatus}</td>
         <td>${rgnGap}</td>
+        <td style="color:var(--text3)">${fmtDate(r.date)}</td>
+        <td style="color:var(--text2)"><span class="comp-full">${compFull}</span><span class="comp-short">${compShort}</span></td>
+        <td style="color:var(--text2)">${escapeHtml(r.venue)}</td>
         <td><button onclick="removeUpcomingEvent('${r.date}','${r.event}','${r.course}')"
           style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px;"
           title="Remove this upcoming event">✕</button></td>

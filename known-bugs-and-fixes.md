@@ -41,6 +41,14 @@ The modal's flat form did not support adding multiple events in one sitting.
 Redesigned: Date/Venue/Course/Competition shared at top; per-event rows with Event, Time,
 Splits, and ✕ remove button. saveNewRace() iterates all rows and pushes one RAW entry each.
 
+### FAB parent ＋ not centred (v26.1)
+The ＋ glyph tilted toward the bottom because the button had no explicit line-height or
+padding reset. Fixed: added `line-height: 1; padding: 0;` to .fab-parent.
+
+### Schedule "Today" shown for yesterday's race (v26.1)
+daysUntil used `<= 0` for "Today", catching any past event still in the grace window.
+Fixed: exact equality `=== 0` for Today; -1 → "Yesterday"; < -1 → "Xd ago".
+
 ## WATCH-OUT AREAS
 
 ### isPB vs getPBs().includes() — use the right one for the right purpose
@@ -150,3 +158,12 @@ the upcomingMap construction inside renderTargets(). Also in buildSwumUpcomingSe
 
 ### Schedule tab colspan = 12 (v26)
 Table now has 12 columns (added Del column). Empty-state td must use colspan="12".
+
+### Schedule Days column labels (v26.1)
+daysUntil is computed via Math.ceil((meetDate - today) / ms_per_day).
+Labels: 0 → Today (gold), 1 → Tomorrow (accent), -1 → Yesterday (muted),
+< -1 → "Xd ago" (muted), > 1 → "in Xd" (normal). Never use <= 0 for Today.
+
+### Overview Recent PBs — competition vs venue (v26.1)
+The sub-line now shows competition name (not venue). Full name on desktop (.comp-full),
+truncated to 30 chars on mobile (.comp-short). Same CSS class pair used in Schedule.
