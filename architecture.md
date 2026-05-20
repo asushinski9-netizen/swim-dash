@@ -7,44 +7,50 @@ Current version: v26
 
 ## Script section layout (in order)
 1.  CONFIGURATION — RACE_DATA_URL, QT_DATA_URL, SE_QT_DATA_URL, UPCOMING_DATA_URL,
-                    COUNTY_CHAMPS_DATE, REGIONAL_CHAMPS_DATE, SEASON_START_MONTH
-2.  DATA globals — RAW, QT_DATA, SE_QT_DATA, UPCOMING, DATA, cache{}
-3.  THEME — getCC(), getPalette(), applyTheme(), toggleTheme()
-4.  STATE MANAGEMENT — invalidateCache(), updateData(newRaw)
-5.  DATA MANAGER MODAL — showDataModal(), hideDataModal(), saveDataToBrowser(),
+                    COUNTY_CHAMPS_DATE, REGIONAL_CHAMPS_DATE, SEASON_START_MONTH,
+                    ALL_EVENTS (canonical event list — single source of truth)
+2.  Swimmer profile functions — getSwimmerDOB(), getSwimmerGender()
+3.  DATA globals — RAW, QT_DATA, SE_QT_DATA, UPCOMING, DATA
+4.  STATE globals — renderedTabs (Set), sortCol, sortDir, fabDialOpen,
+                    currentEventFiltered, contextualPBRef, splitBarChart, paceChart
+5.  cache{} + invalidateCache() — calls renderedTabs.clear()
+6.  THEME — getCC(), getPalette(), applyTheme(), toggleTheme()
+7.  STATE MANAGEMENT — updateData(newRaw)
+8.  DATA MANAGER MODAL — showDataModal(), hideDataModal(), saveDataToBrowser(),
                           resetDashboard(), downloadRaceData(), downloadUpcomingData()
-6.  UTILITIES — escapeHtml(), timeToSec(), secToTime(), parseLocalDate(),
+9.  UTILITIES — escapeHtml(), timeToSec(), secToTime(), parseLocalDate(),
                 fmtDate(), fmtDateShort(), getStroke(), getDistance(), processData(),
                 getAgeAtEndOfYear(), getQTSeasonYear(), getSeasonStart(),
                 getCountyAgeBracket(), getRegionalAgeBracket(),
                 getQTStatusForEvent(), renderQTCells()
-7.  Derived helpers — uniqueEvents(), uniqueVenues(), uniqueYears(),
+10. Derived helpers — uniqueEvents(), uniqueVenues(), uniqueYears(),
                       uniqueEventsWithSplits() — all memoised via cache{}
-8.  PALETTE_LIGHT/DARK + getCC()/getPalette() — theme-aware chart tokens
-9.  MEMOISED LOOKUPS — getPBs(), getFirstSwims(), getLatestSwims(),
+11. PALETTE_LIGHT/DARK + getCC()/getPalette()
+12. MEMOISED LOOKUPS — getPBs(), getFirstSwims(), getLatestSwims(),
                        getPreviousSwims(), getPreviousBestSwims(), getSwimCounts()
-10. v26: getBestSeasonImprovement() — season-start PB delta across all event+course pairs
-11. FILTER RESET HELPERS — resetProgressionFilters(), resetQualifyingFilters(),
-                            resetRegionalFilters()
-12. CHARTS REGISTRY — charts{}, destroyChart()
-13. POPULATE SELECTS — populateSelects()
-14. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
+13. getBestSeasonImprovement()
+14. FILTER RESET HELPERS
+15. CHARTS REGISTRY — charts{}, destroyChart()
+16. POPULATE SELECTS — populateSelects() (snapshots/restores values across rebuilds)
+17. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
                   renderSplits(), renderSplitCharts(), analyzeSwim(),
                   renderResults(), buildQtStatCards(),
-                  renderQTChartAndTable() [shared QT chart+table helper],
+                  renderQTChartAndTable(),
                   renderQualifying(), renderRegionalQualifying(),
                   buildSwumUpcomingSet(), renderSchedule(), renderTargets()
-15. TAB SWITCHING — showTab()
-16. INIT — async init()
-17. ADD RACE MODAL (multi-event) — showAddRaceModal(), hideAddRaceModal(),
-                                   addRaceEventRow(), saveNewRace()
-18. REMOVE RACE — removeRace(date, event, course, time)
-19. REMOVE UPCOMING EVENT — removeUpcomingEvent(date, event, course)
-20. SPEED DIAL FAB — toggleFabDial(), openFabDial(), closeFabDial()
-21. SETTINGS MODAL — showSettingsModal(), hideSettingsModal(), saveSettings()
-22. ADD UPCOMING RACE MODAL — showAddUpcomingModal(), hideAddUpcomingModal(),
+18. RENDER ALL CHART TABS — renderAllChartTabs()
+19. TAB SWITCHING — showTab()
+20. INIT — async init() — includes keydown (Escape) listener and delegated click
+           listeners for .btn-remove-race and .btn-remove-upcoming
+21. ADD RACE MODAL — showAddRaceModal(), hideAddRaceModal(),
+                     addRaceEventRow(), saveNewRace()
+22. REMOVE RACE — removeRace()
+23. REMOVE UPCOMING EVENT — removeUpcomingEvent()
+24. SPEED DIAL FAB — toggleFabDial(), openFabDial(), closeFabDial()
+25. SETTINGS MODAL — showSettingsModal(), hideSettingsModal(), saveSettings()
+26. ADD UPCOMING RACE MODAL — showAddUpcomingModal(), hideAddUpcomingModal(),
                                addUpcomingEventRow(), saveNewUpcoming()
-23. DOMContentLoaded → init()
+27. Theme IIFE + DOMContentLoaded → init()
 
 ## Speed Dial FAB (v26: 5 children)
 Single parent ➕ button (bottom-right, always visible) expands 5 child buttons upward.

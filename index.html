@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <title>Swimming Performance Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <style>
 :root {
   --bg: #f0f4f8;
@@ -87,7 +87,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
   border: 1px solid var(--border); overflow-x: auto;
 }
 .tab {
-  flex: 1; min-width: 90px; padding: 10px 14px; border: none;
+  flex: 1; min-width: 90px; padding: 10px 14px;
   background: var(--surface2); color: var(--text2); font-size: 0.83rem;
   font-weight: 500; border-radius: 8px; cursor: pointer;
   transition: all 0.2s; white-space: nowrap; text-align: center;
@@ -106,13 +106,12 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 
 /* GRID */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
 .grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 20px; }
 .grid6 { display: grid; grid-template-columns: repeat(6,1fr); gap: 16px; margin-bottom: 20px; }
-.grid2 > *, .grid3 > *, .grid4 > *, .grid6 > * { min-width: 0; }
+.grid2 > *, .grid4 > *, .grid6 > * { min-width: 0; }
 @media(max-width:1200px){ .grid6{grid-template-columns:repeat(3,1fr);} }
-@media(max-width:1000px){ .grid4{grid-template-columns:repeat(2,1fr);} .grid3{grid-template-columns:1fr 1fr;} .grid6{grid-template-columns:repeat(2,1fr);} }
-@media(max-width:640px){ .grid2,.grid3,.grid4,.grid6{grid-template-columns:1fr;} }
+@media(max-width:1000px){ .grid4{grid-template-columns:repeat(2,1fr);} .grid6{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:640px){ .grid2,.grid4,.grid6{grid-template-columns:1fr;} }
 
 /* CHART WRAP */
 .chart-wrap { position: relative; overflow: hidden; }
@@ -143,7 +142,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .stat-label { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
 .stat-sub { font-size: 0.7rem; color: var(--text3); margin-top: 4px; }
 
-/* ── Speed Dial FAB (v25) ──────────────────────────────────── */
+/* ── Speed Dial FAB ──────────────────────────────────────────── */
 .fab-backdrop {
   display: none;
   position: fixed; inset: 0; z-index: 198;
@@ -243,8 +242,8 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   display: inline-block; padding: 2px 8px; border-radius: 20px;
   font-size: 0.68rem; font-weight: 700;
 }
-.badge.S { background: rgba(26,86,196,0.12); color: #1a56c4; }
-.badge.L { background: rgba(14,165,212,0.15); color: #0284a8; }
+.badge.S { background: rgba(26,86,196,0.12); color: var(--accent); }
+.badge.L { background: rgba(14,165,212,0.15); color: var(--accent2); }
 .badge.pb { background: linear-gradient(135deg,#d97706,#f59e0b); color: #fff; font-size: 0.62rem; }
 .dpos { color: var(--green); font-weight: 600; }
 .dneg { color: var(--red); font-weight: 600; }
@@ -347,7 +346,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-qualifying .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
   #tab-regional .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
   #tab-regional .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+  #tab-regional .stat-val { font-size: 1.3rem !important; }
   #tab-regional .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
+
+  #progChartWrap { height: 300px !important; }
 
   .fab-dial { bottom: 16px; right: 16px; }
   .fab-parent { width: 50px; height: 50px; font-size: 1.5rem; }
@@ -834,7 +836,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         <div class="card-title" style="margin-bottom:0">⏰ PBs Due for Renewal</div>
         <div class="fg">
           <span class="fl">Flag PBs older than</span>
-          <select id="renewalMonths" onchange="renderTargets()">
+          <select id="renewalMonths" onchange="renderTargets(); renderedTabs.delete('overview'); renderOverview();">
             <option value="3">3 months</option>
             <option value="6" selected>6 months</option>
             <option value="9">9 months</option>
@@ -1059,13 +1061,22 @@ const UPCOMING_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen
 const COUNTY_CHAMPS_DATE   = '2026-02-15';
 const REGIONAL_CHAMPS_DATE = '2026-05-04';
 
-// v26: Season configuration
+// Season configuration — controls getBestSeasonImprovement() season boundary
 const SEASON_START_MONTH = 9; // September (1-indexed)
+
+// Canonical event list — single source of truth for modals, Targets, and QT lookups.
+// Add new events here only; all consumers reference this constant.
+const ALL_EVENTS = [
+  '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
+  '50 Back','100 Back','200 Back',
+  '50 Breast','100 Breast','200 Breast',
+  '50 Fly','100 Fly','200 Fly',
+  '100 IM','200 IM','400 IM'
+];
 
 // ── Swimmer profile ──────────────────────────────────────────
 function getSwimmerDOB()    { return localStorage.getItem('swimDash_DOB')    || '2014-10-12'; }
 function getSwimmerGender() { return localStorage.getItem('swimDash_GENDER') || 'Boys'; }
-const getSwimmerProfile = () => ({ dob: getSwimmerDOB(), gender: getSwimmerGender() });
 
 // ============================================================
 // DATA GLOBALS
@@ -1076,10 +1087,22 @@ let SE_QT_DATA= JSON.parse(localStorage.getItem('swimDash_SE_QT'))    || [];
 let UPCOMING  = JSON.parse(localStorage.getItem('swimDash_UPCOMING')) || [];
 let DATA = [];
 
+// ============================================================
+// STATE — mutable runtime variables (all declared here to avoid hoisting issues)
+// ============================================================
+const renderedTabs       = new Set(); // tracks which tabs have rendered since last data/theme change
+let sortCol              = 'date';    // All Results sort column
+let sortDir              = -1;        // All Results sort direction (-1 = newest first)
+let fabDialOpen          = false;     // Speed Dial open/closed state
+let currentEventFiltered = [];        // Splits tab working state
+let contextualPBRef      = null;
+let splitBarChart        = null;
+let paceChart            = null;
+
 const cache = {};
 function invalidateCache() {
   Object.keys(cache).forEach(k => delete cache[k]);
-  overviewRendered = false;
+  renderedTabs.clear();
 }
 
 // ============================================================
@@ -1103,12 +1126,7 @@ function toggleTheme() {
   closeFabDial();
   const isDark = document.body.classList.contains('dark');
   applyTheme(isDark ? 'light' : 'dark');
-  overviewRendered = false;
-  renderOverview();
-  renderProgression();
-  renderSplits();
-  renderQualifying();
-  renderRegionalQualifying();
+  renderAllChartTabs();
 }
 
 // ============================================================
@@ -1307,8 +1325,10 @@ function getQTStatusForEvent(event, course, pbSec) {
 
 function renderQTCells(s) {
   if (s.status === 'No Data') {
-    return ['<span style="color:var(--text3)">—</span>',
-            '<span style="color:var(--text3)">—</span>'];
+    return [
+      '<span style="color:var(--text3);font-style:italic">Not offered</span>',
+      '<span style="color:var(--text3)">—</span>'
+    ];
   }
   if (s.status === 'No PB') {
     return ['<span style="color:var(--text3)">No PB</span>',
@@ -1331,7 +1351,11 @@ function renderQTCells(s) {
 // PROCESS DATA
 // ============================================================
 function processData(raw) {
-  const data = raw.map(r => ({ ...r, timeInSec: timeToSec(r.time) }))
+  const data = raw.map(r => ({
+    ...r,
+    splits: Array.isArray(r.splits) ? r.splits : [],
+    timeInSec: timeToSec(r.time)
+  }))
     .sort((a, b) => a.date.localeCompare(b.date) || a.event.localeCompare(b.event) || a.course.localeCompare(b.course));
 
   const pbMap = {};
@@ -1462,8 +1486,12 @@ function getSwimCounts() {
 // v26: Best Season Improvement
 // ============================================================
 function getBestSeasonImprovement() {
-  const seasonStart    = getSeasonStart();
-  const seasonStartStr = seasonStart.toISOString().slice(0, 10);
+  const seasonStart = getSeasonStart();
+  // Build date string from local components — toISOString() uses UTC and gives wrong date in UTC+ timezones
+  const y  = seasonStart.getFullYear();
+  const m  = String(seasonStart.getMonth() + 1).padStart(2, '0');
+  const d  = String(seasonStart.getDate()).padStart(2, '0');
+  const seasonStartStr = `${y}-${m}-${d}`;
   let best = null; // { improvement, event, course }
 
   const keys = [...new Set(DATA.map(r => r.event + '|' + r.course))];
@@ -1525,6 +1553,13 @@ function destroyChart(id) {
 // POPULATE SELECTS
 // ============================================================
 function populateSelects() {
+  // Snapshot current selections before rebuilding
+  const prevProgEvent   = document.getElementById('progEvent').value;
+  const prevSplitsEvent = document.getElementById('splitsEvent').value;
+  const prevResEvent    = document.getElementById('resEvent').value;
+  const prevResVenue    = document.getElementById('resVenue').value;
+  const prevResYear     = document.getElementById('resYear').value;
+
   const allEvents        = uniqueEvents();
   const eventsWithSplits = uniqueEventsWithSplits();
   const venues           = uniqueVenues();
@@ -1540,16 +1575,34 @@ function populateSelects() {
     '<option value="">All Venues</option>' + venues.map(v => `<option value="${v}">${v}</option>`).join('');
   document.getElementById('resYear').innerHTML =
     '<option value="">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+
+  // Restore previous selections (browser resets to default if value no longer exists)
+  document.getElementById('progEvent').value   = prevProgEvent;
+  document.getElementById('splitsEvent').value = prevSplitsEvent;
+  document.getElementById('resEvent').value    = prevResEvent;
+  document.getElementById('resVenue').value    = prevResVenue;
+  document.getElementById('resYear').value     = prevResYear;
 }
 
 // ============================================================
-// OVERVIEW TAB (v26: all cards interactive, "Events" → "Best Improvement")
+// OVERVIEW TAB
 // ============================================================
-let overviewRendered = false;
-
 function renderOverview() {
   const CC = getCC(); const PALETTE = getPalette();
-  if (overviewRendered) return;
+  if (renderedTabs.has('overview')) return;
+
+  // Guard against empty data (e.g. before any races are loaded)
+  if (DATA.length === 0) {
+    document.getElementById('hTotalRaces').textContent = '0';
+    document.getElementById('hEvents').textContent     = '0';
+    document.getElementById('hMeets').textContent      = '0';
+    document.getElementById('hSpan').textContent       = '0';
+    document.getElementById('overviewStats').innerHTML = '';
+    document.getElementById('recentPBs').innerHTML =
+      '<div class="empty"><div class="empty-icon">🏅</div><p>No races recorded yet.</p></div>';
+    renderedTabs.add('overview');
+    return;
+  }
 
   const meets     = new Set(DATA.map(r => r.competition + '|' + r.date)).size;
   const firstDate = parseLocalDate(DATA[0].date);
@@ -1569,16 +1622,23 @@ function renderOverview() {
   const pbsThisYear    = pbs.filter(r => r.date >= currentYearStart).length;
   const withSplits     = DATA.filter(r => r.splits.length > 0).length;
 
-  // Upcoming events count (48hr grace period)
+  // Upcoming events count (48hr grace, excluding already-swum events — mirrors Schedule tab)
   const upcomingCount = (() => {
     const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 2);
-    return UPCOMING.reduce((n, m) =>
-      parseLocalDate(m.date) >= cutoff ? n + m.events.length : n, 0);
+    const rows = [];
+    UPCOMING.forEach(meet => {
+      const meetDate = parseLocalDate(meet.date);
+      if (meetDate < cutoff) return;
+      meet.events.forEach(e => rows.push({ date: meet.date, event: e.event, course: meet.course, meetDate }));
+    });
+    const swumSet = buildSwumUpcomingSet(rows);
+    return rows.filter(r => !swumSet.has(r.date + '|' + r.event + '|' + r.course)).length;
   })();
 
-  // PBs older than 6 months
+  // PBs older than threshold — reads from Targets select to stay in sync
+  const renewalMonths = parseInt(document.getElementById('renewalMonths')?.value || '6');
   const renewalCount = (() => {
-    const threshold = new Date(); threshold.setMonth(threshold.getMonth() - 6);
+    const threshold = new Date(); threshold.setMonth(threshold.getMonth() - renewalMonths);
     const eventBestMap = {};
     getPBs().forEach(pb => {
       if (!eventBestMap[pb.event] || pb.timeInSec < eventBestMap[pb.event].timeInSec)
@@ -1591,7 +1651,7 @@ function renderOverview() {
 
   // v26: Best Season Improvement
   const seasonBest      = getBestSeasonImprovement();
-  const seasonBestVal   = seasonBest ? `▼ ${seasonBest.improvement.toFixed(1)}s` : '—';
+  const seasonBestVal   = seasonBest ? `▼ ${seasonBest.improvement.toFixed(2)}s` : '—';
   const seasonBestSub   = seasonBest
     ? `${seasonBest.event} (${seasonBest.course === 'S' ? 'SC' : 'LC'})`
     : 'This season';
@@ -1632,7 +1692,7 @@ function renderOverview() {
       <div class="stat-icon">⏰</div>
       <div class="stat-val" style="color:var(--red)">${renewalCount}</div>
       <div class="stat-label">PBs to Renew</div>
-      <div class="stat-sub">Older than 6 months</div>
+      <div class="stat-sub">Older than ${renewalMonths} months</div>
     </div>`;
 
   // Recent PBs
@@ -1725,7 +1785,7 @@ function renderOverview() {
       <div class="prog-bar"><div class="prog-fill" style="width:${(c/maxV*100).toFixed(0)}%"></div></div>
     </div>`).join('');
 
-  overviewRendered = true;
+  renderedTabs.add('overview');
 }
 
 // ============================================================
@@ -1964,10 +2024,6 @@ function renderPBs() {
 // ============================================================
 // SPLITS TAB
 // ============================================================
-let currentEventFiltered = [];
-let contextualPBRef      = null;
-let splitBarChart        = null;
-let paceChart            = null;
 
 function renderSplits() {
   const CC = getCC(); const PALETTE = getPalette();
@@ -2224,8 +2280,6 @@ function analyzeSwim(index) {
 // ============================================================
 // ALL RESULTS TAB
 // ============================================================
-let sortCol = 'date';
-let sortDir = -1;
 
 function sortResults(col) {
   if (sortCol === col) sortDir *= -1;
@@ -2314,7 +2368,11 @@ function renderResults() {
       <td style="color:var(--text2);max-width:220px;overflow:hidden;text-overflow:ellipsis">${escapeHtml(r.competition) || '—'}</td>
       <td style="color:var(--text2)">${escapeHtml(r.venue) || '—'}</td>
       <td style="color:var(--text3);font-size:0.75rem;font-variant-numeric:tabular-nums">${splitsStr}</td>
-      <td><button onclick="removeRace('${r.date}','${r.event}','${r.course}','${r.time}')"
+      <td><button class="btn-remove-race"
+        data-date="${escapeHtml(r.date)}"
+        data-event="${escapeHtml(r.event)}"
+        data-course="${escapeHtml(r.course)}"
+        data-time="${escapeHtml(r.time)}"
         style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px;" title="Remove this race">✕</button></td>
     </tr>`;
   }).join('');
@@ -2366,7 +2424,7 @@ function buildQtStatCards(matched, statsElId) {
 // SHARED QT CHART + TABLE RENDERER
 // ============================================================
 function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
-  const CC = getCC();
+  const CC = getCC(); const PALETTE = getPalette();
   const statusColor    = s => s === 'Qualified' ? '#10b981' : s === 'Consideration' ? '#f59e0b' : s === 'Outside' ? '#ef4444' : '#64748b';
   const statusBg       = s => s === 'Qualified' ? 'rgba(16,185,129,0.85)' : s === 'Consideration' ? 'rgba(245,158,11,0.85)' : s === 'Outside' ? 'rgba(239,68,68,0.85)' : 'rgba(100,116,139,0.4)';
   const statusBgBorder = s => statusBg(s).replace('0.85','1').replace('0.4','0.8');
@@ -2627,8 +2685,12 @@ function renderSchedule() {
       const compFull  = escapeHtml(r.competition.length > 30 ? r.competition.slice(0, 30) + '…' : r.competition);
       const compShort = escapeHtml(r.competition.length > 20 ? r.competition.slice(0, 20) + '…' : r.competition);
 
+      const logPrompt = r.daysUntil < 0
+        ? `<span style="margin-left:6px;font-size:0.6rem;background:rgba(217,119,6,0.12);color:var(--gold);border-radius:10px;padding:1px 6px;font-weight:600;">⚠️ Log?</span>`
+        : '';
+
       return `<tr>
-        <td style="font-weight:600;color:var(--text)">${r.event}</td>
+        <td style="font-weight:600;color:var(--text)">${r.event}${logPrompt}</td>
         <td>${daysStr}</td>
         <td><span class="badge ${r.course}">${r.course}</span></td>
         <td>${pbStr}</td>
@@ -2639,7 +2701,10 @@ function renderSchedule() {
         <td style="color:var(--text3)">${fmtDate(r.date)}</td>
         <td style="color:var(--text2)"><span class="comp-full">${compFull}</span><span class="comp-short">${compShort}</span></td>
         <td style="color:var(--text2)">${escapeHtml(r.venue)}</td>
-        <td><button onclick="removeUpcomingEvent('${r.date}','${r.event}','${r.course}')"
+        <td><button class="btn-remove-upcoming"
+          data-date="${escapeHtml(r.date)}"
+          data-event="${escapeHtml(r.event)}"
+          data-course="${escapeHtml(r.course)}"
           style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px;"
           title="Remove this upcoming event">✕</button></td>
       </tr>`;
@@ -2695,6 +2760,13 @@ function renderTargets() {
     });
   });
 
+  if (QT_DATA.length === 0 && SE_QT_DATA.length === 0) {
+    document.getElementById('renewalBody').innerHTML =
+      `<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--text3)">
+        No qualifying time data loaded. Upload county_qt.json and se_london_qt.json
+        via ⚙️ Data Manager to see renewal targets.
+      </td></tr>`;
+  } else {
   const renewalRows = [];
   offeredEvents.forEach(event => {
     const best = eventBestMap[event];
@@ -2733,14 +2805,8 @@ function renderTargets() {
           <td><span style="background:rgba(220,38,38,0.12);color:var(--red);font-weight:600;border-radius:20px;padding:2px 8px;">⏰ Renew</span></td>
         </tr>`;
       }).join('');
+  } // end QT data guard
 
-  const ALL_EVENTS = [
-    '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
-    '50 Back','100 Back','200 Back',
-    '50 Breast','100 Breast','200 Breast',
-    '50 Fly','100 Fly','200 Fly',
-    '100 IM','200 IM','400 IM'
-  ];
   const swumEvents    = new Set(DATA.map(r => r.event));
   const neverSwumRows = ALL_EVENTS.filter(event => !swumEvents.has(event));
 
@@ -2777,6 +2843,20 @@ function renderTargets() {
   const noteEl = document.getElementById('renewalNote');
   if (noteEl) noteEl.textContent =
     `County QT: age ${rCountyAge} bracket · Regional QT: age ${rRegionalAge} bracket.${rSeasonNote}`;
+}
+
+// ============================================================
+// RENDER ALL CHART TABS
+// Single point to refresh all chart-bearing tabs (e.g. on theme change).
+// Add new chart-bearing tabs here only — toggleTheme() needs no other changes.
+// ============================================================
+function renderAllChartTabs() {
+  renderedTabs.clear();
+  renderOverview();
+  renderProgression();
+  renderSplits();
+  renderQualifying();
+  renderRegionalQualifying();
 }
 
 // ============================================================
@@ -2868,6 +2948,30 @@ async function init() {
   renderSchedule();
   renderTargets();
   updateSortHeaders();
+
+  // G1: Escape key closes any open modal or Speed Dial
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('addRaceModal').style.display     !== 'none') hideAddRaceModal();
+    if (document.getElementById('addUpcomingModal').style.display !== 'none') hideAddUpcomingModal();
+    if (document.getElementById('settingsModal').style.display    !== 'none') hideSettingsModal();
+    if (document.getElementById('dataModal').style.display        !== 'none') hideDataModal();
+    closeFabDial();
+  });
+
+  // E1: Delegated click for Remove Race buttons in Results table
+  document.getElementById('resultsTbody').addEventListener('click', e => {
+    const btn = e.target.closest('.btn-remove-race');
+    if (!btn) return;
+    removeRace(btn.dataset.date, btn.dataset.event, btn.dataset.course, btn.dataset.time);
+  });
+
+  // E2: Delegated click for Remove Upcoming buttons in Schedule table
+  document.getElementById('scheduleBody').addEventListener('click', e => {
+    const btn = e.target.closest('.btn-remove-upcoming');
+    if (!btn) return;
+    removeUpcomingEvent(btn.dataset.date, btn.dataset.event, btn.dataset.course);
+  });
 }
 
 // ============================================================
@@ -2891,14 +2995,6 @@ function addRaceEventRow() {
   const list = document.getElementById('ar-events-list');
   if (list.children.length >= 6) return;
 
-  const ALL_EVENT_OPTIONS = [
-    '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
-    '50 Back','100 Back','200 Back',
-    '50 Breast','100 Breast','200 Breast',
-    '50 Fly','100 Fly','200 Fly',
-    '100 IM','200 IM','400 IM'
-  ];
-
   const row = document.createElement('div');
   row.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;position:relative;';
   row.innerHTML = `
@@ -2909,7 +3005,7 @@ function addRaceEventRow() {
       <div class="fg">
         <label class="fl">Event</label>
         <select class="ar-event-select" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:0.83rem;width:100%;-webkit-appearance:none;appearance:none;">
-          ${ALL_EVENT_OPTIONS.map(e => `<option value="${e}">${e}</option>`).join('')}
+          ${ALL_EVENTS.map(e => `<option value="${e}">${e}</option>`).join('')}
         </select>
       </div>
       <div class="fg">
@@ -3010,14 +3106,15 @@ function removeUpcomingEvent(date, event, course) {
     }
   }
   localStorage.setItem('swimDash_UPCOMING', JSON.stringify(UPCOMING));
+  renderedTabs.delete('overview');
+  renderOverview();
   renderSchedule();
   renderTargets();
 }
 
 // ============================================================
-// SPEED DIAL FAB (v25)
+// SPEED DIAL FAB
 // ============================================================
-let fabDialOpen = false;
 
 function toggleFabDial() {
   fabDialOpen ? closeFabDial() : openFabDial();
@@ -3060,12 +3157,9 @@ function saveSettings() {
   hideSettingsModal();
   resetQualifyingFilters();
   resetRegionalFilters();
-  renderQualifying();
-  renderRegionalQualifying();
+  renderAllChartTabs();
   renderSchedule();
   renderTargets();
-  overviewRendered = false;
-  renderOverview();
 }
 
 // ============================================================
@@ -3092,19 +3186,11 @@ function addUpcomingEventRow() {
   const rowCount = list.children.length;
   if (rowCount >= 6) return;
 
-  const ALL_EVENT_OPTIONS = [
-    '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
-    '50 Back','100 Back','200 Back',
-    '50 Breast','100 Breast','200 Breast',
-    '50 Fly','100 Fly','200 Fly',
-    '100 IM','200 IM','400 IM'
-  ];
-
   const row = document.createElement('div');
   row.style.cssText = 'display:flex;gap:8px;align-items:center;';
   row.innerHTML = `
     <select style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.83rem;-webkit-appearance:none;appearance:none;">
-      ${ALL_EVENT_OPTIONS.map(e => `<option value="${e}">${e}</option>`).join('')}
+      ${ALL_EVENTS.map(e => `<option value="${e}">${e}</option>`).join('')}
     </select>
     <button type="button" onclick="this.parentElement.remove()"
       style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1.1rem;padding:4px 8px;flex-shrink:0;"
@@ -3156,6 +3242,8 @@ function saveNewUpcoming() {
 
   localStorage.setItem('swimDash_UPCOMING', JSON.stringify(UPCOMING));
   hideAddUpcomingModal();
+  renderedTabs.delete('overview');
+  renderOverview();
   renderSchedule();
   renderTargets();
 

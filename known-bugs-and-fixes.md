@@ -49,6 +49,33 @@ padding reset. Fixed: added `line-height: 1; padding: 0;` to .fab-parent.
 daysUntil used `<= 0` for "Today", catching any past event still in the grace window.
 Fixed: exact equality `=== 0` for Today; -1 → "Yesterday"; < -1 → "Xd ago".
 
+### All items from v26.2 quality pass — resolved
+See session-log.md v26.2 for full list. Key resolutions:
+- overviewRendered hoisting risk — replaced by renderedTabs Set in STATE block (item 1)
+- getSwimmerProfile() dead code removed (item 2)
+- Overview upcomingCount inflated by swum events — fixed via buildSwumUpcomingSet() (items 3+30)
+- Overview crash on empty DATA — guard added (item 9)
+- getBestSeasonImprovement() UTC offset bug — local date components used (item 10)
+- Targets silent when QT data missing — informative message added (item 11)
+- processData() missing splits field — normalised to [] (item 12)
+- removeRace/removeUpcomingEvent inline onclick XSS pattern — data attributes + delegation (items 13+14)
+- .badge.S/.badge.L hardcoded hex in dark theme — CSS variables (item 15)
+- Progression chart too short on mobile — 300px override (item 16)
+- .grid3 unused CSS class removed (item 17)
+- .tab dead border:none removed (item 18)
+- Stale (v25) CSS comment removed (item 19)
+- #tab-regional .stat-val mobile override added (item 20)
+- No Escape key on modals — keydown listener in init() (item 21)
+- No log prompt for past-dated schedule rows — ⚠️ Log? badge added (item 22)
+- Overview PBs to Renew hardcoded at 6 months — reads from #renewalMonths select (item 23)
+- populateSelects() cleared user filters — snapshot/restore added (item 24)
+- toggleTheme() manual render list — renderAllChartTabs() helper (item 25)
+- renderQTCells() No Data silent — now shows italic "Not offered" (item 27)
+- chartjs-adapter-date-fns unpinned — pinned to @3.0.0 (item 28)
+- renderQTChartAndTable missing PALETTE — added for pattern consistency (item 29)
+- Overview upcoming count included swum events — fixed (item 30)
+- Best Improvement .toFixed(1) — changed to .toFixed(2)
+
 ## WATCH-OUT AREAS
 
 ### isPB vs getPBs().includes() — use the right one for the right purpose
@@ -167,3 +194,29 @@ Labels: 0 → Today (gold), 1 → Tomorrow (accent), -1 → Yesterday (muted),
 ### Overview Recent PBs — competition vs venue (v26.1)
 The sub-line now shows competition name (not venue). Full name on desktop (.comp-full),
 truncated to 30 chars on mobile (.comp-short). Same CSS class pair used in Schedule.
+
+### renderedTabs Set — three usage patterns (v26.2)
+renderedTabs.clear()         — full reset; use in invalidateCache() and renderAllChartTabs()
+renderedTabs.delete('overview') — targeted reset; use when only Overview needs refreshing
+                                  (e.g. saveNewUpcoming, removeUpcomingEvent, renewalMonths change)
+renderedTabs.has('overview') — guard at top of renderOverview() — do not remove
+
+### renderAllChartTabs() — single registration point (v26.2)
+New chart-bearing tabs must be added to renderAllChartTabs() only.
+toggleTheme() and saveSettings() call this — they need no other changes when new tabs are added.
+
+### ALL_EVENTS constant — single source of truth (v26.2)
+Declared in CONFIGURATION section. addRaceEventRow(), addUpcomingEventRow(), and
+renderTargets() all reference it. Do NOT add inline event arrays anywhere else.
+Adding a new event: one line change in CONFIGURATION, automatically propagates everywhere.
+
+### buildSwumUpcomingSet() — called from renderOverview() (v26.2)
+Must remain defined before renderOverview() in file order. Currently in the Schedule
+section which comes after renderOverview() — safe because it's a function declaration
+(hoisted), but keep this dependency in mind if the function is ever converted to an
+arrow function or const.
+
+### Event delegation for remove buttons (v26.2)
+resultsTbody and scheduleBody have delegated click listeners set up once in init().
+Buttons use .btn-remove-race and .btn-remove-upcoming CSS classes as selectors.
+Do not add inline onclick to these buttons — the delegation handles it.

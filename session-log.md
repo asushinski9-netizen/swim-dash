@@ -1,6 +1,70 @@
 # Session Log
 
-## v26.1 (latest)
+## v26.2 (latest) — Code Quality & Futureproofing Pass
+
+### A. State management refactor
+- STATE GLOBALS block introduced immediately after DATA GLOBALS — all mutable `let`
+  variables (sortCol, sortDir, fabDialOpen, currentEventFiltered, contextualPBRef,
+  splitBarChart, paceChart) moved here from their scattered locations.
+- `overviewRendered` boolean replaced by `renderedTabs` Set throughout. `renderedTabs.clear()`
+  is the single reset point; `renderedTabs.delete('overview')` for targeted Overview refreshes.
+- `renderAllChartTabs()` helper added before showTab() — toggleTheme() and saveSettings()
+  call it instead of manual render lists. Add new chart tabs here only.
+
+### B. Dead code removal
+- `getSwimmerProfile()` removed (declared but never called).
+- `.grid3` CSS class removed (defined but never used in HTML).
+- Dead `border: none` removed from `.tab` ruleset (immediately overridden by the next line).
+- Stale `(v25)` version annotation removed from FAB CSS comment.
+- `const PALETTE = getPalette()` added to `renderQTChartAndTable()` for pattern consistency.
+
+### C. Single event list source of truth
+- `ALL_EVENTS` constant declared in CONFIGURATION section.
+- `addRaceEventRow()`, `addUpcomingEventRow()`, and `renderTargets()` all reference it —
+  three separate inline arrays eliminated.
+- `renderQTCells()` 'No Data' case now renders as italic muted "Not offered" — visually
+  distinct from "No PB" so users understand the event isn't available at their age group.
+
+### D. Logic fixes
+- `renderOverview()` empty-DATA guard added — no crash if called before races are loaded.
+- `getBestSeasonImprovement()` builds season start string from local date components
+  instead of toISOString() — fixes UTC offset bug in BST/UTC+ timezones.
+- `renderTargets()` shows informative message when QT data is not loaded, instead of
+  silently showing the "all current" green message.
+- `removeUpcomingEvent()` and `saveNewUpcoming()` both call renderedTabs.delete('overview')
+  + renderOverview() so the Upcoming Races stat card updates immediately.
+- Overview upcomingCount now calls buildSwumUpcomingSet() to filter already-swum events —
+  matches the Schedule tab count exactly.
+- Overview renewalCount reads from #renewalMonths select instead of hardcoded 6 months.
+  Stat card sub-label is now dynamic (e.g. "Older than 3 months").
+- #renewalMonths onchange also triggers renderedTabs.delete('overview') + renderOverview().
+- populateSelects() snapshots and restores select values — filters no longer reset when
+  a race is added or removed.
+
+### E. Security
+- removeRace and removeUpcomingEvent buttons use data-* attributes instead of inline
+  onclick string interpolation with user data.
+- Delegated click listeners on resultsTbody and scheduleBody set up once in init().
+
+### F. CSS fixes
+- .badge.S and .badge.L use var(--accent) / var(--accent2) — adapt correctly to dark theme.
+- #progChartWrap gets height: 300px !important on mobile (was compressed to 240px by
+  global .chart-wrap override).
+- #tab-regional .stat-val gets font-size: 1.3rem !important on mobile — matches qualifying tab.
+
+### G. UX
+- Escape key closes any open modal or Speed Dial (single keydown listener in init()).
+- Past-dated unlogged schedule rows show a subtle ⚠️ Log? gold badge on the event cell.
+- chartjs-adapter-date-fns pinned to @3.0.0.
+
+### H. Data safety
+- processData() normalises splits to [] if the field is missing or not an array.
+
+### Fix (post v26.2)
+- Best Improvement stat card used .toFixed(1) — changed to .toFixed(2) to match the
+  2 decimal place precision used throughout the dashboard.
+
+## v26.1
 - Fix: FAB parent ＋ glyph centred — added line-height:1; padding:0 to .fab-parent.
 - Fix: Schedule Days column — "Today" only on daysUntil===0; "Yesterday" for -1; "Xd ago" for older.
 - UX: Schedule column order — Event, Days, Course, PB, County Status, County Gap,
