@@ -480,11 +480,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="filter-bar">
       <div class="fg">
         <span class="fl">Event</span>
-        <select id="progEvent" onchange="renderProgression()"><option value="">All Events</option></select>
+        <select id="progEvent" onchange="forceProgression()"><option value="">All Events</option></select>
       </div>
       <div class="fg">
         <span class="fl">Course</span>
-        <select id="progCourse" onchange="renderProgression()">
+        <select id="progCourse" onchange="forceProgression()">
           <option value="">Both</option>
           <option value="S">Short Course</option>
           <option value="L">Long Course</option>
@@ -492,14 +492,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <span class="fl">Show PBs Only</span>
-        <select id="progPBOnly" onchange="renderProgression()">
+        <select id="progPBOnly" onchange="forceProgression()">
           <option value="0">All Swims</option>
           <option value="1">PB Swims Only</option>
         </select>
       </div>
       <div class="fg">
         <span class="fl">Compare PB To</span>
-        <select id="progCompare" onchange="renderProgression()">
+        <select id="progCompare" onchange="forceProgression()">
           <option value="first">First Swim</option>
           <option value="latest">Latest Swim</option>
           <option value="prevBest">Previous Best</option>
@@ -531,7 +531,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="filter-bar">
       <div class="fg">
         <span class="fl">Stroke</span>
-        <select id="pbStroke" onchange="renderPBs()">
+        <select id="pbStroke" onchange="forcePBs()">
           <option value="">All Strokes</option>
           <option value="Free">Freestyle</option>
           <option value="Back">Backstroke</option>
@@ -542,7 +542,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <span class="fl">Course</span>
-        <select id="pbCourse" onchange="renderPBs()">
+        <select id="pbCourse" onchange="forcePBs()">
           <option value="">All Courses</option>
           <option value="S">Short Course (25m)</option>
           <option value="L">Long Course (50m)</option>
@@ -550,7 +550,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <span class="fl">Compare PB To</span>
-        <select id="pbCompare" onchange="renderPBs()">
+        <select id="pbCompare" onchange="forcePBs()">
           <option value="prevBest">Previous Best</option>
           <option value="first">First Swim</option>
           <option value="latest">Latest Swim</option>
@@ -615,11 +615,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="filter-bar">
       <div class="fg">
         <span class="fl">Event</span>
-        <select id="resEvent" onchange="renderResults()"><option value="">All Events</option></select>
+        <select id="resEvent" onchange="forceResults()"><option value="">All Events</option></select>
       </div>
       <div class="fg">
         <span class="fl">Course</span>
-        <select id="resCourse" onchange="renderResults()">
+        <select id="resCourse" onchange="forceResults()">
           <option value="">Both</option>
           <option value="S">Short Course</option>
           <option value="L">Long Course</option>
@@ -627,11 +627,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <span class="fl">Venue</span>
-        <select id="resVenue" onchange="renderResults()"><option value="">All Venues</option></select>
+        <select id="resVenue" onchange="forceResults()"><option value="">All Venues</option></select>
       </div>
       <div class="fg">
         <span class="fl">Year</span>
-        <select id="resYear" onchange="renderResults()"><option value="">All Years</option></select>
+        <select id="resYear" onchange="forceResults()"><option value="">All Years</option></select>
       </div>
       <div class="fg" style="align-self: flex-end;">
         <button class="btn sec" onclick="resetResultsFilters()">Reset Filters</button>
@@ -664,14 +664,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="filter-bar">
       <div class="fg">
         <span class="fl">Gender</span>
-        <select id="qtGender" onchange="renderQualifying()">
+        <select id="qtGender" onchange="forceQualifying()">
           <option value="Boys" selected>Boys</option>
           <option value="Girls">Girls</option>
         </select>
       </div>
       <div class="fg">
         <span class="fl">Age Group</span>
-        <select id="qtAge" onchange="renderQualifying()">
+        <select id="qtAge" onchange="forceQualifying()">
           <option value="10+11">10+11</option>
           <option value="12" selected>12</option>
           <option value="13">13</option>
@@ -683,14 +683,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <span class="fl">Course</span>
-        <select id="qtCourse" onchange="renderQualifying()">
+        <select id="qtCourse" onchange="forceQualifying()">
           <option value="Short Course">Short Course (25m)</option>
           <option value="Long Course">Long Course (50m)</option>
         </select>
       </div>
       <div class="fg">
         <span class="fl">Stroke</span>
-        <select id="qtStroke" onchange="renderQualifying()">
+        <select id="qtStroke" onchange="forceQualifying()">
           <option value="">All Strokes</option>
           <option value="Free">Freestyle</option>
           <option value="Back">Backstroke</option>
@@ -734,14 +734,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div class="filter-bar">
       <div class="fg">
         <span class="fl">Gender</span>
-        <select id="rqGender" onchange="renderRegionalQualifying()">
+        <select id="rqGender" onchange="forceRegional()">
           <option value="Boys" selected>Boys</option>
           <option value="Girls">Girls</option>
         </select>
       </div>
       <div class="fg">
         <span class="fl">Age Group</span>
-        <select id="rqAge" onchange="renderRegionalQualifying()">
+        <select id="rqAge" onchange="forceRegional()">
           <option value="11/12" selected>11/12</option>
           <option value="13">13</option>
           <option value="14">14</option>
@@ -753,14 +753,14 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div class="fg">
         <span class="fl">Course</span>
-        <select id="rqCourse" onchange="renderRegionalQualifying()">
+        <select id="rqCourse" onchange="forceRegional()">
           <option value="Long Course">Long Course (50m)</option>
           <option value="Short Course" selected>Short Course (25m)</option>
         </select>
       </div>
       <div class="fg">
         <span class="fl">Stroke</span>
-        <select id="rqStroke" onchange="renderRegionalQualifying()">
+        <select id="rqStroke" onchange="forceRegional()">
           <option value="">All Strokes</option>
           <option value="Free">Freestyle</option>
           <option value="Back">Backstroke</option>
@@ -1135,18 +1135,20 @@ function toggleTheme() {
 function updateData(newRaw) {
   RAW = newRaw;
   localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
-  invalidateCache();
+  invalidateCache();      // clears renderedTabs — all tabs will re-render on next visit
   DATA = processData(RAW);
   populateSelects();
-  renderOverview();
-  renderProgression();
-  renderPBs();
-  renderResults();
-  renderQualifying();
-  renderRegionalQualifying();
   updateSortHeaders();
-  // NOTE: renderSchedule() and renderTargets() NOT called here —
-  // they depend on UPCOMING which only changes via file upload or removeUpcomingEvent
+  // Only re-render the currently active tab immediately.
+  // All other tabs are guarded by renderedTabs and will render lazily on next visit.
+  // Schedule and Targets also re-render here since race changes affect upcoming/renewal state.
+  const activePanel = document.querySelector('.panel.active');
+  const activeId    = activePanel ? activePanel.id.replace('tab-', '') : 'overview';
+  showTab(activeId, document.querySelector(`.tab.active`));
+  // Always refresh Schedule and Targets since they reflect upcoming/renewal state
+  // that changes when races are added or removed
+  if (activeId !== 'schedule') renderSchedule();
+  if (activeId !== 'targets')  renderTargets();
 }
 
 // ============================================================
@@ -1502,11 +1504,19 @@ function getBestSeasonImprovement() {
       r.event === event && r.course === course && r.date >= seasonStartStr
     );
     if (seasonSwims.length < 2) return; // need at least 2 swims this season
+
     const firstOfSeason = seasonSwims[0];
-    const currentPB = getPBs().find(p => p.event === event && p.course === course);
-    if (!currentPB) return;
-    const improvement = firstOfSeason.timeInSec - currentPB.timeInSec;
-    if (improvement <= 0) return; // no improvement
+    // Use the best time achieved WITHIN this season as the endpoint.
+    // Using the all-time PB would produce false "improvement" when a swimmer's
+    // season opener is slower than a PB set in a previous season.
+    const bestInSeason = seasonSwims.reduce(
+      (min, r) => r.timeInSec < min.timeInSec ? r : min, seasonSwims[0]
+    );
+    // Skip if the season opener was already the fastest this season
+    if (bestInSeason === firstOfSeason) return;
+
+    const improvement = firstOfSeason.timeInSec - bestInSeason.timeInSec;
+    if (improvement <= 0) return;
     if (!best || improvement > best.improvement) {
       best = { improvement, event, course };
     }
@@ -1517,11 +1527,21 @@ function getBestSeasonImprovement() {
 // ============================================================
 // FILTER RESET HELPERS
 // ============================================================
+
+// Force-render wrappers — called by filter onchange handlers to bypass the
+// renderedTabs guard. The guard prevents redundant re-renders on tab switch;
+// filter changes always need a fresh render regardless.
+function forceProgression()   { renderedTabs.delete('progression'); renderProgression(); }
+function forcePBs()           { renderedTabs.delete('pbs');         renderPBs(); }
+function forceResults()       { renderedTabs.delete('results');     renderResults(); }
+function forceQualifying()    { renderedTabs.delete('qualifying');  renderQualifying(); }
+function forceRegional()      { renderedTabs.delete('regional');    renderRegionalQualifying(); }
 function resetProgressionFilters() {
   document.getElementById('progEvent').value   = '';
   document.getElementById('progCourse').value  = '';
   document.getElementById('progPBOnly').value  = '0';
   document.getElementById('progCompare').value = 'first';
+  renderedTabs.delete('progression');
   renderProgression();
 }
 
@@ -1530,6 +1550,7 @@ function resetQualifyingFilters() {
   document.getElementById('qtAge').value    = getCountyAgeBracket();
   document.getElementById('qtCourse').value = 'Short Course';
   document.getElementById('qtStroke').value = '';
+  renderedTabs.delete('qualifying');
   renderQualifying();
 }
 
@@ -1538,6 +1559,7 @@ function resetRegionalFilters() {
   document.getElementById('rqAge').value    = getRegionalAgeBracket();
   document.getElementById('rqCourse').value = 'Short Course';
   document.getElementById('rqStroke').value = '';
+  renderedTabs.delete('regional');
   renderRegionalQualifying();
 }
 
@@ -1792,6 +1814,7 @@ function renderOverview() {
 // PROGRESSION TAB
 // ============================================================
 function renderProgression() {
+  if (renderedTabs.has('progression')) return;
   const CC = getCC(); const PALETTE = getPalette();
   const eventFilter  = document.getElementById('progEvent').value;
   const courseFilter = document.getElementById('progCourse').value;
@@ -1972,12 +1995,14 @@ function renderProgression() {
   });
   bvfHTML += '</tbody></table></div>';
   document.getElementById('bestVsFirst').innerHTML = bvfHTML;
+  renderedTabs.add('progression');
 }
 
 // ============================================================
 // PERSONAL BESTS TAB
 // ============================================================
 function renderPBs() {
+  if (renderedTabs.has('pbs')) return;
   const courseFilter  = document.getElementById('pbCourse').value;
   const strokeFilter  = document.getElementById('pbStroke').value;
   const compareMode   = document.getElementById('pbCompare').value;
@@ -2019,6 +2044,7 @@ function renderPBs() {
       <div class="pb-info">📅 ${fmtDate(pb.date)} · 📍 ${escapeHtml(pb.venue)}</div>
     </div>`;
   }).join('');
+  renderedTabs.add('pbs');
 }
 
 // ============================================================
@@ -2285,6 +2311,7 @@ function sortResults(col) {
   if (sortCol === col) sortDir *= -1;
   else { sortCol = col; sortDir = 1; }
   updateSortHeaders();
+  renderedTabs.delete('results');
   renderResults();
 }
 
@@ -2295,6 +2322,7 @@ function resetResultsFilters() {
   document.getElementById('resYear').value   = '';
   sortCol = 'date'; sortDir = -1;
   updateSortHeaders();
+  renderedTabs.delete('results');
   renderResults();
 }
 
@@ -2303,6 +2331,7 @@ function resetPBFilters() {
   document.getElementById('pbCourse').selectedIndex = 0;
   const compareEl = document.getElementById('pbCompare');
   if (compareEl) compareEl.selectedIndex = 0;
+  renderedTabs.delete('pbs');
   renderPBs();
 }
 
@@ -2317,6 +2346,7 @@ function updateSortHeaders() {
 }
 
 function renderResults() {
+  if (renderedTabs.has('results')) return;
   const eventFilter  = document.getElementById('resEvent').value;
   const courseFilter = document.getElementById('resCourse').value;
   const venueFilter  = document.getElementById('resVenue').value;
@@ -2378,6 +2408,7 @@ function renderResults() {
   }).join('');
 
   document.getElementById('resCount').textContent = `Showing ${filtered.length} of ${DATA.length} results`;
+  renderedTabs.add('results');
 }
 
 // ============================================================
@@ -2513,6 +2544,7 @@ function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
 // COUNTY QUALIFYING TAB
 // ============================================================
 function renderQualifying() {
+  if (renderedTabs.has('qualifying')) return;
   const gender = document.getElementById('qtGender').value;
   const age    = document.getElementById('qtAge').value;
   const course = document.getElementById('qtCourse').value;
@@ -2558,12 +2590,14 @@ function renderQualifying() {
 
   buildQtStatCards(matched, 'qtStats');
   renderQTChartAndTable(matched, 'qtBarChart', 'qtLegend', 'qtTableBody');
+  renderedTabs.add('qualifying');
 }
 
 // ============================================================
 // REGIONAL QUALIFYING TAB
 // ============================================================
 function renderRegionalQualifying() {
+  if (renderedTabs.has('regional')) return;
   if (!SE_QT_DATA.length) {
     document.getElementById('rqStats').innerHTML = '';
     document.getElementById('rqTableBody').innerHTML =
@@ -2607,6 +2641,7 @@ function renderRegionalQualifying() {
 
   buildQtStatCards(matched, 'rqStats');
   renderQTChartAndTable(matched, 'rqBarChart', 'rqLegend', 'rqTableBody');
+  renderedTabs.add('regional');
 }
 
 // ============================================================

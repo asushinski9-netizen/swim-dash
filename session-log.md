@@ -1,6 +1,74 @@
 # Session Log
 
-## v26.2 (latest) — Code Quality & Futureproofing Pass
+## v26.3 (latest)
+Addresses logical bugs and architectural issues identified in Gemini code review.
+
+### Fix 1A — getBestSeasonImprovement() season logic corrected
+The function previously compared `firstOfSeason.timeInSec - currentPB.timeInSec`, where
+`currentPB` was the all-time PB (potentially set in a prior season). This produced a
+false positive improvement whenever a swimmer's season opener was slower than a historical
+PB from a previous year.
+
+Fixed: the endpoint is now `bestInSeason` — the fastest swim achieved *within* the current
+season. If the season opener is already the fastest swim this season, the event is skipped.
+This ensures only genuine within-season progress is reported.
+
+```
+// Old (broken):
+improvement = firstOfSeason.timeInSec - currentPB.timeInSec  // currentPB may be from prior season
+
+// New (correct):
+bestInSeason = fastest swim of that event+course this season
+improvement  = firstOfSeason.timeInSec - bestInSeason.timeInSec  // purely within-season
+```
+
+### Fix 1B — Ghost view on active Splits tab resolved
+`updateData()` previously rendered 6 tabs eagerly and never called `renderSplits()`,
+meaning the Splits tab showed stale data if a race was added while it was active.
+
+Fixed: `updateData()` now calls `invalidateCache()` (which clears `renderedTabs`), then
+re-renders only the currently active tab via `showTab()` on the active panel. Schedule and
+Targets are also explicitly refreshed. All other tabs render lazily on next visit.
+
+### Fix 3A — Eager rendering anti-pattern removed
+`updateData()` no longer forces all 6 tabs to render immediately on every data change,
+defeating the lazy `renderedTabs` guard. Now only the active tab re-renders; others render
+when the user navigates to them.
+
+### Fix 3B — Complete tab guarding strategy
+All render functions now have `renderedTabs.has()` / `renderedTabs.add()` guards:
+- renderOverview() ✓ (existing)
+- renderProgression() ✓ (new)
+- renderPBs() ✓ (new)
+- renderResults() ✓ (new)
+- renderQualifying() ✓ (new)
+- renderRegionalQualifying() ✓ (new)
+- renderSplits() — intentionally unguarded (filter-event driven, always re-renders on select)
+- renderSchedule() / renderTargets() — intentionally unguarded (depend on UPCOMING independently)
+
+### Filter guard bypass pattern (force wrappers)
+Five `forceX()` wrapper functions added in the FILTER RESET HELPERS section:
+```js
+function forceProgression()  { renderedTabs.delete('progression'); renderProgression(); }
+function forcePBs()          { renderedTabs.delete('pbs');         renderPBs(); }
+function forceResults()      { renderedTabs.delete('results');     renderResults(); }
+function forceQualifying()   { renderedTabs.delete('qualifying');  renderQualifying(); }
+function forceRegional()     { renderedTabs.delete('regional');    renderRegionalQualifying(); }
+```
+All filter `onchange` attributes now call these wrappers instead of render functions directly.
+All reset functions (resetProgressionFilters, resetResultsFilters, resetPBFilters,
+resetQualifyingFilters, resetRegionalFilters) and sortResults() also call
+`renderedTabs.delete()` before rendering.
+
+### Fix 2A — Stale documentation contradiction (project files only)
+The v24.1 watch-out about `ALL_EVENT_OPTIONS` being defined inline in addRaceEventRow()
+and addUpcomingEventRow() was removed from known-bugs-and-fixes.md. It contradicted the
+v26.2 entry establishing `ALL_EVENTS` as the canonical single source of truth. No HTML
+change required — the code was already correct from v26.2.
+
+---
+
+## v26.2 — Code Quality & Futureproofing Pass
 
 ### A. State management refactor
 - STATE GLOBALS block introduced immediately after DATA GLOBALS — all mutable `let`
@@ -29,40 +97,34 @@
 - `renderOverview()` empty-DATA guard added — no crash if called before races are loaded.
 - `getBestSeasonImprovement()` builds season start string from local date components
   instead of toISOString() — fixes UTC offset bug in BST/UTC+ timezones.
-- `renderTargets()` shows informative message when QT data is not loaded, instead of
-  silently showing the "all current" green message.
-- `removeUpcomingEvent()` and `saveNewUpcoming()` both call renderedTabs.delete('overview')
+- `renderTargets()` shows informative message when QT data is not loaded.
+- `removeUpcomingEvent()` and `saveNewUpcoming()` call renderedTabs.delete('overview')
   + renderOverview() so the Upcoming Races stat card updates immediately.
-- Overview upcomingCount now calls buildSwumUpcomingSet() to filter already-swum events —
-  matches the Schedule tab count exactly.
-- Overview renewalCount reads from #renewalMonths select instead of hardcoded 6 months.
-  Stat card sub-label is now dynamic (e.g. "Older than 3 months").
-- #renewalMonths onchange also triggers renderedTabs.delete('overview') + renderOverview().
-- populateSelects() snapshots and restores select values — filters no longer reset when
-  a race is added or removed.
+- Overview upcomingCount calls buildSwumUpcomingSet() to filter already-swum events.
+- Overview renewalCount reads from #renewalMonths select; sub-label is dynamic.
+- #renewalMonths onchange also triggers Overview refresh.
+- populateSelects() snapshots and restores select values across rebuilds.
 
 ### E. Security
-- removeRace and removeUpcomingEvent buttons use data-* attributes instead of inline
-  onclick string interpolation with user data.
-- Delegated click listeners on resultsTbody and scheduleBody set up once in init().
+- removeRace and removeUpcomingEvent buttons use data-* attributes + delegated listeners.
 
 ### F. CSS fixes
-- .badge.S and .badge.L use var(--accent) / var(--accent2) — adapt correctly to dark theme.
-- #progChartWrap gets height: 300px !important on mobile (was compressed to 240px by
-  global .chart-wrap override).
-- #tab-regional .stat-val gets font-size: 1.3rem !important on mobile — matches qualifying tab.
+- .badge.S/.badge.L use var(--accent) / var(--accent2) for dark theme.
+- #progChartWrap gets height: 300px on mobile.
+- #tab-regional .stat-val gets font-size: 1.3rem on mobile.
 
 ### G. UX
-- Escape key closes any open modal or Speed Dial (single keydown listener in init()).
-- Past-dated unlogged schedule rows show a subtle ⚠️ Log? gold badge on the event cell.
+- Escape key closes any open modal or Speed Dial.
+- Past-dated unlogged schedule rows show ⚠️ Log? badge.
 - chartjs-adapter-date-fns pinned to @3.0.0.
 
 ### H. Data safety
-- processData() normalises splits to [] if the field is missing or not an array.
+- processData() normalises splits to [] if field is missing or not an array.
 
-### Fix (post v26.2)
-- Best Improvement stat card used .toFixed(1) — changed to .toFixed(2) to match the
-  2 decimal place precision used throughout the dashboard.
+### Post v26.2 fix
+- Best Improvement .toFixed(1) → .toFixed(2).
+
+---
 
 ## v26.1
 - Fix: FAB parent ＋ glyph centred — added line-height:1; padding:0 to .fab-parent.
@@ -72,89 +134,56 @@
 - UX: Overview Recent PBs — sub-line shows Competition (full desktop / 30-char mobile)
   instead of Venue. Reuses existing .comp-full / .comp-short CSS classes.
 
+---
+
 ## v26
 
 ### Feature: Multi-event Add Race modal
 The flat single-entry Add Race form was redesigned so Date, Competition, Venue, and Course
 are shared at the top, with a repeating row for each event's Event, Time, and Splits.
-- `addRaceEventRow()` dynamically appends a styled card row with a select, time input, and splits input.
-- Max 6 event rows per session. Each row has its own ✕ remove button.
-- `saveNewRace()` iterates all rows, validates each time field, and pushes one RAW entry per row.
-- Duplicate event detection within a batch: errors if the same event appears twice.
-- Confirmation flash moves to the ⏱️ child FAB as in v25.
-- Mobile: shared fields sit in a 1×2 grid above the event list; event rows are full-width cards.
+- Max 6 event rows per session. Duplicate event detection within a batch.
 
 ### Feature: Add Upcoming Race (📅 Speed Dial child + modal)
-A new 📅 child button was added to the Speed Dial (2nd from bottom, between ⏱️ and ⚙️).
-- `showAddUpcomingModal()` / `hideAddUpcomingModal()` — standard open/close pattern.
-- `addUpcomingEventRow()` — appends a simple select + ✕ row; max 6 events per modal session.
-- `saveNewUpcoming()` — validates and pushes to UPCOMING; merges into existing meet if same date+course.
-  Persists to `swimDash_UPCOMING` in localStorage. Calls `renderSchedule()` + `renderTargets()`.
-- Confirmation flash on `#fabAddUpcoming`.
-- Speed Dial now has 5 children (bottom→top): ⏱️ Add Race, 📅 Add Upcoming, ⚙️ Data Manager, 🌙 Theme, 👤 Settings.
-- CSS stagger delay: `.fab-child-row:nth-child(5) { transition-delay: 0.20s; }` added.
+- New 📅 child button in Speed Dial (2nd from bottom).
+- saveNewUpcoming() merges into existing meet if same date+course.
+- Persists to swimDash_UPCOMING. Confirmation flash on #fabAddUpcoming.
+- Speed Dial: 5 children (bottom→top): ⏱️ Add Race, 📅 Add Upcoming, ⚙️ Data Manager, 🌙 Theme, 👤 Settings.
 
-### Feature: Remove Upcoming Event (✕ button in Schedule table)
-- Schedule table gains a 12th column (Del) with a ✕ button per row.
-- `removeUpcomingEvent(date, event, course)` splices the event from the matching UPCOMING meet,
-  removing the meet entirely if its events array becomes empty.
-- Persists to localStorage and re-renders Schedule + Targets.
-- Confirm dialog reminds user to download and push JSON for permanent effect.
-- Empty-state `<td>` colspan updated from 11 → 12.
-- Mobile CSS: `#tab-schedule .tbl-wrap .badge` scaling added.
+### Feature: Remove Upcoming Event (✕ in Schedule)
+- removeUpcomingEvent() splices from UPCOMING meet, removes meet if events becomes empty.
+- Persists to localStorage. Re-renders Schedule + Targets.
 
-### Feature: Download Upcoming Races from Data Manager
-- `downloadUpcomingData()` serialises `UPCOMING` and triggers browser download as `upcoming_races.json`.
-- Button added to Data Manager modal immediately after the existing ⬇️ Download my_swims.json button.
+### Feature: Download Upcoming Races
+- downloadUpcomingData() in Data Manager modal.
 
-### Feature: Overview "Best Improvement" stat card (replaces "Events" card)
-- 3rd stat card now shows the **Best Season Improvement** — the largest absolute time drop
-  (first swim of season → current PB) across all event+course pairs with ≥2 swims this season.
-- `getBestSeasonImprovement()` computes this; `getSeasonStart()` returns Sept 1 of the
-  current swim season year (configurable via `SEASON_START_MONTH = 9`).
-- Card navigates to Progression tab on click. Displays `▼ Xs` in green; `—` in muted if no improvement found.
-- Sub-label shows the winning event+course (e.g. "200 Back (S)").
+### Feature: Overview "Best Improvement" stat card
+- Replaces "Events" card. Shows largest within-season time drop (first swim → best).
+- getBestSeasonImprovement() / getSeasonStart(). SEASON_START_MONTH = 9.
 
-### Feature: All Overview stat cards now clickable
-All 6 stat cards now have `onclick="showTab(...)"` and `cursor:pointer`. Previously only
-"Upcoming Races" and "PBs to Renew" were clickable. New link targets:
-  - Total Races → All Results tab
-  - Current PBs → Personal Bests tab
-  - Best Improvement → Progression tab
-  - Races with Splits → Splits tab
+### Feature: All Overview stat cards clickable
+- Total Races → Results, PBs → Personal Bests, Best Improvement → Progression, Splits → Splits.
 
-### Feature: Schedule tab hides already-swum events
-`buildSwumUpcomingSet()` cross-references each upcoming row against DATA (within a 1-day
-window of the meet date). Swum events are filtered out of the visible table. A note line
-appended to `scheduleNote` reports how many events were hidden.
-
-### Configuration
-`SEASON_START_MONTH = 9` (September, 1-indexed) — controls the season boundary used by
-`getSeasonStart()`. Change to adjust when the swim season begins.
+### Feature: Schedule hides already-swum events
+- buildSwumUpcomingSet() cross-references DATA vs upcoming rows (±1 day window).
 
 ---
 
 ## v25
-- **Feature: Speed Dial FAB** — single ➕ parent expands 4 child actions upward.
-  Children (bottom→top): ⏱️ Add Race, ⚙️ Data Manager, 🌙 Theme, 👤 Settings.
-  Backdrop, staggered entrance animation, parent rotates to ✕ when open.
-  closeFabDial() called at the top of every action function.
+- Speed Dial FAB — single ➕ parent expands 4 child actions upward.
 
 ## v24.1
-- Logo: GitHub raw URL. Status badge font fix. 100 IM added. renderQTCells() inline
-  font-size removed. Competition truncation 30/20 chars.
+- Logo: GitHub raw URL. Status badge font fix. 100 IM added. renderQTCells() font-size fix.
 
 ## v24
-- Schedule tab. Targets tab. Swimmer Settings modal. Auto age-bracket from DOB.
-- Overview 6 stat cards (grid6). renderQTCells() two-column layout.
+- Schedule tab. Targets tab. Swimmer Settings. Auto age-bracket from DOB. Overview 6 stat cards.
 
 ## v23
 - Dark/light theme toggle. PALETTE_LIGHT/DARK. getCC()/getPalette().
 
 ## v22
-- escapeHtml(pb.venue). renderQTChartAndTable shared helper. Progress bar 12.5x scale.
+- escapeHtml(pb.venue). renderQTChartAndTable shared. Progress bar 12.5x scale.
 
 ## v21
-- escapeHtml() across all innerHTML. getPBs() fixes in Overview. processData sort stable.
+- escapeHtml() across all innerHTML. getPBs() fixes. processData sort stable.
 
 ## v20–v9 — see earlier entries
