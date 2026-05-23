@@ -1,181 +1,135 @@
 # Session Log
 
-## v26.3 (latest)
-Addresses logical bugs and architectural issues identified in Gemini code review.
+## v27 (latest)
+Major redesign of County QT and Regional QT tabs.
+
+### Core change: dual-course unified view
+Both QT tabs previously showed only one course at a time (filtered by a Course select).
+v27 removes the Course filter entirely and always shows SC and LC simultaneously,
+addressing the UX issue where a swimmer had to switch courses to see their full status.
+
+### New rendering pipeline (replaces renderQTChartAndTable + old buildQtStatCards)
+
+**buildQtStatCards(scMatched, lcMatched, statsElId)**
+- Counts best status per event across SC+LC
+- Stat cards list events with: course badge (SC/LC), best PB, gap chip
+- Gap logic: Qualified→largest margin inside QT; Consideration→smallest gap to QT; Outside→smallest gap to CT
+- Cards are clickable filter shortcuts — click sets Status filter and re-renders tab
+- Prefix derived from statsElId to target correct select (qtStatus or rqStatus)
+
+**buildProgressBar(pbSec, qualify, consider)**
+- Per-event scaling with slowAnchor (CT×1.06) and fastAnchor (QT×0.988)
+- Always rendered even with no PB, so CT/QT markers are always visible
+- CT and QT times labelled above marker lines
+- Gap text NOT returned — rendered once in stats row above (prevents LC duplicate)
+
+**applyStatusFilter(allEventNames, scMatched, lcMatched, statusFilter)**
+- New function; filters event list by best status across courses
+- Qualified: ≥1 course Qualified; Consideration: best=Consideration; Outside: all Outside; No PB: no PB either course
+
+**renderQTCards(scMatched, lcMatched, cardGridId, chartId, legendId, tableBodyId, prefix, statusFilter)**
+- Builds event card grid (4-col desktop / 1-col mobile)
+- Each card: SC block (surface2 bg) + LC block (surface3 bg), left border = course status colour
+- No status chip inside block — status conveyed by border colour only
+- Builds 6-dataset chart (SC PB, SC QT, SC CT, LC PB, LC QT, LC CT)
+- Builds event-by-event table (one row per event+course, SC/LC row toggles)
+
+**toggleQTChart(prefix, course) / toggleQTRows(prefix, course)**
+- SC/LC toggle buttons above chart and table
+- Chart toggle: mutates dataset.hidden via qtToggleState; no re-render
+- Row toggle: adds/removes .hidden class on qt-tbl-row-sc / qt-tbl-row-lc rows
+
+### New Status filter
+Dropdown added to both QT tab filter bars.
+Reset functions updated to also clear Status filter.
+
+### Stat card fixes (iterative within v27 session)
+- Added course badge (SC/LC) next to PB in event list rows
+- Removed "Click to filter" subtitle label (retained as title attr tooltip)
+- Removed underline (border-bottom) from event list rows
+- All items left-aligned (flex-wrap:wrap, no justify-content:space-between)
+- Consistent 0.68rem font on desktop; 0.58rem on mobile for event rows
+- No PB events show event name only (no badge/time rendered when bestPB null)
+- "— No PB" → "No PB" (dash removed from badge text throughout)
+
+### Course block fixes
+- Status chip removed; left border colour conveys status
+- Gap chip shown once only in stats row above bar
+- LC and SC rows now visually consistent
+
+### Mobile fixes
+- QT event-by-event table: added font-size 0.60rem, padding 5px 3px, badge scaling
+  at max-width 500px (matching Schedule/Targets pattern, lost in earlier v27 iteration)
+- "Course" column header → col-full/col-abbr pattern ("C" on mobile)
+
+### Bracket note
+Added #qtNote / #rqNote elements below each event-by-event table.
+Populated by renderQualifying() and renderRegionalQualifying() with gender, age,
+championship year, and next-season notice if champs date has passed.
+
+### Chart redesign
+Old chart: single "best PB" bar vs SC QT/CT lines only.
+New chart: SC PB bars + LC PB bars + SC QT/CT lines + LC QT/CT lines (6 datasets).
+SC/LC toggle buttons above chart control dataset visibility without re-render.
+
+### Event-by-event table (restored and enhanced)
+Previously removed in early v27 implementation. Restored with:
+- One row per event+course (not one row per event)
+- SC/LC row toggle buttons
+- Course column abbreviated to "C" on mobile
+
+---
+
+## v26.3
+Addresses logical bugs and architectural issues.
 
 ### Fix 1A — getBestSeasonImprovement() season logic corrected
-The function previously compared `firstOfSeason.timeInSec - currentPB.timeInSec`, where
-`currentPB` was the all-time PB (potentially set in a prior season). This produced a
-false positive improvement whenever a swimmer's season opener was slower than a historical
-PB from a previous year.
-
-Fixed: the endpoint is now `bestInSeason` — the fastest swim achieved *within* the current
-season. If the season opener is already the fastest swim this season, the event is skipped.
-This ensures only genuine within-season progress is reported.
-
-```
-// Old (broken):
-improvement = firstOfSeason.timeInSec - currentPB.timeInSec  // currentPB may be from prior season
-
-// New (correct):
-bestInSeason = fastest swim of that event+course this season
-improvement  = firstOfSeason.timeInSec - bestInSeason.timeInSec  // purely within-season
-```
-
 ### Fix 1B — Ghost view on active Splits tab resolved
-`updateData()` previously rendered 6 tabs eagerly and never called `renderSplits()`,
-meaning the Splits tab showed stale data if a race was added while it was active.
-
-Fixed: `updateData()` now calls `invalidateCache()` (which clears `renderedTabs`), then
-re-renders only the currently active tab via `showTab()` on the active panel. Schedule and
-Targets are also explicitly refreshed. All other tabs render lazily on next visit.
-
-### Fix 3A — Eager rendering anti-pattern removed
-`updateData()` no longer forces all 6 tabs to render immediately on every data change,
-defeating the lazy `renderedTabs` guard. Now only the active tab re-renders; others render
-when the user navigates to them.
-
+### Fix 3A — Eager rendering anti-pattern removed from updateData()
 ### Fix 3B — Complete tab guarding strategy
-All render functions now have `renderedTabs.has()` / `renderedTabs.add()` guards:
-- renderOverview() ✓ (existing)
-- renderProgression() ✓ (new)
-- renderPBs() ✓ (new)
-- renderResults() ✓ (new)
-- renderQualifying() ✓ (new)
-- renderRegionalQualifying() ✓ (new)
-- renderSplits() — intentionally unguarded (filter-event driven, always re-renders on select)
-- renderSchedule() / renderTargets() — intentionally unguarded (depend on UPCOMING independently)
-
 ### Filter guard bypass pattern (force wrappers)
-Five `forceX()` wrapper functions added in the FILTER RESET HELPERS section:
-```js
-function forceProgression()  { renderedTabs.delete('progression'); renderProgression(); }
-function forcePBs()          { renderedTabs.delete('pbs');         renderPBs(); }
-function forceResults()      { renderedTabs.delete('results');     renderResults(); }
-function forceQualifying()   { renderedTabs.delete('qualifying');  renderQualifying(); }
-function forceRegional()     { renderedTabs.delete('regional');    renderRegionalQualifying(); }
-```
-All filter `onchange` attributes now call these wrappers instead of render functions directly.
-All reset functions (resetProgressionFilters, resetResultsFilters, resetPBFilters,
-resetQualifyingFilters, resetRegionalFilters) and sortResults() also call
-`renderedTabs.delete()` before rendering.
-
-### Fix 2A — Stale documentation contradiction (project files only)
-The v24.1 watch-out about `ALL_EVENT_OPTIONS` being defined inline in addRaceEventRow()
-and addUpcomingEventRow() was removed from known-bugs-and-fixes.md. It contradicted the
-v26.2 entry establishing `ALL_EVENTS` as the canonical single source of truth. No HTML
-change required — the code was already correct from v26.2.
+### Fix 2A — Stale documentation contradiction removed
 
 ---
 
 ## v26.2 — Code Quality & Futureproofing Pass
-
-### A. State management refactor
-- STATE GLOBALS block introduced immediately after DATA GLOBALS — all mutable `let`
-  variables (sortCol, sortDir, fabDialOpen, currentEventFiltered, contextualPBRef,
-  splitBarChart, paceChart) moved here from their scattered locations.
-- `overviewRendered` boolean replaced by `renderedTabs` Set throughout. `renderedTabs.clear()`
-  is the single reset point; `renderedTabs.delete('overview')` for targeted Overview refreshes.
-- `renderAllChartTabs()` helper added before showTab() — toggleTheme() and saveSettings()
-  call it instead of manual render lists. Add new chart tabs here only.
-
+### A. State management refactor — renderedTabs Set
 ### B. Dead code removal
-- `getSwimmerProfile()` removed (declared but never called).
-- `.grid3` CSS class removed (defined but never used in HTML).
-- Dead `border: none` removed from `.tab` ruleset (immediately overridden by the next line).
-- Stale `(v25)` version annotation removed from FAB CSS comment.
-- `const PALETTE = getPalette()` added to `renderQTChartAndTable()` for pattern consistency.
-
-### C. Single event list source of truth
-- `ALL_EVENTS` constant declared in CONFIGURATION section.
-- `addRaceEventRow()`, `addUpcomingEventRow()`, and `renderTargets()` all reference it —
-  three separate inline arrays eliminated.
-- `renderQTCells()` 'No Data' case now renders as italic muted "Not offered" — visually
-  distinct from "No PB" so users understand the event isn't available at their age group.
-
-### D. Logic fixes
-- `renderOverview()` empty-DATA guard added — no crash if called before races are loaded.
-- `getBestSeasonImprovement()` builds season start string from local date components
-  instead of toISOString() — fixes UTC offset bug in BST/UTC+ timezones.
-- `renderTargets()` shows informative message when QT data is not loaded.
-- `removeUpcomingEvent()` and `saveNewUpcoming()` call renderedTabs.delete('overview')
-  + renderOverview() so the Upcoming Races stat card updates immediately.
-- Overview upcomingCount calls buildSwumUpcomingSet() to filter already-swum events.
-- Overview renewalCount reads from #renewalMonths select; sub-label is dynamic.
-- #renewalMonths onchange also triggers Overview refresh.
-- populateSelects() snapshots and restores select values across rebuilds.
-
-### E. Security
-- removeRace and removeUpcomingEvent buttons use data-* attributes + delegated listeners.
-
-### F. CSS fixes
-- .badge.S/.badge.L use var(--accent) / var(--accent2) for dark theme.
-- #progChartWrap gets height: 300px on mobile.
-- #tab-regional .stat-val gets font-size: 1.3rem on mobile.
-
-### G. UX
-- Escape key closes any open modal or Speed Dial.
-- Past-dated unlogged schedule rows show ⚠️ Log? badge.
-- chartjs-adapter-date-fns pinned to @3.0.0.
-
-### H. Data safety
-- processData() normalises splits to [] if field is missing or not an array.
-
-### Post v26.2 fix
-- Best Improvement .toFixed(1) → .toFixed(2).
+### C. Single event list source of truth — ALL_EVENTS
+### D. Logic fixes (empty DATA guard, UTC offset bug, QT data missing message, etc.)
+### E. Security — data-* attributes + event delegation
+### F. CSS fixes — badge colours, mobile chart height, regional stat-val
+### G. UX — Escape key closes modals, past-dated schedule log prompt, adapter pinned
+### H. Data safety — splits normalised to []
 
 ---
 
 ## v26.1
-- Fix: FAB parent ＋ glyph centred — added line-height:1; padding:0 to .fab-parent.
-- Fix: Schedule Days column — "Today" only on daysUntil===0; "Yesterday" for -1; "Xd ago" for older.
-- UX: Schedule column order — Event, Days, Course, PB, County Status, County Gap,
-  Regional Status, Regional Gap, Date, Competition, Venue, Del.
-- UX: Overview Recent PBs — sub-line shows Competition (full desktop / 30-char mobile)
-  instead of Venue. Reuses existing .comp-full / .comp-short CSS classes.
+- FAB parent ＋ centred fix
+- Schedule Days column — "Today" only on daysUntil===0
+- Overview Recent PBs — Competition in sub-line
 
 ---
 
 ## v26
-
-### Feature: Multi-event Add Race modal
-The flat single-entry Add Race form was redesigned so Date, Competition, Venue, and Course
-are shared at the top, with a repeating row for each event's Event, Time, and Splits.
-- Max 6 event rows per session. Duplicate event detection within a batch.
-
-### Feature: Add Upcoming Race (📅 Speed Dial child + modal)
-- New 📅 child button in Speed Dial (2nd from bottom).
-- saveNewUpcoming() merges into existing meet if same date+course.
-- Persists to swimDash_UPCOMING. Confirmation flash on #fabAddUpcoming.
-- Speed Dial: 5 children (bottom→top): ⏱️ Add Race, 📅 Add Upcoming, ⚙️ Data Manager, 🌙 Theme, 👤 Settings.
-
-### Feature: Remove Upcoming Event (✕ in Schedule)
-- removeUpcomingEvent() splices from UPCOMING meet, removes meet if events becomes empty.
-- Persists to localStorage. Re-renders Schedule + Targets.
-
-### Feature: Download Upcoming Races
-- downloadUpcomingData() in Data Manager modal.
-
-### Feature: Overview "Best Improvement" stat card
-- Replaces "Events" card. Shows largest within-season time drop (first swim → best).
-- getBestSeasonImprovement() / getSeasonStart(). SEASON_START_MONTH = 9.
-
-### Feature: All Overview stat cards clickable
-- Total Races → Results, PBs → Personal Bests, Best Improvement → Progression, Splits → Splits.
-
-### Feature: Schedule hides already-swum events
-- buildSwumUpcomingSet() cross-references DATA vs upcoming rows (±1 day window).
+- Multi-event Add Race modal
+- Add Upcoming Race (📅 Speed Dial child + modal)
+- Remove Upcoming Event (✕ in Schedule)
+- Download Upcoming Races
+- Overview "Best Improvement" stat card
+- All Overview stat cards clickable
+- Schedule hides already-swum events
 
 ---
 
 ## v25
-- Speed Dial FAB — single ➕ parent expands 4 child actions upward.
+- Speed Dial FAB — single ➕ parent expands 4 child actions upward
 
 ## v24.1
 - Logo: GitHub raw URL. Status badge font fix. 100 IM added. renderQTCells() font-size fix.
 
 ## v24
-- Schedule tab. Targets tab. Swimmer Settings. Auto age-bracket from DOB. Overview 6 stat cards.
+- Schedule tab. Targets tab. Swimmer Settings. Auto age-bracket. Overview 6 stat cards.
 
 ## v23
 - Dark/light theme toggle. PALETTE_LIGHT/DARK. getCC()/getPalette().

@@ -1,9 +1,9 @@
 # Code Architecture
 
 ## File
-Single HTML file: swimming_dash_vN.html
-Current version: v26.3
-~3307 lines total
+Single HTML file: index.html (swimming_dash_v27.html)
+Current version: v27
+~3831 lines total
 
 ## Script section layout (in order)
 1.  CONFIGURATION — RACE_DATA_URL, QT_DATA_URL, SE_QT_DATA_URL, UPCOMING_DATA_URL,
@@ -12,7 +12,8 @@ Current version: v26.3
 2.  Swimmer profile functions — getSwimmerDOB(), getSwimmerGender()
 3.  DATA globals — RAW, QT_DATA, SE_QT_DATA, UPCOMING, DATA
 4.  STATE globals — renderedTabs (Set), sortCol, sortDir, fabDialOpen,
-                    currentEventFiltered, contextualPBRef, splitBarChart, paceChart
+                    currentEventFiltered, contextualPBRef, splitBarChart, paceChart,
+                    qtToggleState (SC/LC chart+row toggle state for qt and rq prefixes)
 5.  cache{} + invalidateCache() — calls renderedTabs.clear()
 6.  THEME — getCC(), getPalette(), applyTheme(), toggleTheme()
 7.  STATE MANAGEMENT — updateData(newRaw)
@@ -25,7 +26,7 @@ Current version: v26.3
                 getQTStatusForEvent(), renderQTCells()
 10. Derived helpers — uniqueEvents(), uniqueVenues(), uniqueYears(),
                       uniqueEventsWithSplits() — all memoised via cache{}
-11. PALETTE_LIGHT/DARK + getCC()/getPalette()
+11. PALETTE_LIGHT/DARK + getPalette()
 12. MEMOISED LOOKUPS — getPBs(), getFirstSwims(), getLatestSwims(),
                        getPreviousSwims(), getPreviousBestSwims(), getSwimCounts()
 13. getBestSeasonImprovement()
@@ -35,8 +36,9 @@ Current version: v26.3
 16. POPULATE SELECTS — populateSelects() (snapshots/restores values across rebuilds)
 17. TAB RENDERS — renderOverview(), renderProgression(), renderPBs(),
                   renderSplits(), renderSplitCharts(), analyzeSwim(),
-                  renderResults(), buildQtStatCards(),
-                  renderQTChartAndTable(),
+                  renderResults(),
+                  buildQtStatCards(), buildProgressBar(), applyStatusFilter(),
+                  renderQTCards(), toggleQTChart(), toggleQTRows(),
                   renderQualifying(), renderRegionalQualifying(),
                   buildSwumUpcomingSet(), renderSchedule(), renderTargets()
 18. RENDER ALL CHART TABS — renderAllChartTabs()
@@ -55,11 +57,11 @@ Current version: v26.3
 
 ---
 
-## Lazy rendering system (v26.2 + v26.3)
+## Lazy rendering system
 
 ### renderedTabs Set
 Central state variable. Tracks which tabs have completed an initial render since the
-last data or theme change. Declared in the STATE globals block.
+last data or theme change.
 
 | Operation | When to use |
 |---|---|
@@ -68,18 +70,17 @@ last data or theme change. Declared in the STATE globals block.
 | `renderedTabs.has('tab')` | Guard at top of each guarded render function |
 | `renderedTabs.add('tab')` | At the bottom of each guarded render function |
 
-### Guarded render functions (v26.3)
+### Guarded render functions
 renderOverview, renderProgression, renderPBs, renderResults,
 renderQualifying, renderRegionalQualifying.
 
-### Intentionally unguarded (v26.3)
+### Intentionally unguarded
 - renderSplits() — filter-event driven; always re-renders on event select change
 - renderSchedule() — depends on UPCOMING which changes independently
 - renderTargets() — same; also has renewal threshold select
 
-### forceX() wrappers (v26.3)
+### forceX() wrappers
 All filter onchange attributes call force wrappers, NOT render functions directly.
-Wrappers call renderedTabs.delete() before rendering to bypass the lazy guard.
 ```js
 function forceProgression()  { renderedTabs.delete('progression'); renderProgression(); }
 function forcePBs()          { renderedTabs.delete('pbs');         renderPBs(); }
@@ -88,138 +89,154 @@ function forceQualifying()   { renderedTabs.delete('qualifying');  renderQualify
 function forceRegional()     { renderedTabs.delete('regional');    renderRegionalQualifying(); }
 ```
 
-### updateData() active-tab-only re-render (v26.3)
+---
+
+## QT Tab Architecture (v27)
+
+### Two tabs: County QT (#tab-qualifying) and Regional QT (#tab-regional)
+Both use the same rendering pipeline. Prefix `qt` = County, `rq` = Regional.
+
+### Filter bar
+Gender · Age Group · Stroke · Status (new in v27)
+Course filter removed — both courses always shown simultaneously.
+
+### Stat cards — buildQtStatCards(scMatched, lcMatched, statsElId)
+- Counts best status per event across SC+LC
+- Each card lists events with: course badge (SC/LC), best PB time, gap chip
+- Gap logic: Qualified → largest margin inside QT; Consideration → smallest gap to QT;
+  Outside → smallest gap to CT (both across SC and LC)
+- Clicking a card sets the Status filter select and re-renders the tab
+- Prefix derived from statsElId to target correct select ('qtStatus' or 'rqStatus')
+- Mobile: font-size 0.58rem for event rows; desktop: 0.68rem
+
+### Status filter — applyStatusFilter(allEventNames, scMatched, lcMatched, statusFilter)
+Filters the unified event list by best status:
+- Qualified  → at least one course is Qualified
+- Consideration → best across courses is Consideration (none Qualified)
+- Outside → both course PBs are Outside (or No PB is not Outside by definition)
+- No PB → no PB on either course (status No PB or No Data)
+Returns filtered event name array consumed by renderQTCards().
+
+### Progress bar — buildProgressBar(pbSec, qualify, consider)
+Per-event scaling: slowAnchor = CT * 1.06, fastAnchor = QT * 0.988.
+Faster times position further right. Always rendered even when pbSec is null,
+so CT/QT markers are visible for events with no PB.
+CT and QT times shown as small labels above their marker lines.
+Gap text NOT included in bar output — rendered once only in the stats row above.
+
+### Course block design — buildCourseBlock (inner fn in renderQTCards)
+- SC block: background var(--surface2); LC block: background var(--surface3)
+- Left border coloured by that course's own status (green/amber/red/grey)
+- Stats row: course badge · PB time · gap chip — all left-aligned, consistent font
+- Status shown via left border colour only (no chip label)
+- No PB: shows "No PB" badge (no dash prefix)
+- Not offered at age group: shows "Not offered" badge
+
+### Card grid
+4-column grid on desktop (≥1200px), 2-column at 1200px, 1-column on mobile (≤640px).
+Card border colour = best status across both courses.
+Card header badge = best status label (no dash prefix for No PB/No Data).
+
+### Chart — renderQTCards() chart section
+6 datasets:
+- [0] SC PB bars (blue tones, status-coloured)
+- [1] SC QT line (dashed dark blue #1a56c4)
+- [2] SC CT line (dotted light blue #60a5fa)
+- [3] LC PB bars (teal tones, status-coloured)
+- [4] LC QT line (dashed teal #0ea5d4)
+- [5] LC CT line (dotted light teal #67e8f9)
+
+### qtToggleState — SC/LC visibility state
+```js
+const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
 ```
-invalidateCache()  →  renderedTabs.clear()
-processData()
-populateSelects()
-updateSortHeaders()
-showTab(activeId)  →  re-renders only the currently active tab
-renderSchedule()   →  always, race changes affect upcoming/renewal display
-renderTargets()    →  always
-```
-All other tabs render lazily when the user navigates to them.
+- toggleQTChart(prefix, course) — toggles datasets [0,1,2] (SC) or [3,4,5] (LC) via chart.data.datasets[i].hidden
+- toggleQTRows(prefix, course) — toggles .qt-tbl-row-sc or .qt-tbl-row-lc visibility via .hidden class
+Both update the corresponding toggle button active class.
+No re-render needed — purely DOM/Chart.js mutation.
+
+### Event-by-event table
+One row per event+course combination.
+Row classes: qt-tbl-row-sc (plain bg) / qt-tbl-row-lc (subtle teal tint).
+.hidden class applied when toggle is off.
+"Course" column header uses col-full/col-abbr pattern (shows "C" on mobile).
+Table respects the status filter (only filtered events appear).
+
+### Bracket note
+Populated by renderQualifying() and renderRegionalQualifying() into #qtNote / #rqNote.
+Format: "Qualifying times shown for {gender} · age group {age} · {Championship} {year}."
+Includes next-season notice if champs date has passed.
+
+### updateData() active-tab-only re-render
+updateData() re-renders the active tab + Schedule + Targets. All other tabs render lazily.
 
 ---
 
-## getBestSeasonImprovement() (v26.3 corrected)
-Returns { improvement (seconds), event, course } or null.
-Season start: getSeasonStart() → Sept 1 of current season year (SEASON_START_MONTH=9).
-Requires ≥2 swims this season per event+course.
-Endpoint: bestInSeason (fastest swim within the current season) — NOT the all-time PB.
-If season opener is already the season's fastest, the event is skipped.
-Baseline: first chronological swim of the season for that event+course.
-
-```
-improvement = firstOfSeason.timeInSec - bestInSeason.timeInSec
-```
-
-This ensures only genuine within-season progress is reported, regardless of historical PBs
-from prior seasons.
-
----
-
-## Speed Dial FAB (v26: 5 children)
-Single parent ➕ button (bottom-right). Expands 5 child buttons upward.
-State: `let fabDialOpen = false` (in STATE globals block)
-Functions: toggleFabDial(), openFabDial(), closeFabDial()
-Child button order (bottom→top, CSS nth-child 1→5):
+## Speed Dial FAB (5 children)
+Single parent ➕ button (bottom-right). Expands 5 child actions upward.
+State: `let fabDialOpen = false`
+Child button order (bottom→top):
   1. ⏱️ fabAddRace    — Add Race (multi-event)
   2. 📅 fabAddUpcoming — Add Upcoming Race
   3. ⚙️ (no id)        — Data Manager
   4. 🌙 fabTheme        — Toggle Theme
   5. 👤 fabSettings     — Swimmer Settings
-Stagger delays: nth-child(1)=0s, (2)=0.05s, (3)=0.10s, (4)=0.15s, (5)=0.20s
-fabTheme id retained so applyTheme() can sync the icon text.
-closeFabDial() MUST be called first in every action function.
 
 ---
 
-## Swimmer profile (v24)
+## Swimmer profile
 getSwimmerDOB() and getSwimmerGender() read from localStorage.
 Defaults: '2014-10-12' / 'Boys'. Set via 👤 Settings modal.
 saveSettings() persists and calls renderAllChartTabs() + renderSchedule() + renderTargets().
 
-## Age bracket calculation (v24)
+## Age bracket calculation
 getAgeAtEndOfYear(year), getQTSeasonYear(champDateStr),
 getCountyAgeBracket(), getRegionalAgeBracket()
 Called at render time — NOT cached at module level.
 
-## QT status helpers (v24/v26.2)
+## QT status helpers (Schedule + Targets)
 getQTStatusForEvent(event, course, pbSec) → { county: {...}, regional: {...} }
 renderQTCells(s) → [statusCell, gapCell]
-  No Data  → italic "Not offered" (v26.2)
-  No PB    → "No PB"
-  Qualified / Consideration / Outside → coloured status + gap
+These are SEPARATE from the v27 QT tab rendering pipeline.
+They look up a single course at a time and are used only by Schedule and Targets.
 
-## Upcoming races (v24/v26)
+## Upcoming races
 localStorage: swimDash_UPCOMING. Fetched from UPCOMING_DATA_URL on first load.
 Also mutated locally by saveNewUpcoming() and removeUpcomingEvent().
 48-hour grace period applied in renderSchedule(), renderTargets(), buildSwumUpcomingSet().
-upcomingMap: { event: nearestFutureMeet } built inside renderTargets().
 
-## ALL_EVENTS (v26.2)
-18 standard events — single source of truth in CONFIGURATION section.
+## ALL_EVENTS constant — single source of truth
+18 standard events in CONFIGURATION section.
 Used in: addRaceEventRow(), addUpcomingEventRow(), renderTargets().
-Do NOT define inline event arrays anywhere else.
 
-## processData() sort order (v21)
+## processData() sort order
 Stable: date ASC → event name ASC → course ASC (S before L).
 Includes splits normalisation: Array.isArray(r.splits) ? r.splits : [].
 
 ## isPB vs getPBs().includes(swim)
 r.isPB: historical (was fastest at time of swimming)
 getPBs().includes(swim): current fastest ever
-Use getPBs() for: AI Coach badge, Overview recent PBs, pbsThisYear count.
 
-## Add Race modal — multi-event (v26)
-Shared fields: Date, Venue, Course, Competition (entered once per session).
-Per-event rows: dynamically added by addRaceEventRow(), max 6.
-saveNewRace() validates all rows, pushes one RAW entry per row.
-Duplicate event detection within a batch.
+## escapeHtml() — required for all user-supplied strings in innerHTML
+competition, venue from RAW. Event and course are dropdown-constrained — safe without escaping.
 
-## Add Upcoming Race modal (v26)
-saveNewUpcoming() merges into existing meet on same date+course, or pushes new.
-UPCOMING sorted by date. Persists to swimDash_UPCOMING.
-Calls renderedTabs.delete('overview') + renderOverview() + renderSchedule() + renderTargets().
+## getCC() and getPalette() — must be called inside render functions
+Never at module level. Every render function injects at top:
+  const CC = getCC(); const PALETTE = getPalette();
 
-## Remove Upcoming Event (v26)
-removeUpcomingEvent(date, event, course) splices from matching meet's events[].
-If meet.events becomes empty, the meet is removed from UPCOMING.
-Calls renderedTabs.delete('overview') + renderOverview() + renderSchedule() + renderTargets().
+## getBestSeasonImprovement() — within-season only
+Uses bestInSeason (fastest within current season) not all-time currentPB as endpoint.
+Season boundary: getSeasonStart() → SEASON_START_MONTH (default 9 = September).
 
-## Schedule tab — already-swum filter (v26)
-buildSwumUpcomingSet(rows) — cross-references upcoming rows against DATA.
-Match: same event, same course, date within 1 day (±86400000ms).
-renderSchedule() filters visibleRows = rows not in swumSet.
-hiddenCount reported in scheduleNote. Empty-state colspan = 12.
-
-## downloadUpcomingData() (v26)
-Serialises UPCOMING to JSON blob, triggers download as upcoming_races.json.
-
-## Stable DOM wrapper IDs
-splitBarChartWrap / progChartWrap / paceChartWrap
-
-## DRY QT Rendering (v22)
-renderQTChartAndTable() shared by renderQualifying() and renderRegionalQualifying().
-Both receive const CC = getCC(); const PALETTE = getPalette() at top (v26.2).
-
-## Security: escapeHtml() + data attributes (v21/v26.2)
-escapeHtml() applied to all user-supplied fields in innerHTML: competition, venue.
-Remove buttons use data-* attributes + delegated listeners on resultsTbody / scheduleBody.
-Set up once in init(). No inline onclick with user data.
-
-## Responsive QT table headers
-col-full (desktop) / col-abbr (mobile) for gap columns in both QT tabs.
-
-## sortDir default and reset: -1 (newest-first)
-sortResults() and resetResultsFilters() both call renderedTabs.delete('results').
+## renderAllChartTabs() — single registration point
+New chart-bearing tabs must be added here only.
+toggleTheme() and saveSettings() call this.
 
 ## Data authority
 swimDash_RAW      — USER AUTHORITATIVE (never overwritten by GitHub)
 swimDash_QT       — GitHub authoritative (re-fetched if missing)
 swimDash_SE_QT    — GitHub authoritative (re-fetched if missing)
-swimDash_UPCOMING — GitHub authoritative on first load; also mutated locally (v26)
+swimDash_UPCOMING — GitHub authoritative on first load; also mutated locally
 swimDash_theme    — 'light' or 'dark'
 swimDash_DOB      — Swimmer date of birth
 swimDash_GENDER   — Swimmer gender

@@ -60,6 +60,197 @@ body.dark {
   border-left: 3px solid var(--accent) !important;
 }
 
+/* ── QT Event Cards (v27.1) ───────────────────────────────── */
+.qt-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media (max-width: 1200px) { .qt-card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .qt-card-grid { grid-template-columns: 1fr; } }
+
+.qt-event-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: transform 0.15s;
+  font-size: 0.78rem;
+}
+.qt-event-card:hover { transform: translateY(-2px); }
+.qt-event-card.status-qualified     { border-left-color: var(--green); }
+.qt-event-card.status-consideration { border-left-color: var(--gold); }
+.qt-event-card.status-outside       { border-left-color: var(--red); }
+.qt-event-card.status-nopb          { border-left-color: var(--border); }
+
+.qt-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 6px;
+}
+.qt-card-event-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.qt-card-best-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.qt-card-best-badge.qualified     { background: rgba(5,150,105,0.15);  color: var(--green); }
+.qt-card-best-badge.consideration { background: rgba(217,119,6,0.15);  color: var(--gold); }
+.qt-card-best-badge.outside       { background: rgba(220,38,38,0.12);  color: var(--red); }
+.qt-card-best-badge.nopb          { background: var(--surface2);        color: var(--text3); }
+
+/* Course block — SC lighter, LC slightly darker for visual distinction */
+.qt-course-block {
+  border-radius: 8px;
+  padding: 7px 8px 10px;
+  margin-bottom: 5px;
+}
+.qt-course-block:last-child { margin-bottom: 0; }
+.qt-course-block.sc { background: var(--surface2); }
+.qt-course-block.lc { background: var(--surface3); }
+
+/* Stats row inside course block */
+.qt-course-stats {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+  font-size: 0.72rem;
+}
+.qt-pb-val {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+  font-size: 0.78rem;
+}
+.qt-status-chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.qt-status-chip.qualified     { background: rgba(5,150,105,0.15);  color: var(--green); }
+.qt-status-chip.consideration { background: rgba(217,119,6,0.15);  color: var(--gold); }
+.qt-status-chip.outside       { background: rgba(220,38,38,0.12);  color: var(--red); }
+.qt-status-chip.nopb          { background: var(--surface2);        color: var(--text3); }
+
+.qt-gap-chip {
+  font-size: 0.62rem;
+  font-weight: 600;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.qt-gap-chip.inside { color: var(--green); }
+.qt-gap-chip.close  { color: var(--gold); }
+.qt-gap-chip.far    { color: var(--red); }
+
+/* No-PB badge */
+.qt-nopb-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--surface3);
+  color: var(--text3);
+  display: inline-block;
+}
+
+/* Progress bar */
+.qt-progress-wrap {
+  position: relative;
+  height: 7px;
+  background: var(--surface);
+  border-radius: 4px;
+  overflow: visible;
+  margin-top: 18px;
+  margin-bottom: 4px;
+}
+.qt-progress-fill {
+  position: absolute;
+  left: 0; top: 0; height: 100%;
+  border-radius: 4px;
+  min-width: 3px;
+  transition: width 0.8s ease;
+}
+.qt-progress-fill.qualified     { background: var(--green); }
+.qt-progress-fill.consideration { background: var(--gold); }
+.qt-progress-fill.outside       { background: var(--red); }
+.qt-progress-fill.nopb          { background: var(--border); }
+
+/* Marker line */
+.qt-marker-line {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 15px;
+  border-radius: 1px;
+}
+.qt-marker-line.ct { background: var(--gold); }
+.qt-marker-line.qt { background: var(--green); }
+
+/* Time label above marker */
+.qt-marker-time {
+  position: absolute;
+  font-size: 0.52rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  top: -16px;
+  line-height: 1;
+}
+.qt-marker-time.ct { color: var(--gold); }
+.qt-marker-time.qt { color: var(--green); }
+
+/* Chart & table toggle buttons */
+.qt-chart-toggles, .qt-table-toggles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.qt-chart-toggles { margin-bottom: 12px; }
+.qt-table-toggles { margin-bottom: 10px; }
+
+.qt-toggle-btn, .qt-row-toggle {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.qt-toggle-btn.active-sc, .qt-row-toggle.active-sc {
+  border-color: var(--accent);
+  background: rgba(26,86,196,0.12);
+  color: var(--accent);
+}
+.qt-toggle-btn.active-lc, .qt-row-toggle.active-lc {
+  border-color: var(--accent2);
+  background: rgba(14,165,212,0.12);
+  color: var(--accent2);
+}
+
+/* Table row colouring by course */
+.qt-tbl-row-sc td { background: transparent; }
+.qt-tbl-row-lc td { background: rgba(14,165,212,0.04); }
+.qt-tbl-row-sc.hidden, .qt-tbl-row-lc.hidden { display: none; }
+
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
@@ -292,7 +483,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 .sc.fade { border-top: 3px solid var(--red); background: rgba(220,38,38,0.08); }
 .sc.even { border-top: 3px solid var(--border); }
 
-/* Competition column: full text on desktop, truncated on mobile */
+/* Competition column */
 .comp-short { display: none; }
 .comp-full  { display: inline; }
 
@@ -340,14 +531,31 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
   .chart-wrap { height: 240px !important; }
 
+  /* QT card grid mobile */
+  .qt-event-card { padding: 12px 12px 10px !important; }
+  .qt-card-event-name { font-size: 0.9rem !important; }
+  .qt-pb-time { font-size: 0.92rem !important; }
+  .qt-status-chip { font-size: 0.62rem !important; padding: 2px 6px !important; }
+  .qt-card-best-badge { font-size: 0.6rem !important; }
+
   #tab-qualifying .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-  #tab-qualifying .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+  #tab-qualifying .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; }
   #tab-qualifying .stat-val { font-size: 1.3rem !important; }
   #tab-qualifying .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
+  #tab-qualifying .stat-card .qt-gap-chip { font-size: 0.58rem !important; }
+  #tab-qualifying .stat-card span[style*="font-size:0.68rem"] { font-size: 0.58rem !important; }
+  #tab-qualifying .tbl-wrap table { font-size: 0.60rem !important; }
+  #tab-qualifying .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-qualifying .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-qualifying .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
   #tab-regional .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-  #tab-regional .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+  #tab-regional .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; }
   #tab-regional .stat-val { font-size: 1.3rem !important; }
-  #tab-regional .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
+  #tab-regional .stat-card .qt-gap-chip { font-size: 0.58rem !important; }
+  #tab-regional .tbl-wrap table { font-size: 0.60rem !important; }
+  #tab-regional .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-regional .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
+  #tab-regional .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
 
   #progChartWrap { height: 300px !important; }
 
@@ -362,16 +570,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
   .col-abbr { display: inline !important; }
   .col-full  { display: none !important; }
-
-  #tab-qualifying .tbl-wrap table { font-size: 0.60rem !important; }
-  #tab-qualifying .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
-  #tab-qualifying .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
-  #tab-qualifying .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
-
-  #tab-regional .tbl-wrap table { font-size: 0.60rem !important; }
-  #tab-regional .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
-  #tab-regional .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
-  #tab-regional .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
 
   /* Schedule table */
   #tab-schedule .tbl-wrap table { font-size: 0.60rem !important; }
@@ -659,7 +857,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="resCount"></div>
   </div>
 
-  <!-- COUNTY QUALIFYING TAB -->
+  <!-- COUNTY QUALIFYING TAB (v27.1) -->
   <div class="panel" id="tab-qualifying">
     <div class="filter-bar">
       <div class="fg">
@@ -682,13 +880,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         </select>
       </div>
       <div class="fg">
-        <span class="fl">Course</span>
-        <select id="qtCourse" onchange="forceQualifying()">
-          <option value="Short Course">Short Course (25m)</option>
-          <option value="Long Course">Long Course (50m)</option>
-        </select>
-      </div>
-      <div class="fg">
         <span class="fl">Stroke</span>
         <select id="qtStroke" onchange="forceQualifying()">
           <option value="">All Strokes</option>
@@ -699,37 +890,72 @@ tr:hover td { background: var(--surface2); color: var(--text); }
           <option value="IM">Individual Medley</option>
         </select>
       </div>
+      <div class="fg">
+        <span class="fl">Status</span>
+        <select id="qtStatus" onchange="forceQualifying()">
+          <option value="">All Statuses</option>
+          <option value="Qualified">✅ Qualified</option>
+          <option value="Consideration">🔶 Consideration</option>
+          <option value="Outside">❌ Outside</option>
+          <option value="No PB">— No PB</option>
+        </select>
+      </div>
       <div class="fg" style="align-self: flex-end;">
         <button class="btn sec" onclick="resetQualifyingFilters()">Reset Filters</button>
       </div>
     </div>
+    <!-- Summary stat cards — best status across SC+LC -->
     <div class="grid4" id="qtStats" style="margin-bottom:20px"></div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title">🎯 PB vs Qualifying &amp; Consideration Times</div>
+    <!-- Event cards (SC + LC blocks per card, 4-per-row on desktop) -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">🎯 Qualification Status — SC &amp; LC</div>
+      <p style="font-size:0.78rem;color:var(--text3);margin-bottom:16px;">
+        Each card shows Short Course and Long Course status. Card border = best status across either course.
+        Progress bars are per-event scaled: <span style="color:var(--gold);font-weight:600;">●</span> CT &nbsp;
+        <span style="color:var(--green);font-weight:600;">●</span> QT markers shown above bar.
+      </p>
+      <div class="qt-card-grid" id="qtCardGrid"></div>
+    </div>
+    <!-- Chart -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">📊 PB vs County Qualifying &amp; Consideration Times</div>
+      <div class="qt-chart-toggles" id="qtChartToggles">
+        <button class="qt-toggle-btn active-sc" id="qtToggleSC" onclick="toggleQTChart('qt','SC')">● SC</button>
+        <button class="qt-toggle-btn active-lc" id="qtToggleLC" onclick="toggleQTChart('qt','LC')">● LC</button>
+      </div>
       <div style="height:380px;position:relative"><canvas id="qtBarChart"></canvas></div>
       <div class="chart-legend" id="qtLegend" style="margin-top:12px"></div>
     </div>
+    <!-- Event-by-Event Table -->
     <div class="card">
       <div class="card-title">📋 Event-by-Event Status</div>
+      <div class="qt-table-toggles">
+        <button class="qt-row-toggle active-sc" id="qtRowToggleSC" onclick="toggleQTRows('qt','SC')">● Show SC</button>
+        <button class="qt-row-toggle active-lc" id="qtRowToggleLC" onclick="toggleQTRows('qt','LC')">● Show LC</button>
+      </div>
       <div class="tbl-wrap">
         <table>
           <thead>
             <tr>
-              <th>Event</th><th>PB</th><th>PB Date</th>
+              <th>Event</th>
+              <th><span class="col-full">Course</span><span class="col-abbr">C</span></th>
+              <th>PB</th>
+              <th>PB Date</th>
               <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
               <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
-              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap to QT</span></th>
-              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap to CT</span></th>
+              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap QT</span></th>
+              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap CT</span></th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="qtTableBody"></tbody>
         </table>
       </div>
+      <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="qtNote"></div>
     </div>
   </div>
 
-  <!-- REGIONAL QUALIFYING TAB -->
+  <!-- REGIONAL QUALIFYING TAB (v27.1) -->
   <div class="panel" id="tab-regional">
     <div class="filter-bar">
       <div class="fg">
@@ -752,13 +978,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         </select>
       </div>
       <div class="fg">
-        <span class="fl">Course</span>
-        <select id="rqCourse" onchange="forceRegional()">
-          <option value="Long Course">Long Course (50m)</option>
-          <option value="Short Course" selected>Short Course (25m)</option>
-        </select>
-      </div>
-      <div class="fg">
         <span class="fl">Stroke</span>
         <select id="rqStroke" onchange="forceRegional()">
           <option value="">All Strokes</option>
@@ -769,33 +988,68 @@ tr:hover td { background: var(--surface2); color: var(--text); }
           <option value="IM">Individual Medley</option>
         </select>
       </div>
+      <div class="fg">
+        <span class="fl">Status</span>
+        <select id="rqStatus" onchange="forceRegional()">
+          <option value="">All Statuses</option>
+          <option value="Qualified">✅ Qualified</option>
+          <option value="Consideration">🔶 Consideration</option>
+          <option value="Outside">❌ Outside</option>
+          <option value="No PB">— No PB</option>
+        </select>
+      </div>
       <div class="fg" style="align-self: flex-end;">
         <button class="btn sec" onclick="resetRegionalFilters()">Reset Filters</button>
       </div>
     </div>
+    <!-- Summary stat cards -->
     <div class="grid4" id="rqStats" style="margin-bottom:20px"></div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title">🏅 PB vs SE London Regional Qualifying &amp; Consideration Times</div>
+    <!-- Event cards -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">🏅 Qualification Status — SC &amp; LC</div>
+      <p style="font-size:0.78rem;color:var(--text3);margin-bottom:16px;">
+        Each card shows Short Course and Long Course status. Card border = best status across either course.
+        Progress bars are per-event scaled: <span style="color:var(--gold);font-weight:600;">●</span> CT &nbsp;
+        <span style="color:var(--green);font-weight:600;">●</span> QT markers shown above bar.
+      </p>
+      <div class="qt-card-grid" id="rqCardGrid"></div>
+    </div>
+    <!-- Chart -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">📊 PB vs SE London Regional Qualifying &amp; Consideration Times</div>
+      <div class="qt-chart-toggles" id="rqChartToggles">
+        <button class="qt-toggle-btn active-sc" id="rqToggleSC" onclick="toggleQTChart('rq','SC')">● SC</button>
+        <button class="qt-toggle-btn active-lc" id="rqToggleLC" onclick="toggleQTChart('rq','LC')">● LC</button>
+      </div>
       <div style="height:380px;position:relative"><canvas id="rqBarChart"></canvas></div>
       <div class="chart-legend" id="rqLegend" style="margin-top:12px"></div>
     </div>
+    <!-- Event-by-Event Table -->
     <div class="card">
       <div class="card-title">📋 Event-by-Event Status</div>
+      <div class="qt-table-toggles">
+        <button class="qt-row-toggle active-sc" id="rqRowToggleSC" onclick="toggleQTRows('rq','SC')">● Show SC</button>
+        <button class="qt-row-toggle active-lc" id="rqRowToggleLC" onclick="toggleQTRows('rq','LC')">● Show LC</button>
+      </div>
       <div class="tbl-wrap">
         <table>
           <thead>
             <tr>
-              <th>Event</th><th>PB</th><th>PB Date</th>
+              <th>Event</th>
+              <th><span class="col-full">Course</span><span class="col-abbr">C</span></th>
+              <th>PB</th>
+              <th>PB Date</th>
               <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
               <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
-              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap to QT</span></th>
-              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap to CT</span></th>
+              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap QT</span></th>
+              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap CT</span></th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="rqTableBody"></tbody>
         </table>
       </div>
+      <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="rqNote"></div>
     </div>
   </div>
 
@@ -830,7 +1084,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
   <!-- TARGETS TAB -->
   <div class="panel" id="tab-targets">
-    <!-- Section 1: PB Renewal -->
     <div class="card" style="margin-bottom:20px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
         <div class="card-title" style="margin-bottom:0">⏰ PBs Due for Renewal</div>
@@ -870,8 +1123,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </div>
       <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="renewalNote"></div>
     </div>
-
-    <!-- Section 2: Never Swum -->
     <div class="card">
       <div class="card-title">🆕 Events Not Yet Swum</div>
       <p style="font-size:0.8rem;color:var(--text3);margin-bottom:14px">
@@ -883,27 +1134,22 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
 </div><!-- /container -->
 
-<!-- Speed Dial FAB (v26: 5 children) -->
+<!-- Speed Dial FAB -->
 <div class="fab-backdrop" id="fabBackdrop" onclick="closeFabDial()"></div>
 <div class="fab-dial">
   <div class="fab-children" id="fabChildren">
-    <!-- Top (5th) -->
     <div class="fab-child-row">
       <button class="fab-child" id="fabSettings" onclick="showSettingsModal()" title="Swimmer settings">👤</button>
     </div>
-    <!-- 4th -->
     <div class="fab-child-row">
       <button class="fab-child" id="fabTheme" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     </div>
-    <!-- 3rd -->
     <div class="fab-child-row">
       <button class="fab-child" onclick="showDataModal()" title="Data Manager">⚙️</button>
     </div>
-    <!-- 2nd — NEW: Add Upcoming Race -->
     <div class="fab-child-row">
       <button class="fab-child" id="fabAddUpcoming" onclick="showAddUpcomingModal()" title="Add upcoming race">📅</button>
     </div>
-    <!-- 1st (closest to thumb) -->
     <div class="fab-child-row">
       <button class="fab-child" id="fabAddRace" onclick="showAddRaceModal()" title="Add new race result">⏱️</button>
     </div>
@@ -911,15 +1157,13 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   <button class="fab-parent" id="fabParent" onclick="toggleFabDial()" title="Actions">＋</button>
 </div>
 
-<!-- ADD RACE MODAL (v26: multi-event) -->
+<!-- ADD RACE MODAL -->
 <div id="addRaceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:998; align-items:center; justify-content:center; padding:16px;">
   <div class="card" style="width:520px; max-width:100%; max-height:90vh; overflow-y:auto; background:var(--surface);">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
       <h2 style="font-size:1.1rem; font-weight:700; color:var(--text);">➕ Add Race Result</h2>
       <button class="btn sec" style="min-width:auto; padding:4px 10px;" onclick="hideAddRaceModal()">✕</button>
     </div>
-
-    <!-- Shared fields -->
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
       <div class="fg" style="grid-column:1/span 2;">
         <label class="fl" for="ar-date">Date</label>
@@ -943,22 +1187,18 @@ tr:hover td { background: var(--surface2); color: var(--text); }
           style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.85rem;width:100%;">
       </div>
     </div>
-
-    <!-- Per-event rows -->
     <div class="fl" style="margin-bottom:8px;">Events</div>
     <div id="ar-events-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;"></div>
     <button type="button" onclick="addRaceEventRow()"
       style="background:none;border:1px dashed var(--border);color:var(--accent);border-radius:8px;padding:8px;width:100%;cursor:pointer;font-size:0.83rem;">
       ＋ Add another event
     </button>
-
     <div id="ar-error" style="display:none;margin-top:12px;padding:10px;background:rgba(220,38,38,0.1);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:0.82rem;"></div>
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn sec" style="flex:1;" onclick="hideAddRaceModal()">Cancel</button>
       <button class="btn" style="flex:2;" onclick="saveNewRace()">💾 Save Race</button>
     </div>
     <div style="margin-top:12px;font-size:0.72rem;color:var(--text3);text-align:center;">
-      For multi-day meets, add results separately per day.<br>
       Data is stored in your browser's local storage only. Use ⚙️ → ⬇️ Download to save permanently.
     </div>
   </div>
@@ -971,8 +1211,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       <h2 style="font-size:1.1rem; font-weight:700; color:var(--text);">📅 Add Upcoming Race</h2>
       <button class="btn sec" style="min-width:auto; padding:4px 10px;" onclick="hideAddUpcomingModal()">✕</button>
     </div>
-
-    <!-- Shared meet fields -->
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
       <div class="fg" style="grid-column:1/span 2;">
         <label class="fl" for="au-date">Date</label>
@@ -996,23 +1234,18 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         </select>
       </div>
     </div>
-
-    <!-- Per-event rows -->
     <div class="fl" style="margin-bottom:8px;">Events</div>
     <div id="au-events-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
     <button type="button" onclick="addUpcomingEventRow()"
       style="background:none;border:1px dashed var(--border);color:var(--accent);border-radius:8px;padding:8px;width:100%;cursor:pointer;font-size:0.83rem;">
       ＋ Add another event
     </button>
-
     <div id="au-error" style="display:none;margin-top:12px;padding:10px;background:rgba(220,38,38,0.1);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:0.82rem;"></div>
-
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn sec" style="flex:1;" onclick="hideAddUpcomingModal()">Cancel</button>
       <button class="btn" style="flex:2;" onclick="saveNewUpcoming()">💾 Save</button>
     </div>
     <div style="margin-top:12px;font-size:0.72rem;color:var(--text3);text-align:center;">
-      For multi-day meets, add a separate entry per day.<br>
       Data is stored in your browser's local storage only. Use ⚙️ → ⬇️ Download to save permanently.
     </div>
   </div>
@@ -1057,15 +1290,10 @@ const QT_DATA_URL     = 'https://raw.githubusercontent.com/asushinski9-netizen/s
 const SE_QT_DATA_URL  = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/se_london_qt.json';
 const UPCOMING_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/upcoming_races.json';
 
-// Championship last days — used to compute age brackets
 const COUNTY_CHAMPS_DATE   = '2026-02-15';
 const REGIONAL_CHAMPS_DATE = '2026-05-04';
+const SEASON_START_MONTH = 9;
 
-// Season configuration — controls getBestSeasonImprovement() season boundary
-const SEASON_START_MONTH = 9; // September (1-indexed)
-
-// Canonical event list — single source of truth for modals, Targets, and QT lookups.
-// Add new events here only; all consumers reference this constant.
 const ALL_EVENTS = [
   '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
   '50 Back','100 Back','200 Back',
@@ -1088,13 +1316,13 @@ let UPCOMING  = JSON.parse(localStorage.getItem('swimDash_UPCOMING')) || [];
 let DATA = [];
 
 // ============================================================
-// STATE — mutable runtime variables (all declared here to avoid hoisting issues)
+// STATE
 // ============================================================
-const renderedTabs       = new Set(); // tracks which tabs have rendered since last data/theme change
-let sortCol              = 'date';    // All Results sort column
-let sortDir              = -1;        // All Results sort direction (-1 = newest first)
-let fabDialOpen          = false;     // Speed Dial open/closed state
-let currentEventFiltered = [];        // Splits tab working state
+const renderedTabs       = new Set();
+let sortCol              = 'date';
+let sortDir              = -1;
+let fabDialOpen          = false;
+let currentEventFiltered = [];
 let contextualPBRef      = null;
 let splitBarChart        = null;
 let paceChart            = null;
@@ -1135,18 +1363,13 @@ function toggleTheme() {
 function updateData(newRaw) {
   RAW = newRaw;
   localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
-  invalidateCache();      // clears renderedTabs — all tabs will re-render on next visit
+  invalidateCache();
   DATA = processData(RAW);
   populateSelects();
   updateSortHeaders();
-  // Only re-render the currently active tab immediately.
-  // All other tabs are guarded by renderedTabs and will render lazily on next visit.
-  // Schedule and Targets also re-render here since race changes affect upcoming/renewal state.
   const activePanel = document.querySelector('.panel.active');
   const activeId    = activePanel ? activePanel.id.replace('tab-', '') : 'overview';
   showTab(activeId, document.querySelector(`.tab.active`));
-  // Always refresh Schedule and Targets since they reflect upcoming/renewal state
-  // that changes when races are added or removed
   if (activeId !== 'schedule') renderSchedule();
   if (activeId !== 'targets')  renderTargets();
 }
@@ -1206,7 +1429,6 @@ function downloadRaceData() {
   URL.revokeObjectURL(url);
 }
 
-// v26: Download current in-memory UPCOMING data
 function downloadUpcomingData() {
   const json = JSON.stringify(UPCOMING, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
@@ -1234,7 +1456,7 @@ function timeToSec(t) {
 }
 
 function secToTime(s) {
-  if (!isFinite(s)) return '—';
+  if (!isFinite(s) || s === null) return '—';
   const m = Math.floor(s / 60);
   const rem = (s - m * 60).toFixed(2);
   return m > 0 ? m + ':' + rem.padStart(5, '0') : rem;
@@ -1264,7 +1486,6 @@ function getStroke(event) {
 
 function getDistance(event) { return parseInt(event.split(' ')[0]); }
 
-// ── Age & season helpers ─────────────────────────────────────
 function getAgeAtEndOfYear(year) {
   return year - parseLocalDate(getSwimmerDOB()).getFullYear();
 }
@@ -1289,7 +1510,6 @@ function getRegionalAgeBracket() {
   return String(age);
 }
 
-// v26: Returns the Date for the start of the current swim season (Sept 1).
 function getSeasonStart() {
   const now = new Date();
   const year = now.getMonth() + 1 >= SEASON_START_MONTH
@@ -1298,7 +1518,7 @@ function getSeasonStart() {
   return new Date(year, SEASON_START_MONTH - 1, 1);
 }
 
-// ── QT Status helpers ─────────────────────────────────────────
+// getQTStatusForEvent — used by Schedule and Targets tabs (unchanged)
 function getQTStatusForEvent(event, course, pbSec) {
   const qtCourse = course === 'S' ? 'Short Course' : 'Long Course';
 
@@ -1485,36 +1705,28 @@ function getSwimCounts() {
 }
 
 // ============================================================
-// v26: Best Season Improvement
+// BEST SEASON IMPROVEMENT
 // ============================================================
 function getBestSeasonImprovement() {
   const seasonStart = getSeasonStart();
-  // Build date string from local components — toISOString() uses UTC and gives wrong date in UTC+ timezones
   const y  = seasonStart.getFullYear();
   const m  = String(seasonStart.getMonth() + 1).padStart(2, '0');
   const d  = String(seasonStart.getDate()).padStart(2, '0');
   const seasonStartStr = `${y}-${m}-${d}`;
-  let best = null; // { improvement, event, course }
+  let best = null;
 
   const keys = [...new Set(DATA.map(r => r.event + '|' + r.course))];
   keys.forEach(key => {
     const [event, course] = key.split('|');
-    // All swims this season, sorted chronologically (DATA is already sorted)
     const seasonSwims = DATA.filter(r =>
       r.event === event && r.course === course && r.date >= seasonStartStr
     );
-    if (seasonSwims.length < 2) return; // need at least 2 swims this season
-
+    if (seasonSwims.length < 2) return;
     const firstOfSeason = seasonSwims[0];
-    // Use the best time achieved WITHIN this season as the endpoint.
-    // Using the all-time PB would produce false "improvement" when a swimmer's
-    // season opener is slower than a PB set in a previous season.
-    const bestInSeason = seasonSwims.reduce(
+    const bestInSeason  = seasonSwims.reduce(
       (min, r) => r.timeInSec < min.timeInSec ? r : min, seasonSwims[0]
     );
-    // Skip if the season opener was already the fastest this season
     if (bestInSeason === firstOfSeason) return;
-
     const improvement = firstOfSeason.timeInSec - bestInSeason.timeInSec;
     if (improvement <= 0) return;
     if (!best || improvement > best.improvement) {
@@ -1527,15 +1739,12 @@ function getBestSeasonImprovement() {
 // ============================================================
 // FILTER RESET HELPERS
 // ============================================================
-
-// Force-render wrappers — called by filter onchange handlers to bypass the
-// renderedTabs guard. The guard prevents redundant re-renders on tab switch;
-// filter changes always need a fresh render regardless.
 function forceProgression()   { renderedTabs.delete('progression'); renderProgression(); }
 function forcePBs()           { renderedTabs.delete('pbs');         renderPBs(); }
 function forceResults()       { renderedTabs.delete('results');     renderResults(); }
 function forceQualifying()    { renderedTabs.delete('qualifying');  renderQualifying(); }
 function forceRegional()      { renderedTabs.delete('regional');    renderRegionalQualifying(); }
+
 function resetProgressionFilters() {
   document.getElementById('progEvent').value   = '';
   document.getElementById('progCourse').value  = '';
@@ -1548,8 +1757,8 @@ function resetProgressionFilters() {
 function resetQualifyingFilters() {
   document.getElementById('qtGender').value = getSwimmerGender();
   document.getElementById('qtAge').value    = getCountyAgeBracket();
-  document.getElementById('qtCourse').value = 'Short Course';
   document.getElementById('qtStroke').value = '';
+  document.getElementById('qtStatus').value = '';
   renderedTabs.delete('qualifying');
   renderQualifying();
 }
@@ -1557,8 +1766,8 @@ function resetQualifyingFilters() {
 function resetRegionalFilters() {
   document.getElementById('rqGender').value = getSwimmerGender();
   document.getElementById('rqAge').value    = getRegionalAgeBracket();
-  document.getElementById('rqCourse').value = 'Short Course';
   document.getElementById('rqStroke').value = '';
+  document.getElementById('rqStatus').value = '';
   renderedTabs.delete('regional');
   renderRegionalQualifying();
 }
@@ -1575,7 +1784,6 @@ function destroyChart(id) {
 // POPULATE SELECTS
 // ============================================================
 function populateSelects() {
-  // Snapshot current selections before rebuilding
   const prevProgEvent   = document.getElementById('progEvent').value;
   const prevSplitsEvent = document.getElementById('splitsEvent').value;
   const prevResEvent    = document.getElementById('resEvent').value;
@@ -1598,7 +1806,6 @@ function populateSelects() {
   document.getElementById('resYear').innerHTML =
     '<option value="">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
 
-  // Restore previous selections (browser resets to default if value no longer exists)
   document.getElementById('progEvent').value   = prevProgEvent;
   document.getElementById('splitsEvent').value = prevSplitsEvent;
   document.getElementById('resEvent').value    = prevResEvent;
@@ -1613,7 +1820,6 @@ function renderOverview() {
   const CC = getCC(); const PALETTE = getPalette();
   if (renderedTabs.has('overview')) return;
 
-  // Guard against empty data (e.g. before any races are loaded)
   if (DATA.length === 0) {
     document.getElementById('hTotalRaces').textContent = '0';
     document.getElementById('hEvents').textContent     = '0';
@@ -1644,7 +1850,6 @@ function renderOverview() {
   const pbsThisYear    = pbs.filter(r => r.date >= currentYearStart).length;
   const withSplits     = DATA.filter(r => r.splits.length > 0).length;
 
-  // Upcoming events count (48hr grace, excluding already-swum events — mirrors Schedule tab)
   const upcomingCount = (() => {
     const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 2);
     const rows = [];
@@ -1657,7 +1862,6 @@ function renderOverview() {
     return rows.filter(r => !swumSet.has(r.date + '|' + r.event + '|' + r.course)).length;
   })();
 
-  // PBs older than threshold — reads from Targets select to stay in sync
   const renewalMonths = parseInt(document.getElementById('renewalMonths')?.value || '6');
   const renewalCount = (() => {
     const threshold = new Date(); threshold.setMonth(threshold.getMonth() - renewalMonths);
@@ -1671,7 +1875,6 @@ function renderOverview() {
     ).length;
   })();
 
-  // v26: Best Season Improvement
   const seasonBest      = getBestSeasonImprovement();
   const seasonBestVal   = seasonBest ? `▼ ${seasonBest.improvement.toFixed(2)}s` : '—';
   const seasonBestSub   = seasonBest
@@ -1717,7 +1920,6 @@ function renderOverview() {
       <div class="stat-sub">Older than ${renewalMonths} months</div>
     </div>`;
 
-  // Recent PBs
   const recentPBs = getPBs().slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
   const rpEl = document.getElementById('recentPBs');
   if (recentPBs.length === 0) {
@@ -1748,7 +1950,6 @@ function renderOverview() {
     }).join('');
   }
 
-  // Race frequency chart
   const monthMap = {};
   DATA.forEach(r => { const ym = r.date.slice(0, 7); monthMap[ym] = (monthMap[ym] || 0) + 1; });
   const months2 = Object.keys(monthMap).sort();
@@ -1773,7 +1974,6 @@ function renderOverview() {
     }
   });
 
-  // Events pie
   const eventCount = {};
   DATA.forEach(r => { eventCount[r.event] = (eventCount[r.event] || 0) + 1; });
   const evKeys = Object.keys(eventCount).sort();
@@ -1793,7 +1993,6 @@ function renderOverview() {
     }
   });
 
-  // Venues
   const venueCount = {};
   DATA.forEach(r => { if (r.venue && r.venue !== 'UNKNOWN') venueCount[r.venue] = (venueCount[r.venue] || 0) + 1; });
   const vSorted = Object.entries(venueCount).sort((a, b) => b[1] - a[1]);
@@ -2050,7 +2249,6 @@ function renderPBs() {
 // ============================================================
 // SPLITS TAB
 // ============================================================
-
 function renderSplits() {
   const CC = getCC(); const PALETTE = getPalette();
   const eventFilter  = document.getElementById('splitsEvent').value;
@@ -2306,7 +2504,6 @@ function analyzeSwim(index) {
 // ============================================================
 // ALL RESULTS TAB
 // ============================================================
-
 function sortResults(col) {
   if (sortCol === col) sortDir *= -1;
   else { sortCol = col; sortDir = 1; }
@@ -2412,82 +2609,397 @@ function renderResults() {
 }
 
 // ============================================================
-// SHARED QT STAT CARD BUILDER
 // ============================================================
-function buildQtStatCards(matched, statsElId) {
-  const qualified     = matched.filter(r => r.status === 'Qualified');
-  const consideration = matched.filter(r => r.status === 'Consideration');
-  const outside       = matched.filter(r => r.status === 'Outside');
-  const noPB          = matched.filter(r => r.status === 'No PB');
+// QT STAT CARDS (v27.1) — unified across SC + LC
+// Shows: icon, event, best PB, gap to QT/CT or inside QT
+// Gap logic: use the smallest (best) gap across both courses
+// ============================================================
+function buildQtStatCards(scMatched, lcMatched, statsElId) {
+  const statusRank = s => ({'Qualified':0,'Consideration':1,'Outside':2,'No PB':3,'No Data':4}[s] ?? 5);
 
-  const evList = (items, fn) => items.length
-    ? `<div style="margin-top:8px;text-align:left;font-size:0.7rem;line-height:1.6;">${items.map(fn).join('')}</div>`
+  const allEventNames = [...new Set([
+    ...scMatched.map(r => r.event),
+    ...lcMatched.map(r => r.event)
+  ])];
+
+  // Per-event: determine best status + best PB + course of that PB + best gap display
+  const eventData = {};
+  allEventNames.forEach(event => {
+    const sc = scMatched.find(r => r.event === event);
+    const lc = lcMatched.find(r => r.event === event);
+    const scS = sc ? sc.status : 'No Data';
+    const lcS = lc ? lc.status : 'No Data';
+    const bestStatus = statusRank(scS) <= statusRank(lcS) ? scS : lcS;
+
+    // Best PB (fastest time across both courses) + which course it came from
+    const candidates = [
+      sc?.pbSec !== null && sc?.pbSec !== undefined ? {sec: sc.pbSec, course: 'S'} : null,
+      lc?.pbSec !== null && lc?.pbSec !== undefined ? {sec: lc.pbSec, course: 'L'} : null,
+    ].filter(Boolean);
+    const bestEntry = candidates.length ? candidates.reduce((a, b) => a.sec <= b.sec ? a : b) : null;
+    const bestPB     = bestEntry?.sec ?? null;
+    const bestCourse = bestEntry?.course ?? null;
+
+    // Gap: smallest gap (best margin) across both courses
+    let gapText = '', gapClass = '';
+    if (bestStatus === 'Qualified') {
+      const margins = [sc, lc]
+        .filter(r => r && r.status === 'Qualified' && r.qualify !== null && r.pbSec !== null)
+        .map(r => r.qualify - r.pbSec);
+      const best = margins.length ? Math.max(...margins) : null;
+      gapText  = best !== null ? `▼ ${best.toFixed(2)}s inside QT` : '';
+      gapClass = 'inside';
+    } else if (bestStatus === 'Consideration') {
+      const gaps = [sc, lc]
+        .filter(r => r && r.status === 'Consideration' && r.qualify !== null && r.pbSec !== null)
+        .map(r => r.pbSec - r.qualify);
+      const best = gaps.length ? Math.min(...gaps) : null;
+      gapText  = best !== null ? `+${best.toFixed(2)}s to QT` : '';
+      gapClass = 'close';
+    } else if (bestStatus === 'Outside') {
+      const gaps = [sc, lc]
+        .filter(r => r && r.pbSec !== null && r.consider !== null)
+        .map(r => r.pbSec - r.consider);
+      const best = gaps.length ? Math.min(...gaps) : null;
+      gapText  = best !== null ? `+${best.toFixed(2)}s to CT` : '';
+      gapClass = 'far';
+    }
+
+    eventData[event] = { status: bestStatus, bestPB, bestCourse, gapText, gapClass };
+  });
+
+  const byStatus = s => Object.entries(eventData).filter(([,d]) => d.status === s);
+  const qualList = byStatus('Qualified');
+  const conList  = byStatus('Consideration');
+  const outList  = byStatus('Outside');
+  const nopbList = byStatus('No PB');
+
+  // Derive the prefix from the statsElId so clicking a card sets the right status filter
+  const prefix = statsElId.startsWith('rq') ? 'rq' : 'qt';
+  const statusSelectId  = `${prefix}Status`;
+  const forceRenderFn   = prefix === 'rq' ? 'forceRegional' : 'forceQualifying';
+
+  // Build event list rows — include course badge next to PB time
+  // Points 1-6: no underline, left-aligned, consistent font, course badge, no dash for No PB
+  const evList = (items) => items.length
+    ? `<div style="margin-top:8px;text-align:left;">
+        ${items.map(([ev, d]) => `
+          <div style="display:flex;align-items:center;flex-wrap:wrap;
+            padding:3px 0;font-size:0.68rem;gap:4px;">
+            <span style="color:var(--text);font-weight:600;font-size:0.68rem;">${ev}</span>
+            ${d.bestPB !== null
+              ? `<span class="badge ${d.bestCourse}" style="font-size:0.52rem;padding:1px 4px;">${d.bestCourse === 'S' ? 'SC' : 'LC'}</span>
+                 <span style="color:var(--gold);font-variant-numeric:tabular-nums;font-size:0.68rem;">${secToTime(d.bestPB)}</span>
+                 ${d.gapText ? `<span class="qt-gap-chip ${d.gapClass}" style="font-size:0.68rem;">${d.gapText}</span>` : ''}`
+              : ''}
+          </div>`).join('')}
+      </div>`
     : '';
 
-  document.getElementById(statsElId).innerHTML = `
-    <div class="stat-card">
-      <div class="stat-icon">✅</div>
-      <div class="stat-val" style="color:var(--green)">${qualified.length}</div>
-      <div class="stat-label">Qualified</div>
-      ${evList(qualified, r => `<div style="color:var(--text2)"><span style="font-weight:600;color:var(--green)">✓</span> ${r.event} <span style="color:var(--text3)">${secToTime(r.pbSec)}</span></div>`)}
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🔶</div>
-      <div class="stat-val" style="color:var(--gold)">${consideration.length}</div>
-      <div class="stat-label">Consideration</div>
-      ${evList(consideration, r => `<div style="color:var(--text2)"><span style="font-weight:600;color:var(--gold)">◆</span> ${r.event} <span style="color:var(--text3)">${secToTime(r.pbSec)}</span> <span style="color:var(--red);font-size:0.65rem;">+${Math.abs(r.gapQ).toFixed(2)}s to QT</span></div>`)}
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">❌</div>
-      <div class="stat-val" style="color:var(--red)">${outside.length}</div>
-      <div class="stat-label">Outside Times</div>
-      ${evList(outside, r => `<div style="color:var(--text2)"><span style="font-weight:600;color:var(--red)">✗</span> ${r.event} <span style="color:var(--text3)">${secToTime(r.pbSec)}</span> <span style="color:var(--red);font-size:0.65rem;">+${Math.abs(r.gapC).toFixed(2)}s to CT</span></div>`)}
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">—</div>
-      <div class="stat-val" style="color:var(--text3)">${noPB.length}</div>
-      <div class="stat-label">No PB Recorded</div>
-      <div class="stat-sub">Event not swum</div>
+  // Clickable stat card: sets status filter and re-renders
+  const makeCard = (statusVal, icon, count, label, list, color) => {
+    const clickHandler = `document.getElementById('${statusSelectId}').value='${statusVal}';${forceRenderFn}();`;
+    return `<div class="stat-card" onclick="${clickHandler}" style="cursor:pointer;"
+        title="Click to filter by ${label}">
+      <div class="stat-icon">${icon}</div>
+      <div class="stat-val" style="color:${color}">${count}</div>
+      <div class="stat-label">${label}</div>
+      ${evList(list)}
+    </div>`;
+  };
+
+  document.getElementById(statsElId).innerHTML =
+    makeCard('Qualified',     '✅', qualList.length, 'Qualified',    qualList, 'var(--green)') +
+    makeCard('Consideration', '🔶', conList.length,  'Consideration', conList,  'var(--gold)')  +
+    makeCard('Outside',       '❌', outList.length,  'Outside Times', outList,  'var(--red)')   +
+    makeCard('No PB',         '—',  nopbList.length, 'No PB',         nopbList, 'var(--text3)');
+}
+
+// ============================================================
+// PROGRESS BAR BUILDER (v27.1)
+// Per-event scaling. Time labels shown above CT/QT markers.
+// Bar always rendered (even when no PB) so CT/QT are visible.
+// ============================================================
+function buildProgressBar(pbSec, qualify, consider) {
+  if (!qualify && !consider) return '';
+
+  const ct = consider || qualify * 1.04;
+  const qt = qualify  || consider * 0.97;
+  const slowAnchor = ct * 1.06;
+  const fastAnchor = qt * 0.988;
+  const range = slowAnchor - fastAnchor;
+  if (range <= 0) return '';
+
+  // Faster = further right
+  const toPercent = t => Math.max(2, Math.min(98, ((slowAnchor - t) / range) * 100));
+
+  const ctPct = toPercent(ct);
+  const qtPct = toPercent(qt);
+
+  let fillPct = 0, fillClass = 'nopb', gapText = '', gapClass = '';
+  if (pbSec !== null && pbSec !== undefined) {
+    fillPct = toPercent(pbSec);
+    if      (pbSec <= qt) { fillClass = 'qualified';     gapText = `▼${(qt-pbSec).toFixed(2)}s inside QT`; gapClass = 'inside'; }
+    else if (pbSec <= ct) { fillClass = 'consideration'; gapText = `+${(pbSec-qt).toFixed(2)}s to QT`;     gapClass = 'close';  }
+    else                  { fillClass = 'outside';        gapText = `+${(pbSec-ct).toFixed(2)}s to CT`;     gapClass = 'far';    }
+  }
+
+  return `
+    <div class="qt-progress-wrap">
+      <div class="qt-progress-fill ${fillClass}" style="width:${fillPct.toFixed(1)}%"></div>
+      <div class="qt-marker-line ct" style="left:${ctPct.toFixed(1)}%">
+        <div class="qt-marker-time ct">${secToTime(ct)}</div>
+      </div>
+      <div class="qt-marker-line qt" style="left:${qtPct.toFixed(1)}%">
+        <div class="qt-marker-time qt">${secToTime(qt)}</div>
+      </div>
     </div>`;
 }
 
 // ============================================================
-// SHARED QT CHART + TABLE RENDERER
+// STATUS FILTER HELPER (v27.1)
+// Applies status filter to unified event list.
+// Qualified  → at least one course is Qualified
+// Consideration → best is Consideration (none Qualified)
+// Outside → all course PBs are Outside (no Qualified/Consideration)
+// No PB → no PB on any course
 // ============================================================
-function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
-  const CC = getCC(); const PALETTE = getPalette();
-  const statusColor    = s => s === 'Qualified' ? '#10b981' : s === 'Consideration' ? '#f59e0b' : s === 'Outside' ? '#ef4444' : '#64748b';
-  const statusBg       = s => s === 'Qualified' ? 'rgba(16,185,129,0.85)' : s === 'Consideration' ? 'rgba(245,158,11,0.85)' : s === 'Outside' ? 'rgba(239,68,68,0.85)' : 'rgba(100,116,139,0.4)';
-  const statusBgBorder = s => statusBg(s).replace('0.85','1').replace('0.4','0.8');
-  const statusIcon     = s => s === 'Qualified' ? '✅' : s === 'Consideration' ? '🔶' : s === 'Outside' ? '❌' : '—';
+function applyStatusFilter(allEventNames, scMatched, lcMatched, statusFilter) {
+  if (!statusFilter) return allEventNames;
+  const statusRank = s => ({'Qualified':0,'Consideration':1,'Outside':2,'No PB':3,'No Data':4}[s] ?? 5);
+  return allEventNames.filter(event => {
+    const sc = scMatched.find(r => r.event === event);
+    const lc = lcMatched.find(r => r.event === event);
+    const scS = sc ? sc.status : 'No Data';
+    const lcS = lc ? lc.status : 'No Data';
+    const bestStatus = statusRank(scS) <= statusRank(lcS) ? scS : lcS;
+    if (statusFilter === 'Qualified')     return bestStatus === 'Qualified';
+    if (statusFilter === 'Consideration') return bestStatus === 'Consideration';
+    if (statusFilter === 'Outside')       return bestStatus === 'Outside';
+    if (statusFilter === 'No PB')         return bestStatus === 'No PB' || bestStatus === 'No Data';
+    return true;
+  });
+}
 
-  if (!matched.length) {
+// ============================================================
+// QT CARD GRID + CHART + TABLE RENDERER (v27.1)
+// ============================================================
+
+// State for chart/row toggles (shared between qt and rq)
+const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
+
+function toggleQTChart(prefix, course) {
+  qtToggleState[prefix][course] = !qtToggleState[prefix][course];
+  const btnId = `${prefix}Toggle${course}`;
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.classList.toggle(`active-${course.toLowerCase()}`, qtToggleState[prefix][course]);
+  }
+  const chartId = `${prefix}BarChart`;
+  if (charts[chartId]) {
+    // Datasets: 0=SC PB, 1=SC QT line, 2=SC CT line, 3=LC PB, 4=LC QT line, 5=LC CT line
+    const scIdxs = [0, 1, 2];
+    const lcIdxs = [3, 4, 5];
+    const idxs = course === 'SC' ? scIdxs : lcIdxs;
+    idxs.forEach(i => {
+      if (charts[chartId].data.datasets[i]) {
+        charts[chartId].data.datasets[i].hidden = !qtToggleState[prefix][course];
+      }
+    });
+    charts[chartId].update();
+  }
+}
+
+function toggleQTRows(prefix, course) {
+  qtToggleState[prefix][course] = !qtToggleState[prefix][course];
+  const btnId = `${prefix}RowToggle${course}`;
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.classList.toggle(`active-${course.toLowerCase()}`, qtToggleState[prefix][course]);
+  }
+  const bodyId = `${prefix}TableBody`;
+  const tbody = document.getElementById(bodyId);
+  if (tbody) {
+    const cls = course === 'SC' ? 'qt-tbl-row-sc' : 'qt-tbl-row-lc';
+    tbody.querySelectorAll(`.${cls}`).forEach(row => {
+      row.classList.toggle('hidden', !qtToggleState[prefix][course]);
+    });
+  }
+}
+
+function renderQTCards(scMatched, lcMatched, cardGridId, chartId, legendId, tableBodyId, prefix, statusFilter) {
+  const CC = getCC(); const PALETTE = getPalette();
+  const statusRank = s => ({'Qualified':0,'Consideration':1,'Outside':2,'No PB':3,'No Data':4}[s] ?? 5);
+  const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
+
+  // Build full event list sorted by stroke+distance
+  let allEventNames = [...new Set([
+    ...scMatched.map(r => r.event),
+    ...lcMatched.map(r => r.event)
+  ])];
+  allEventNames.sort((a, b) => {
+    const sa = strokeOrder.indexOf(getStroke(a));
+    const sb = strokeOrder.indexOf(getStroke(b));
+    return sa !== sb ? sa - sb : parseInt(a) - parseInt(b);
+  });
+
+  // Apply status filter
+  const filteredEvents = applyStatusFilter(allEventNames, scMatched, lcMatched, statusFilter);
+
+  if (filteredEvents.length === 0) {
+    document.getElementById(cardGridId).innerHTML =
+      '<div class="empty" style="grid-column:1/-1"><p>No events match the current filters.</p></div>';
     destroyChart(chartId);
-    document.getElementById(legendId).innerHTML = '';
-    document.getElementById(tableBodyId).innerHTML =
-      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">No events found for these filters</td></tr>`;
+    if (legendId) document.getElementById(legendId).innerHTML = '';
+    if (tableBodyId) document.getElementById(tableBodyId).innerHTML =
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No events match the current filters.</td></tr>';
     return;
   }
+
+  // ── EVENT CARDS ──────────────────────────────────────────
+  let cardsHTML = '';
+  filteredEvents.forEach(event => {
+    const sc = scMatched.find(r => r.event === event);
+    const lc = lcMatched.find(r => r.event === event);
+    const scS = sc ? sc.status : 'No Data';
+    const lcS = lc ? lc.status : 'No Data';
+    const bestStatus = statusRank(scS) <= statusRank(lcS) ? scS : lcS;
+
+    const cardClass = {
+      'Qualified':'status-qualified','Consideration':'status-consideration',
+      'Outside':'status-outside'
+    }[bestStatus] || 'status-nopb';
+    const badgeClass = {
+      'Qualified':'qualified','Consideration':'consideration','Outside':'outside'
+    }[bestStatus] || 'nopb';
+    const badgeLabel = {
+      'Qualified':'✅ Qualified','Consideration':'🔶 Consideration',
+      'Outside':'❌ Outside','No PB':'No PB','No Data':'No Data'
+    }[bestStatus] || '—';
+
+    // Build a course block (sc or lc)
+    // Point 4: status shown as a left colour bar on the block, not a chip label
+    // Point 5: gap shown once only — in the stats row above the bar (via buildProgressBar gap output removed from bar fn)
+    const buildCourseBlock = (r, courseCode, blockClass) => {
+      // Colour bar on left edge of block by status
+      const statusBorderColor = {
+        'Qualified':     'var(--green)',
+        'Consideration': 'var(--gold)',
+        'Outside':       'var(--red)',
+        'No PB':         'var(--border)',
+        'No Data':       'var(--border)'
+      }[r ? r.status : 'No Data'] || 'var(--border)';
+
+      if (!r) {
+        return `<div class="qt-course-block ${blockClass}" style="border-left:3px solid var(--border);">
+          <div class="qt-course-stats">
+            <span class="badge ${courseCode}">${courseCode}</span>
+            <span class="qt-nopb-badge">Not offered</span>
+          </div>
+        </div>`;
+      }
+
+      const hasPB = r.pbSec !== null && r.pbSec !== undefined;
+
+      // Gap chip shown in stats row (above bar)
+      let gapChip = '';
+      if (hasPB) {
+        if (r.status === 'Qualified' && r.qualify)
+          gapChip = `<span class="qt-gap-chip inside" style="margin-left:auto">▼${(r.qualify-r.pbSec).toFixed(2)}s</span>`;
+        else if (r.status === 'Consideration' && r.qualify)
+          gapChip = `<span class="qt-gap-chip close" style="margin-left:auto">+${(r.pbSec-r.qualify).toFixed(2)}s to QT</span>`;
+        else if (r.status === 'Outside' && r.consider)
+          gapChip = `<span class="qt-gap-chip far" style="margin-left:auto">+${(r.pbSec-r.consider).toFixed(2)}s to CT</span>`;
+      }
+
+      return `<div class="qt-course-block ${blockClass}" style="border-left:3px solid ${statusBorderColor};">
+        <div class="qt-course-stats">
+          <span class="badge ${courseCode}">${courseCode}</span>
+          ${hasPB
+            ? `<span class="qt-pb-val">${secToTime(r.pbSec)}</span>
+               ${gapChip}`
+            : `<span class="qt-nopb-badge">No PB</span>`}
+        </div>
+        ${buildProgressBar(hasPB ? r.pbSec : null, r.qualify, r.consider)}
+      </div>`;
+    };
+
+    cardsHTML += `
+      <div class="qt-event-card ${cardClass}">
+        <div class="qt-card-header">
+          <div class="qt-card-event-name">${event}</div>
+          <span class="qt-card-best-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+        ${buildCourseBlock(sc, 'S', 'sc')}
+        ${buildCourseBlock(lc, 'L', 'lc')}
+      </div>`;
+  });
+  document.getElementById(cardGridId).innerHTML = cardsHTML;
+
+  // ── CHART (6 datasets: SC PB, SC QT line, SC CT line, LC PB, LC QT line, LC CT line) ──
+  const scColor  = 'rgba(26,86,196,0.82)';
+  const lcColor  = 'rgba(14,165,212,0.75)';
+
+  const statusBarColor = (r, defaultColor) => {
+    if (!r || r.pbSec === null) return 'rgba(100,116,139,0.35)';
+    return {
+      'Qualified':     defaultColor.replace(/[\d.]+\)$/, '0.85)'),
+      'Consideration': 'rgba(245,158,11,0.82)',
+      'Outside':       'rgba(239,68,68,0.82)'
+    }[r.status] || 'rgba(100,116,139,0.35)';
+  };
+
+  const labels  = filteredEvents;
+  const scPBs   = labels.map(ev => { const r = scMatched.find(x => x.event === ev); return r?.pbSec ?? null; });
+  const lcPBs   = labels.map(ev => { const r = lcMatched.find(x => x.event === ev); return r?.pbSec ?? null; });
+  const scQTs   = labels.map(ev => { const r = scMatched.find(x => x.event === ev); return r?.qualify  ?? null; });
+  const scCTs   = labels.map(ev => { const r = scMatched.find(x => x.event === ev); return r?.consider ?? null; });
+  const lcQTs   = labels.map(ev => { const r = lcMatched.find(x => x.event === ev); return r?.qualify  ?? null; });
+  const lcCTs   = labels.map(ev => { const r = lcMatched.find(x => x.event === ev); return r?.consider ?? null; });
+
+  const scBarColors = labels.map(ev => statusBarColor(scMatched.find(x => x.event === ev), scColor));
+  const lcBarColors = labels.map(ev => statusBarColor(lcMatched.find(x => x.event === ev), lcColor));
 
   destroyChart(chartId);
   charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
     type: 'bar',
     data: {
-      labels: matched.map(r => r.event),
+      labels,
       datasets: [
-        { label: "Swimmer's PB",
-          data: matched.map(r => r.pbSec !== null ? parseFloat(r.pbSec.toFixed(2)) : null),
-          backgroundColor: matched.map(r => statusBg(r.status)),
-          borderColor:     matched.map(r => statusBgBorder(r.status)),
-          borderWidth: 1, borderRadius: 4, order: 1 },
-        { label: 'Qualify time',
-          data: matched.map(r => r.qualify !== null ? parseFloat(r.qualify.toFixed(2)) : null),
-          type: 'line', borderColor: '#10b981', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [6,3], pointRadius: 4, pointBackgroundColor: '#10b981', order: 0, tension: 0 },
-        { label: 'Consideration time',
-          data: matched.map(r => r.consider !== null ? parseFloat(r.consider.toFixed(2)) : null),
-          type: 'line', borderColor: '#f59e0b', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [4,4], pointRadius: 4, pointBackgroundColor: '#f59e0b', order: 0, tension: 0 }
+        // Dataset 0: SC PB bars
+        { label: 'SC PB', data: scPBs, backgroundColor: scBarColors,
+          borderColor: scBarColors.map(c => c.replace(/[\d.]+\)$/, '1)')),
+          borderWidth: 1, borderRadius: 4, order: 2,
+          hidden: !qtToggleState[prefix].SC },
+        // Dataset 1: SC QT line
+        { label: 'SC Qualify', data: scQTs, type: 'line',
+          borderColor: '#1a56c4', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [6,3], pointRadius: 3,
+          pointBackgroundColor: '#1a56c4', order: 0, tension: 0,
+          hidden: !qtToggleState[prefix].SC },
+        // Dataset 2: SC CT line
+        { label: 'SC Consider', data: scCTs, type: 'line',
+          borderColor: '#60a5fa', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [4,4], pointRadius: 3,
+          pointBackgroundColor: '#60a5fa', order: 0, tension: 0,
+          hidden: !qtToggleState[prefix].SC },
+        // Dataset 3: LC PB bars
+        { label: 'LC PB', data: lcPBs, backgroundColor: lcBarColors,
+          borderColor: lcBarColors.map(c => c.replace(/[\d.]+\)$/, '1)')),
+          borderWidth: 1, borderRadius: 4, order: 2,
+          hidden: !qtToggleState[prefix].LC },
+        // Dataset 4: LC QT line
+        { label: 'LC Qualify', data: lcQTs, type: 'line',
+          borderColor: '#0ea5d4', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [6,3], pointRadius: 3,
+          pointBackgroundColor: '#0ea5d4', order: 0, tension: 0,
+          hidden: !qtToggleState[prefix].LC },
+        // Dataset 5: LC CT line
+        { label: 'LC Consider', data: lcCTs, type: 'line',
+          borderColor: '#67e8f9', backgroundColor: 'transparent',
+          borderWidth: 2, borderDash: [4,4], pointRadius: 3,
+          pointBackgroundColor: '#67e8f9', order: 0, tension: 0,
+          hidden: !qtToggleState[prefix].LC },
       ]
     },
     options: {
@@ -2495,11 +3007,9 @@ function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
       plugins: {
         legend: { display: false },
         tooltip: { callbacks: { label: item => {
-          const r = matched[item.dataIndex];
-          if (item.dataset.label === "Swimmer's PB")
-            return r.pbSec === null ? ' No PB recorded' : ` PB: ${secToTime(r.pbSec)} (${r.status})`;
-          if (item.dataset.label === 'Qualify time') return ` Qualify: ${secToTime(r.qualify)}`;
-          return ` Consideration: ${secToTime(r.consider)}`;
+          const v = item.parsed.y;
+          if (v === null) return null;
+          return ` ${item.dataset.label}: ${secToTime(v)}`;
         }}}
       },
       scales: {
@@ -2509,146 +3019,193 @@ function renderQTChartAndTable(matched, chartId, legendId, tableBodyId) {
     }
   });
 
-  document.getElementById(legendId).innerHTML = `
-    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #10b981;background:none"></div> Qualify time</div>
-    <div class="cl-item"><div class="cl-dot" style="width:24px;height:3px;border-top:2px dashed #f59e0b;background:none"></div> Consideration time</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(16,185,129,0.85);border-radius:2px"></div> PB — Qualified</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(245,158,11,0.85);border-radius:2px"></div> PB — Consideration</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(239,68,68,0.85);border-radius:2px"></div> PB — Outside</div>
-    <div class="cl-item"><div class="cl-dot" style="background:rgba(100,116,139,0.4);border-radius:2px"></div> No PB</div>`;
+  if (legendId) {
+    document.getElementById(legendId).innerHTML = `
+      <div class="cl-item"><div class="cl-dot" style="background:rgba(26,86,196,0.82);border-radius:2px;width:14px;height:10px;"></div> SC PB</div>
+      <div class="cl-item"><div class="cl-dot" style="background:rgba(14,165,212,0.75);border-radius:2px;width:14px;height:10px;"></div> LC PB</div>
+      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dashed #1a56c4;"></div> SC Qualify</div>
+      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dotted #60a5fa;"></div> SC Consider</div>
+      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dashed #0ea5d4;"></div> LC Qualify</div>
+      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dotted #67e8f9;"></div> LC Consider</div>
+      <div style="font-size:0.65rem;color:var(--text3);margin-top:4px;width:100%;">Bar colour: 🟢 Qualified · 🟡 Consideration · 🔴 Outside · ⬜ No PB. Use SC/LC toggles to show/hide.</div>`;
+  }
 
-  document.getElementById(tableBodyId).innerHTML = matched.map(r => {
-    const pbStr  = r.pbSec !== null
-      ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
-      : '<span style="color:var(--text3)">—</span>';
-    const gapQStr = r.gapQ !== null
-      ? `<span class="${r.gapQ <= 0 ? 'dpos' : 'dneg'}">${r.gapQ <= 0 ? '▼' : '▲'}${Math.abs(r.gapQ).toFixed(2)}s</span>`
-      : '<span style="color:var(--text3)">—</span>';
-    const gapCStr = r.gapC !== null
-      ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
-      : '<span style="color:var(--text3)">—</span>';
-    return `<tr>
-      <td style="font-weight:600;color:var(--text)">${r.event}</td>
-      <td>${pbStr}</td>
-      <td style="color:var(--text3);font-size:0.78rem">${r.pb ? fmtDateShort(r.pb.date) : '—'}</td>
-      <td class="tc">${secToTime(r.qualify)}</td>
-      <td class="tc">${secToTime(r.consider)}</td>
-      <td>${gapQStr}</td>
-      <td>${gapCStr}</td>
-      <td><span style="color:${statusColor(r.status)};font-weight:600">${statusIcon(r.status)} ${r.status}</span></td>
-    </tr>`;
-  }).join('');
+  // ── EVENT-BY-EVENT TABLE ─────────────────────────────────
+  if (!tableBodyId) return;
+  const statusColor = s => ({'Qualified':'var(--green)','Consideration':'var(--gold)','Outside':'var(--red)'}[s] || 'var(--text3)');
+  const statusIcon  = s => ({'Qualified':'✅','Consideration':'🔶','Outside':'❌'}[s] || '—');
+
+  let rowsHTML = '';
+  filteredEvents.forEach(event => {
+    [[scMatched, 'S', 'qt-tbl-row-sc'], [lcMatched, 'L', 'qt-tbl-row-lc']].forEach(([matched, courseCode, rowClass]) => {
+      const r = matched.find(x => x.event === event);
+      if (!r) return;
+
+      const pbStr = r.pbSec !== null
+        ? `<span class="tc" style="color:var(--gold)">${secToTime(r.pbSec)}</span>`
+        : '<span style="color:var(--text3)">—</span>';
+      const pbDateStr = r.pb ? fmtDateShort(r.pb.date) : '—';
+      const gapQStr = r.gapQ !== null
+        ? `<span class="${r.gapQ <= 0 ? 'dpos' : 'dneg'}">${r.gapQ <= 0 ? '▼' : '▲'}${Math.abs(r.gapQ).toFixed(2)}s</span>`
+        : '<span style="color:var(--text3)">—</span>';
+      const gapCStr = r.gapC !== null
+        ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
+        : '<span style="color:var(--text3)">—</span>';
+      const hidden = !qtToggleState[prefix][courseCode === 'S' ? 'SC' : 'LC'] ? ' hidden' : '';
+
+      rowsHTML += `<tr class="${rowClass}${hidden}">
+        <td style="font-weight:600;color:var(--text)">${event}</td>
+        <td><span class="badge ${courseCode}">${courseCode === 'S' ? 'SC' : 'LC'}</span></td>
+        <td>${pbStr}</td>
+        <td style="color:var(--text3);font-size:0.78rem">${pbDateStr}</td>
+        <td class="tc">${secToTime(r.qualify)}</td>
+        <td class="tc">${secToTime(r.consider)}</td>
+        <td>${gapQStr}</td>
+        <td>${gapCStr}</td>
+        <td><span style="color:${statusColor(r.status)};font-weight:600">${statusIcon(r.status)} ${r.status}</span></td>
+      </tr>`;
+    });
+  });
+  document.getElementById(tableBodyId).innerHTML = rowsHTML ||
+    '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No events found.</td></tr>';
 }
 
 // ============================================================
-// COUNTY QUALIFYING TAB
+// COUNTY QUALIFYING TAB (v27.1)
 // ============================================================
 function renderQualifying() {
   if (renderedTabs.has('qualifying')) return;
-  const gender = document.getElementById('qtGender').value;
-  const age    = document.getElementById('qtAge').value;
-  const course = document.getElementById('qtCourse').value;
-  const stroke = document.getElementById('qtStroke').value;
+  const gender       = document.getElementById('qtGender').value;
+  const age          = document.getElementById('qtAge').value;
+  const stroke       = document.getElementById('qtStroke').value;
+  const statusFilter = document.getElementById('qtStatus').value;
 
   if (QT_DATA.length === 0) {
     document.getElementById('qtStats').innerHTML = '';
-    document.getElementById('qtLegend').innerHTML = '';
     destroyChart('qtBarChart');
+    document.getElementById('qtLegend').innerHTML = '';
+    document.getElementById('qtCardGrid').innerHTML =
+      `<div class="empty" style="grid-column:1/-1;padding:40px 20px;text-align:center;color:var(--text3)">
+        No qualifying time data loaded.<br>
+        <span style="font-size:0.8rem">Upload county_qt.json via the ⚙️ Data menu.</span>
+      </div>`;
     document.getElementById('qtTableBody').innerHTML =
-      `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">
-        No qualifying time data loaded.<br><span style="font-size:0.8rem">Upload county_qt.json via the ⚙️ Data menu.</span>
-      </td></tr>`;
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No data loaded.</td></tr>';
     return;
   }
 
-  const dashCourse = course === 'Short Course' ? 'S' : 'L';
-  const pbMap = {};
-  getPBs().filter(r => r.course === dashCourse).forEach(r => { pbMap[r.event] = r; });
-
   const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
-  const matched = QT_DATA
-    .filter(r => r.gender === gender && r.age === age && r.course === course && !(r.qualify === null && r.consider === null))
-    .filter(r => !stroke || r.event.includes(stroke))
-    .map(qt => {
-      const pb    = pbMap[qt.event] || null;
-      const pbSec = pb ? pb.timeInSec : null;
-      const gapQ  = pbSec !== null && qt.qualify  !== null ? pbSec - qt.qualify  : null;
-      const gapC  = pbSec !== null && qt.consider !== null ? pbSec - qt.consider : null;
-      let status  = 'No PB';
-      if (pbSec !== null) {
-        if      (qt.qualify  !== null && pbSec <= qt.qualify)  status = 'Qualified';
-        else if (qt.consider !== null && pbSec <= qt.consider) status = 'Consideration';
-        else status = 'Outside';
-      }
-      return { ...qt, pb, pbSec, gapQ, gapC, status };
-    })
-    .sort((a, b) => {
-      const sa = strokeOrder.indexOf(getStroke(a.event));
-      const sb = strokeOrder.indexOf(getStroke(b.event));
-      return sa !== sb ? sa - sb : parseInt(a.event) - parseInt(b.event);
-    });
 
-  buildQtStatCards(matched, 'qtStats');
-  renderQTChartAndTable(matched, 'qtBarChart', 'qtLegend', 'qtTableBody');
+  function buildCourseMatched(course, dashCourse) {
+    const pbMap = {};
+    getPBs().filter(r => r.course === dashCourse).forEach(r => { pbMap[r.event] = r; });
+    return QT_DATA
+      .filter(r => r.gender === gender && r.age === age && r.course === course &&
+        !(r.qualify === null && r.consider === null))
+      .filter(r => !stroke || r.event.includes(stroke))
+      .map(qt => {
+        const pb    = pbMap[qt.event] || null;
+        const pbSec = pb ? pb.timeInSec : null;
+        const gapQ  = pbSec !== null && qt.qualify  !== null ? pbSec - qt.qualify  : null;
+        const gapC  = pbSec !== null && qt.consider !== null ? pbSec - qt.consider : null;
+        let status  = 'No PB';
+        if (pbSec !== null) {
+          if      (qt.qualify  !== null && pbSec <= qt.qualify)  status = 'Qualified';
+          else if (qt.consider !== null && pbSec <= qt.consider) status = 'Consideration';
+          else status = 'Outside';
+        }
+        return { ...qt, pb, pbSec, gapQ, gapC, status };
+      })
+      .sort((a, b) => {
+        const sa = strokeOrder.indexOf(getStroke(a.event));
+        const sb = strokeOrder.indexOf(getStroke(b.event));
+        return sa !== sb ? sa - sb : parseInt(a.event) - parseInt(b.event);
+      });
+  }
+
+  const scMatched = buildCourseMatched('Short Course', 'S');
+  const lcMatched = buildCourseMatched('Long Course',  'L');
+
+  buildQtStatCards(scMatched, lcMatched, 'qtStats');
+  renderQTCards(scMatched, lcMatched, 'qtCardGrid', 'qtBarChart', 'qtLegend', 'qtTableBody', 'qt', statusFilter);
+
+  const qtChamsYear = parseLocalDate(COUNTY_CHAMPS_DATE).getFullYear();
+  const qtIsPast    = new Date() > parseLocalDate(COUNTY_CHAMPS_DATE);
+  const qtSeason    = qtIsPast ? ` ${qtChamsYear + 1} season standards not yet published — using ${qtChamsYear} times.` : '';
+  const qtNoteEl    = document.getElementById('qtNote');
+  if (qtNoteEl) qtNoteEl.textContent = `Qualifying times shown for ${gender} · age group ${age} · County Championships ${qtChamsYear}.${qtSeason}`;
+
   renderedTabs.add('qualifying');
 }
 
 // ============================================================
-// REGIONAL QUALIFYING TAB
+// REGIONAL QUALIFYING TAB (v27.1)
 // ============================================================
 function renderRegionalQualifying() {
   if (renderedTabs.has('regional')) return;
+
   if (!SE_QT_DATA.length) {
     document.getElementById('rqStats').innerHTML = '';
-    document.getElementById('rqTableBody').innerHTML =
-      `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">
+    destroyChart('rqBarChart');
+    document.getElementById('rqCardGrid').innerHTML =
+      `<div class="empty" style="grid-column:1/-1;padding:40px 20px;text-align:center;color:var(--text3)">
         No SE London QT data. Upload se_london_qt.json via ⚙️ Data Manager.
-      </td></tr>`;
+      </div>`;
+    document.getElementById('rqTableBody').innerHTML =
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No data loaded.</td></tr>';
     return;
   }
 
-  const gender = document.getElementById('rqGender').value;
-  const age    = document.getElementById('rqAge').value;
-  const course = document.getElementById('rqCourse').value;
-  const stroke = document.getElementById('rqStroke').value;
-
-  const dashCourse = course === 'Short Course' ? 'S' : 'L';
-  const pbMap = {};
-  getPBs().filter(r => r.course === dashCourse).forEach(r => { pbMap[r.event] = r; });
+  const gender       = document.getElementById('rqGender').value;
+  const age          = document.getElementById('rqAge').value;
+  const stroke       = document.getElementById('rqStroke').value;
+  const statusFilter = document.getElementById('rqStatus').value;
 
   const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
-  const matched = SE_QT_DATA
-    .filter(r => r.gender === gender && r.age === age && r.course === course)
-    .filter(r => !stroke || r.event.includes(stroke))
-    .map(qt => {
-      const pb    = pbMap[qt.event] || null;
-      const pbSec = pb ? pb.timeInSec : null;
-      const gapQ  = pbSec !== null ? pbSec - qt.qualify  : null;
-      const gapC  = pbSec !== null ? pbSec - qt.consider : null;
-      let status  = 'No PB';
-      if (pbSec !== null) {
-        if      (pbSec <= qt.qualify)  status = 'Qualified';
-        else if (pbSec <= qt.consider) status = 'Consideration';
-        else status = 'Outside';
-      }
-      return { ...qt, pb, pbSec, gapQ, gapC, status };
-    })
-    .sort((a, b) => {
-      const sa = strokeOrder.indexOf(getStroke(a.event));
-      const sb = strokeOrder.indexOf(getStroke(b.event));
-      return sa !== sb ? sa - sb : parseInt(a.event) - parseInt(b.event);
-    });
 
-  buildQtStatCards(matched, 'rqStats');
-  renderQTChartAndTable(matched, 'rqBarChart', 'rqLegend', 'rqTableBody');
+  function buildCourseMatched(course, dashCourse) {
+    const pbMap = {};
+    getPBs().filter(r => r.course === dashCourse).forEach(r => { pbMap[r.event] = r; });
+    return SE_QT_DATA
+      .filter(r => r.gender === gender && r.age === age && r.course === course)
+      .filter(r => !stroke || r.event.includes(stroke))
+      .map(qt => {
+        const pb    = pbMap[qt.event] || null;
+        const pbSec = pb ? pb.timeInSec : null;
+        const gapQ  = pbSec !== null ? pbSec - qt.qualify  : null;
+        const gapC  = pbSec !== null ? pbSec - qt.consider : null;
+        let status  = 'No PB';
+        if (pbSec !== null) {
+          if      (pbSec <= qt.qualify)  status = 'Qualified';
+          else if (pbSec <= qt.consider) status = 'Consideration';
+          else status = 'Outside';
+        }
+        return { ...qt, pb, pbSec, gapQ, gapC, status };
+      })
+      .sort((a, b) => {
+        const sa = strokeOrder.indexOf(getStroke(a.event));
+        const sb = strokeOrder.indexOf(getStroke(b.event));
+        return sa !== sb ? sa - sb : parseInt(a.event) - parseInt(b.event);
+      });
+  }
+
+  const scMatched = buildCourseMatched('Short Course', 'S');
+  const lcMatched = buildCourseMatched('Long Course',  'L');
+
+  buildQtStatCards(scMatched, lcMatched, 'rqStats');
+  renderQTCards(scMatched, lcMatched, 'rqCardGrid', 'rqBarChart', 'rqLegend', 'rqTableBody', 'rq', statusFilter);
+
+  const rqChamsYear = parseLocalDate(REGIONAL_CHAMPS_DATE).getFullYear();
+  const rqIsPast    = new Date() > parseLocalDate(REGIONAL_CHAMPS_DATE);
+  const rqSeason    = rqIsPast ? ` ${rqChamsYear + 1} season standards not yet published — using ${rqChamsYear} times.` : '';
+  const rqNoteEl    = document.getElementById('rqNote');
+  if (rqNoteEl) rqNoteEl.textContent = `Qualifying times shown for ${gender} · age group ${age} · SE London Regional Championships ${rqChamsYear}.${rqSeason}`;
+
   renderedTabs.add('regional');
 }
 
+// SCHEDULE TAB
 // ============================================================
-// SCHEDULE TAB (v26: hide swum events + delete button)
-// ============================================================
-
-// v26: Build set of upcoming event keys that have already been swum
 function buildSwumUpcomingSet(upcomingRows) {
   const swumSet = new Set();
   upcomingRows.forEach(r => {
@@ -2656,7 +3213,7 @@ function buildSwumUpcomingSet(upcomingRows) {
     const match = DATA.find(swim =>
       swim.event  === r.event &&
       swim.course === r.course &&
-      Math.abs(parseLocalDate(swim.date) - upcomingDate) <= 86400000 // 1 day in ms
+      Math.abs(parseLocalDate(swim.date) - upcomingDate) <= 86400000
     );
     if (match) swumSet.add(r.date + '|' + r.event + '|' + r.course);
   });
@@ -2667,7 +3224,6 @@ function renderSchedule() {
   const today  = new Date();
   const cutoff = new Date(today); cutoff.setDate(cutoff.getDate() - 2);
 
-  // Flatten UPCOMING into one row per event, suppress past entries (48hr grace)
   const rows = [];
   UPCOMING.forEach(meet => {
     const meetDate = parseLocalDate(meet.date);
@@ -2683,7 +3239,6 @@ function renderSchedule() {
 
   rows.sort((a, b) => a.meetDate - b.meetDate);
 
-  // v26: Filter out already-swum events
   const swumSet    = buildSwumUpcomingSet(rows);
   const visibleRows = rows.filter(r => !swumSet.has(r.date + '|' + r.event + '|' + r.course));
   const hiddenCount = rows.length - visibleRows.length;
@@ -2703,17 +3258,11 @@ function renderSchedule() {
         : '<span style="color:var(--text3)">—</span>';
 
       let daysStr;
-      if (r.daysUntil === 0) {
-        daysStr = '<span style="color:var(--gold);font-weight:600">Today</span>';
-      } else if (r.daysUntil === 1) {
-        daysStr = '<span style="color:var(--accent)">Tomorrow</span>';
-      } else if (r.daysUntil === -1) {
-        daysStr = '<span style="color:var(--text3)">Yesterday</span>';
-      } else if (r.daysUntil < 0) {
-        daysStr = `<span style="color:var(--text3)">${Math.abs(r.daysUntil)}d ago</span>`;
-      } else {
-        daysStr = `<span style="color:var(--text2)">in ${r.daysUntil}d</span>`;
-      }
+      if (r.daysUntil === 0)      daysStr = '<span style="color:var(--gold);font-weight:600">Today</span>';
+      else if (r.daysUntil === 1) daysStr = '<span style="color:var(--accent)">Tomorrow</span>';
+      else if (r.daysUntil === -1) daysStr = '<span style="color:var(--text3)">Yesterday</span>';
+      else if (r.daysUntil < 0)   daysStr = `<span style="color:var(--text3)">${Math.abs(r.daysUntil)}d ago</span>`;
+      else                        daysStr = `<span style="color:var(--text2)">in ${r.daysUntil}d</span>`;
 
       const [ctyStatus, ctyGap] = renderQTCells(r.qtStatus.county);
       const [rgnStatus, rgnGap] = renderQTCells(r.qtStatus.regional);
@@ -2749,10 +3298,9 @@ function renderSchedule() {
   const countyAge   = getCountyAgeBracket();
   const regionalAge = getRegionalAgeBracket();
   const chamsYear   = parseLocalDate(COUNTY_CHAMPS_DATE).getFullYear();
-  const nextYear    = chamsYear + 1;
   const isPast      = new Date() > parseLocalDate(COUNTY_CHAMPS_DATE);
   const seasonNote  = isPast
-    ? ` ${nextYear} season standards not yet published — using ${chamsYear} times.`
+    ? ` ${chamsYear + 1} season standards not yet published — using ${chamsYear} times.`
     : '';
   document.getElementById('scheduleNote').textContent =
     `County QT: age ${countyAge} bracket · Regional QT: age ${regionalAge} bracket.${seasonNote}${hiddenNote}`;
@@ -2802,45 +3350,45 @@ function renderTargets() {
         via ⚙️ Data Manager to see renewal targets.
       </td></tr>`;
   } else {
-  const renewalRows = [];
-  offeredEvents.forEach(event => {
-    const best = eventBestMap[event];
-    if (!best) return;
-    const pbDate = parseLocalDate(best.date);
-    if (pbDate >= threshold) return;
-    renewalRows.push(best);
-  });
-  renewalRows.sort((a, b) => a.date.localeCompare(b.date));
+    const renewalRows = [];
+    offeredEvents.forEach(event => {
+      const best = eventBestMap[event];
+      if (!best) return;
+      const pbDate = parseLocalDate(best.date);
+      if (pbDate >= threshold) return;
+      renewalRows.push(best);
+    });
+    renewalRows.sort((a, b) => a.date.localeCompare(b.date));
 
-  document.getElementById('renewalBody').innerHTML = renewalRows.length === 0
-    ? `<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--green)">
-        ✅ All PBs are current within the ${months}-month threshold.
-      </td></tr>`
-    : renewalRows.map(pb => {
-        const monthsOld  = Math.floor((today - parseLocalDate(pb.date)) / (1000 * 60 * 60 * 24 * 30.5));
-        const qtStatus   = getQTStatusForEvent(pb.event, pb.course, pb.timeInSec);
-        const upcoming   = upcomingMap[pb.event];
-        const upcomingCell = upcoming
-          ? `<span style="color:var(--green);font-weight:600">📅 ${fmtDateShort(upcoming.date)}</span>`
-          : `<span style="color:var(--red)">⚠️ None registered</span>`;
+    document.getElementById('renewalBody').innerHTML = renewalRows.length === 0
+      ? `<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--green)">
+          ✅ All PBs are current within the ${months}-month threshold.
+        </td></tr>`
+      : renewalRows.map(pb => {
+          const monthsOld  = Math.floor((today - parseLocalDate(pb.date)) / (1000 * 60 * 60 * 24 * 30.5));
+          const qtStatus   = getQTStatusForEvent(pb.event, pb.course, pb.timeInSec);
+          const upcoming   = upcomingMap[pb.event];
+          const upcomingCell = upcoming
+            ? `<span style="color:var(--green);font-weight:600">📅 ${fmtDateShort(upcoming.date)}</span>`
+            : `<span style="color:var(--red)">⚠️ None registered</span>`;
 
-        const [ctyStatus, ctyGap] = renderQTCells(qtStatus.county);
-        const [rgnStatus, rgnGap] = renderQTCells(qtStatus.regional);
-        return `<tr>
-          <td style="font-weight:600;color:var(--text)">${pb.event}</td>
-          <td class="tc" style="color:var(--gold)">${pb.time}</td>
-          <td><span class="badge ${pb.course}">${pb.course}</span></td>
-          <td style="color:var(--text3)">${fmtDateShort(pb.date)}</td>
-          <td style="color:var(--red);font-weight:600">${monthsOld}mo ago</td>
-          <td>${ctyStatus}</td>
-          <td>${ctyGap}</td>
-          <td>${rgnStatus}</td>
-          <td>${rgnGap}</td>
-          <td>${upcomingCell}</td>
-          <td><span style="background:rgba(220,38,38,0.12);color:var(--red);font-weight:600;border-radius:20px;padding:2px 8px;">⏰ Renew</span></td>
-        </tr>`;
-      }).join('');
-  } // end QT data guard
+          const [ctyStatus, ctyGap] = renderQTCells(qtStatus.county);
+          const [rgnStatus, rgnGap] = renderQTCells(qtStatus.regional);
+          return `<tr>
+            <td style="font-weight:600;color:var(--text)">${pb.event}</td>
+            <td class="tc" style="color:var(--gold)">${pb.time}</td>
+            <td><span class="badge ${pb.course}">${pb.course}</span></td>
+            <td style="color:var(--text3)">${fmtDateShort(pb.date)}</td>
+            <td style="color:var(--red);font-weight:600">${monthsOld}mo ago</td>
+            <td>${ctyStatus}</td>
+            <td>${ctyGap}</td>
+            <td>${rgnStatus}</td>
+            <td>${rgnGap}</td>
+            <td>${upcomingCell}</td>
+            <td><span style="background:rgba(220,38,38,0.12);color:var(--red);font-weight:600;border-radius:20px;padding:2px 8px;">⏰ Renew</span></td>
+          </tr>`;
+        }).join('');
+  }
 
   const swumEvents    = new Set(DATA.map(r => r.event));
   const neverSwumRows = ALL_EVENTS.filter(event => !swumEvents.has(event));
@@ -2882,8 +3430,6 @@ function renderTargets() {
 
 // ============================================================
 // RENDER ALL CHART TABS
-// Single point to refresh all chart-bearing tabs (e.g. on theme change).
-// Add new chart-bearing tabs here only — toggleTheme() needs no other changes.
 // ============================================================
 function renderAllChartTabs() {
   renderedTabs.clear();
@@ -2984,7 +3530,6 @@ async function init() {
   renderTargets();
   updateSortHeaders();
 
-  // G1: Escape key closes any open modal or Speed Dial
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (document.getElementById('addRaceModal').style.display     !== 'none') hideAddRaceModal();
@@ -2994,14 +3539,12 @@ async function init() {
     closeFabDial();
   });
 
-  // E1: Delegated click for Remove Race buttons in Results table
   document.getElementById('resultsTbody').addEventListener('click', e => {
     const btn = e.target.closest('.btn-remove-race');
     if (!btn) return;
     removeRace(btn.dataset.date, btn.dataset.event, btn.dataset.course, btn.dataset.time);
   });
 
-  // E2: Delegated click for Remove Upcoming buttons in Schedule table
   document.getElementById('scheduleBody').addEventListener('click', e => {
     const btn = e.target.closest('.btn-remove-upcoming');
     if (!btn) return;
@@ -3010,7 +3553,7 @@ async function init() {
 }
 
 // ============================================================
-// ADD RACE MODAL (v26: multi-event)
+// ADD RACE MODAL
 // ============================================================
 function showAddRaceModal() {
   closeFabDial();
@@ -3020,7 +3563,7 @@ function showAddRaceModal() {
   document.getElementById('ar-course').value      = 'S';
   document.getElementById('ar-error').style.display = 'none';
   document.getElementById('ar-events-list').innerHTML = '';
-  addRaceEventRow(); // start with one blank row
+  addRaceEventRow();
   document.getElementById('addRaceModal').style.display = 'flex';
 }
 
@@ -3093,7 +3636,6 @@ function saveNewRace() {
     newEntries.push({ course, event, date, competition, venue, time: timeStr, splits });
   }
 
-  // Check for duplicate event entries in this batch
   const eventKeys = newEntries.map(e => e.event);
   if (new Set(eventKeys).size !== eventKeys.length) {
     showError('Duplicate events detected. Each event should appear only once per entry.'); return;
@@ -3108,11 +3650,7 @@ function saveNewRace() {
     fabChild.textContent = '✓';
     fabChild.style.background = 'var(--green)';
     fabChild.style.color = 'white';
-    setTimeout(() => {
-      fabChild.textContent = '⏱️';
-      fabChild.style.background = '';
-      fabChild.style.color = '';
-    }, 2000);
+    setTimeout(() => { fabChild.textContent = '⏱️'; fabChild.style.background = ''; fabChild.style.color = ''; }, 2000);
   }
 }
 
@@ -3128,7 +3666,7 @@ function removeRace(date, event, course, time) {
 }
 
 // ============================================================
-// v26: REMOVE UPCOMING EVENT
+// REMOVE UPCOMING EVENT
 // ============================================================
 function removeUpcomingEvent(date, event, course) {
   if (!confirm(`Remove ${event} (${course}) on ${fmtDate(date)} from upcoming schedule?\n\nTo make this permanent, download upcoming_races.json from the Data Manager and push to GitHub.`)) return;
@@ -3150,10 +3688,7 @@ function removeUpcomingEvent(date, event, course) {
 // ============================================================
 // SPEED DIAL FAB
 // ============================================================
-
-function toggleFabDial() {
-  fabDialOpen ? closeFabDial() : openFabDial();
-}
+function toggleFabDial() { fabDialOpen ? closeFabDial() : openFabDial(); }
 
 function openFabDial() {
   fabDialOpen = true;
@@ -3179,9 +3714,7 @@ function showSettingsModal() {
   document.getElementById('settingsModal').style.display = 'flex';
 }
 
-function hideSettingsModal() {
-  document.getElementById('settingsModal').style.display = 'none';
-}
+function hideSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
 
 function saveSettings() {
   const dob    = document.getElementById('cfg-dob').value;
@@ -3198,7 +3731,7 @@ function saveSettings() {
 }
 
 // ============================================================
-// ADD UPCOMING RACE MODAL (v26)
+// ADD UPCOMING RACE MODAL
 // ============================================================
 function showAddUpcomingModal() {
   closeFabDial();
@@ -3212,14 +3745,11 @@ function showAddUpcomingModal() {
   document.getElementById('addUpcomingModal').style.display = 'flex';
 }
 
-function hideAddUpcomingModal() {
-  document.getElementById('addUpcomingModal').style.display = 'none';
-}
+function hideAddUpcomingModal() { document.getElementById('addUpcomingModal').style.display = 'none'; }
 
 function addUpcomingEventRow() {
-  const list     = document.getElementById('au-events-list');
-  const rowCount = list.children.length;
-  if (rowCount >= 6) return;
+  const list = document.getElementById('au-events-list');
+  if (list.children.length >= 6) return;
 
   const row = document.createElement('div');
   row.style.cssText = 'display:flex;gap:8px;align-items:center;';
@@ -3264,9 +3794,7 @@ function saveNewUpcoming() {
   if (existingMeet) {
     const existingEventNames = existingMeet.events.map(e => e.event);
     const newEvents = events.filter(e => !existingEventNames.includes(e.event));
-    if (newEvents.length === 0) {
-      showError('All these events already exist for this date and course.'); return;
-    }
+    if (newEvents.length === 0) { showError('All these events already exist for this date and course.'); return; }
     existingMeet.events.push(...newEvents);
     if (!existingMeet.competition) existingMeet.competition = competition;
     if (!existingMeet.venue)       existingMeet.venue       = venue;
@@ -3287,15 +3815,11 @@ function saveNewUpcoming() {
     fabChild.textContent = '✓';
     fabChild.style.background = 'var(--green)';
     fabChild.style.color = 'white';
-    setTimeout(() => {
-      fabChild.textContent = '📅';
-      fabChild.style.background = '';
-      fabChild.style.color = '';
-    }, 2000);
+    setTimeout(() => { fabChild.textContent = '📅'; fabChild.style.background = ''; fabChild.style.color = ''; }, 2000);
   }
 }
 
-// Apply theme immediately to avoid flash before DOMContentLoaded
+// Apply theme immediately to avoid flash
 (function() {
   const saved = localStorage.getItem('swimDash_theme') || 'light';
   if (saved === 'dark') document.body.classList.add('dark');

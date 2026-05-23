@@ -33,56 +33,44 @@
 ### Four stacked FABs cluttering screen (v25)
 ### Schedule table colspan mismatch (v26) — fixed to colspan="12"
 ### Add Race modal: single flat form (v26) — redesigned to multi-event
-
-### All items from v26.2 quality pass
-- overviewRendered hoisting risk — replaced by renderedTabs Set in STATE block
-- getSwimmerProfile() dead code removed
-- Overview upcomingCount inflated by swum events — fixed via buildSwumUpcomingSet()
-- Overview crash on empty DATA — guard added
-- getBestSeasonImprovement() UTC offset bug — local date components used
-- Targets silent when QT data missing — informative message added
-- processData() missing splits field — normalised to []
-- removeRace/removeUpcomingEvent inline onclick — data attributes + delegation
-- .badge.S/.badge.L hardcoded hex in dark theme — CSS variables
-- Progression chart too short on mobile — 300px override
-- .grid3 unused CSS class removed
-- .tab dead border:none removed
-- Stale (v25) CSS comment removed
-- #tab-regional .stat-val mobile override added
-- No Escape key on modals — keydown listener in init()
-- No log prompt for past-dated schedule rows — ⚠️ Log? badge added
-- Overview PBs to Renew hardcoded at 6 months — reads from #renewalMonths select
-- populateSelects() cleared user filters — snapshot/restore added
-- toggleTheme() manual render list — renderAllChartTabs() helper
-- renderQTCells() No Data silent — now shows italic "Not offered"
-- chartjs-adapter-date-fns unpinned — pinned to @3.0.0
-- renderQTChartAndTable missing PALETTE — added for pattern consistency
-- Overview upcoming count included swum events — fixed
-- Best Improvement .toFixed(1) — changed to .toFixed(2)
-
-### FAB parent ＋ not centred (v26.1) — line-height:1; padding:0 added
-### Schedule "Today" shown for yesterday's race (v26.1) — exact daysUntil===0 check
-
-### getBestSeasonImprovement() false positive (v26.3)
-The function compared firstOfSeason vs all-time currentPB (potentially from a prior season),
-producing a positive "improvement" even when the swimmer had not improved within the season.
-Fixed: endpoint is now bestInSeason (fastest swim within the current season). Event is
-skipped if the season opener is already the season's fastest swim.
-
+### All items from v26.2 quality pass (see session-log.md)
+### getBestSeasonImprovement() false positive (v26.3) — endpoint is bestInSeason
 ### Ghost view on Splits tab after updateData() (v26.3)
-updateData() never called renderSplits(), so the Splits tab showed stale data when a race
-was added/removed while it was active. Fixed: updateData() now re-renders only the active
-tab via showTab(), letting renderedTabs guards handle lazy rendering of all others.
-
 ### Eager rendering in updateData() (v26.3)
-updateData() forced all 6 tabs to render immediately, defeating the renderedTabs lazy
-guard. Fixed: only the active tab re-renders; all others render lazily on next visit.
-
 ### Incomplete tab guarding (v26.3)
-Only renderOverview() had a renderedTabs guard. All filter-bearing render functions now
-have guards. Filter onchange attributes call forceX() wrappers that delete the guard
-before rendering. Reset functions and sortResults() also delete the guard before rendering.
 
+### v27 QT tab — Course filter removed
+Old single-course filter replaced by dual-course unified view.
+resetQualifyingFilters() and resetRegionalFilters() no longer reference qtCourse/rqCourse.
+
+### v27 QT tab — buildQtStatCards() old single-arg signature removed
+Now takes (scMatched, lcMatched, statsElId). Old call sites removed.
+Stat cards are clickable filter shortcuts — prefix derived from statsElId.
+
+### v27 QT tab — renderQTChartAndTable() removed
+Replaced entirely by renderQTCards() which handles cards, chart, and table.
+
+### v27 QT tab — Stat card "SC or LC" / "Both courses" subtitle inconsistency
+Fixed: subtitle removed entirely; "Click to filter" in title attr only.
+
+### v27 QT tab — Duplicate gap text on LC progress bar
+Gap text rendered once only in stats row above bar; removed from buildProgressBar() output.
+
+### v27 QT tab — Status chip inside course block
+Replaced by left border colour on the course block div. No chip label rendered.
+
+### v27 QT tab — "— No PB" dash prefix
+Removed from course block badge and card header badge. Now just "No PB" / "No Data".
+
+### v27 QT tab — Mobile table scaling lost
+Re-added: font-size 0.60rem, padding 5px 3px, badge scaling for both QT tab tables
+at max-width 500px, matching Schedule and Targets pattern.
+
+### v27 QT tab — Stat card event list alignment
+Items flow left-to-right (flex, flex-wrap:wrap, no justify-content:space-between).
+No flex:1 on event name — all items naturally left-aligned.
+
+---
 
 ## WATCH-OUT AREAS
 
@@ -100,99 +88,105 @@ before rendering. Reset functions and sortResults() also delete the guard before
 | Progression Improv / BvF | swims===1 || !refSwim || (ref===pb && mode!='latest') |
 | Splits analyzeSwim       | prevPB===null (date filtered)                         |
 
-### processData sort order (v21)
-Stable: date ASC → event name ASC → course ASC (S before L).
+### QT tab — two separate rendering pipelines
+1. **QT tab cards/chart/table**: buildQtStatCards() + buildProgressBar() + applyStatusFilter() + renderQTCards()
+   - Takes scMatched + lcMatched arrays; shows both courses simultaneously
+   - Used only by renderQualifying() and renderRegionalQualifying()
+2. **Schedule + Targets**: getQTStatusForEvent() + renderQTCells()
+   - Looks up a single course at a time from QT_DATA / SE_QT_DATA
+   - KEEP SEPARATE — do not merge these pipelines
 
-### escapeHtml must be applied to ALL user-supplied strings in innerHTML
-competition, venue from RAW. Event and course are dropdown-constrained — safe without escaping.
+### qtToggleState — module-level, persists within session
+```js
+const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
+```
+toggleQTChart() and toggleQTRows() mutate this object.
+State is NOT reset when filters change or tabs re-render — intentional so user's
+toggle preference is preserved across filter changes within a session.
+Resets to {SC:true, LC:true} on page reload only.
 
-### renderedTabs Set — three usage patterns (v26.2)
-- `renderedTabs.clear()` — full reset; use in invalidateCache() and renderAllChartTabs()
-- `renderedTabs.delete('tabname')` — targeted reset; use when only one tab needs refreshing,
-  or in forceX() wrappers and reset/sort functions
+### applyStatusFilter() — operates on event names, not matched rows
+Takes allEventNames array and both scMatched/lcMatched to determine best status.
+Returns filtered event name array. renderQTCards() then uses this to filter
+both the card grid and table (but NOT the stat cards — those always show all events).
+
+### buildProgressBar() — gap text NOT returned
+Gap text is intentionally excluded from buildProgressBar() output.
+It is rendered once only in the stats row above the bar (inside buildCourseBlock).
+Do NOT add gap text back to buildProgressBar() — it would duplicate on LC rows.
+
+### Course block border colour — status of that specific course
+The left border on each qt-course-block reflects that course's own status, not the
+overall card best status. This is intentional — it shows per-course qualification.
+
+### Card header badge — best status across both courses
+The badge in .qt-card-header reflects the best status across SC+LC.
+"No PB" and "No Data" show without a dash prefix.
+
+### Stat card clickable shortcut — prefix derivation
+buildQtStatCards() derives prefix from statsElId:
+  prefix = statsElId.startsWith('rq') ? 'rq' : 'qt'
+The Status select ID is then `${prefix}Status` and the force function is
+`forceRegional` or `forceQualifying`. If a new QT tab is added, ensure its
+statsElId starts with a unique prefix.
+
+### renderedTabs Set — three usage patterns
+- `renderedTabs.clear()` — full reset; invalidateCache() and renderAllChartTabs()
+- `renderedTabs.delete('tabname')` — targeted reset; forceX() wrappers, reset/sort fns
 - `renderedTabs.has('tabname')` — guard at top of each render function
 
-### forceX() wrappers — required for all filter onchange handlers (v26.3)
+### forceX() wrappers — required for all filter onchange handlers
 Filter onchange attributes must call forceX() wrappers, NOT render functions directly.
-The wrappers call renderedTabs.delete() before rendering, bypassing the lazy guard.
 Current wrappers: forceProgression(), forcePBs(), forceResults(), forceQualifying(), forceRegional().
-Any new filter-bearing tab needs its own forceX() wrapper and must use it in all
-onchange attributes, reset functions, and sort functions.
+Any new filter-bearing tab needs its own forceX() wrapper.
 
-### renderAllChartTabs() — single registration point (v26.2)
-New chart-bearing tabs must be added to renderAllChartTabs() only.
+### renderAllChartTabs() — single registration point
+New chart-bearing tabs must be added here only.
 toggleTheme() and saveSettings() call this — they need no other changes.
 
-### Intentionally unguarded render functions (v26.3)
-- renderSplits() — filter-event driven; always re-renders on event select change
-- renderSchedule() — depends on UPCOMING which changes independently of renderedTabs
-- renderTargets() — same as Schedule; also has renewal threshold select
-These must NOT receive renderedTabs guards.
+### Intentionally unguarded render functions
+- renderSplits() — filter-event driven
+- renderSchedule() — depends on UPCOMING independently
+- renderTargets() — same; also has renewal threshold select
 
-### updateData() active-tab-only re-render (v26.3)
+### updateData() active-tab-only re-render
 updateData() re-renders the active tab + Schedule + Targets. All other tabs render lazily.
-Do NOT add explicit render calls for other tabs back into updateData() — it defeats the
-lazy rendering system. If a tab needs immediate refresh after data change, add a
-renderedTabs.delete() + render call there specifically with a comment explaining why.
 
-### ALL_EVENTS constant — single source of truth (v26.2)
-Declared in CONFIGURATION section. addRaceEventRow(), addUpcomingEventRow(), and
-renderTargets() all reference it. Do NOT add inline event arrays anywhere else.
-Adding a new event: one line change in CONFIGURATION, automatically propagates everywhere.
+### ALL_EVENTS constant — single source of truth
+Declared in CONFIGURATION section. Do NOT add inline event arrays anywhere else.
 
-### getBestSeasonImprovement() — within-season only (v26.3)
-Uses bestInSeason (fastest within current season) not all-time currentPB as endpoint.
+### getBestSeasonImprovement() — within-season only
+Uses bestInSeason (fastest within current season) not all-time currentPB.
 Requires ≥2 swims this season. Skips event if season opener is already season's fastest.
-Season boundary: getSeasonStart() → SEASON_START_MONTH (default 9 = September).
-Date string built from local components — not toISOString() (UTC offset bug).
 
-### buildSwumUpcomingSet() — called from renderOverview() (v26.2)
-Must remain defined before renderOverview() in file order (or remain a function declaration
-so it is hoisted). Currently in the Schedule section — safe via hoisting.
-
-### Event delegation for remove buttons (v26.2)
-resultsTbody and scheduleBody have delegated click listeners set up once in init().
-Buttons use .btn-remove-race and .btn-remove-upcoming classes. No inline onclick.
-
-### UPCOMING data authority (v26)
-swimDash_UPCOMING is GitHub-authoritative on first load, also mutated locally by
-saveNewUpcoming() and removeUpcomingEvent(). User must download and commit to persist.
-
-### removeUpcomingEvent() — event property format
-UPCOMING[i].events is an array of { event: string }. Filter uses `e.event !== event`.
-saveNewUpcoming() always pushes { event: select.value } — format is consistent.
-
-### buildSwumUpcomingSet() date window
+### buildSwumUpcomingSet() — date window
 Uses ±1 day (86400000ms) tolerance. Races logged 2+ days off the meet date may not suppress.
 
-### Schedule Days column labels (v26.1)
-daysUntil: 0 → Today (gold), 1 → Tomorrow (accent), -1 → Yesterday (muted),
-< -1 → "Xd ago" (muted), > 1 → "in Xd". Never use <= 0 for Today.
+### Schedule Days column labels
+daysUntil: 0→Today, 1→Tomorrow, -1→Yesterday, <-1→"Xd ago", >1→"in Xd".
+Never use <= 0 for Today.
 
-### Schedule tab colspan = 12 (v26)
-12 columns (added Del column). Empty-state td must use colspan="12".
+### Schedule tab colspan = 12
+12 columns (includes Del column). Empty-state td must use colspan="12".
 
-### Competition column truncation (v24)
-.comp-full (30 chars desktop) / .comp-short (20 chars mobile).
-
-### getCC() and getPalette() must be called inside render functions (v23)
-Never at module level. Every render function injects at top:
+### getCC() and getPalette() — inside render functions only
+Never at module level. Always declare at top of render function:
   const CC = getCC(); const PALETTE = getPalette();
 
-### getSwimmerDOB() / getSwimmerGender() — not constants (v24)
-Functions that read localStorage. Do not cache at module level.
+### Mobile col-abbr/col-full pattern
+Used for: QT/CT columns in both QT tabs, "Course"→"C" in QT event tables,
+Competition column in Schedule/Overview. Add to any new table column that
+would overflow on mobile.
 
-### getCountyAgeBracket() / getRegionalAgeBracket() — not cacheable (v24)
-Called at render time. Depend on getSwimmerDOB() which may change.
+### escapeHtml() — required for all user-supplied strings in innerHTML
+competition, venue from RAW. Event and course are dropdown-constrained.
 
-### renderQTCells() — no inline font-size (v24.1)
-Returns [statusCell, gapCell]. No font-size on spans — table CSS applies.
-Gap: Outside → CT gap; Consideration → QT gap; Qualified → ✓.
-No Data → italic "Not offered" (v26.2).
+### UPCOMING data authority
+swimDash_UPCOMING is GitHub-authoritative on first load, also mutated locally.
+User must download and commit to persist.
 
-### Logo (v24.1+)
-Loaded via GitHub raw URL. Works online; hidden gracefully offline via onerror.
+### removeUpcomingEvent() — event property format
+UPCOMING[i].events is array of { event: string }. Filter uses `e.event !== event`.
 
-### Upcoming races 48-hour grace period
-cutoff = today - 2 days. Applied in renderSchedule(), renderTargets(),
-upcomingMap construction, and buildSwumUpcomingSet() row filtering.
+### Logo — GitHub raw URL
+Loaded via GitHub raw URL. Hidden gracefully offline via onerror.
