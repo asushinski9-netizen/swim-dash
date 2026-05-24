@@ -2679,6 +2679,13 @@ function buildQtStatCards(scMatched, lcMatched, statsElId) {
   const statusSelectId  = `${prefix}Status`;
   const forceRenderFn   = prefix === 'rq' ? 'forceRegional' : 'forceQualifying';
 
+  // Abbreviate stroke names for mobile display in stat card rows
+  const abbrevEvent = ev => ev
+    .replace(/Free/g, 'FR')
+    .replace(/Back/g, 'BK')
+    .replace(/Breast/g, 'BR')
+    .replace(/Fly/g, 'FL');
+
   // Build event list rows — include course badge next to PB time
   // Points 1-6: no underline, left-aligned, consistent font, course badge, no dash for No PB
   const evList = (items) => items.length
@@ -2686,7 +2693,9 @@ function buildQtStatCards(scMatched, lcMatched, statsElId) {
         ${items.map(([ev, d]) => `
           <div style="display:flex;align-items:center;flex-wrap:wrap;
             padding:3px 0;font-size:0.68rem;gap:4px;">
-            <span style="color:var(--text);font-weight:600;font-size:0.68rem;">${ev}</span>
+            <span style="color:var(--text);font-weight:600;font-size:0.68rem;">
+              <span class="col-full">${ev}</span><span class="col-abbr">${abbrevEvent(ev)}</span>
+            </span>
             ${d.bestPB !== null
               ? `<span class="badge ${d.bestCourse}" style="font-size:0.52rem;padding:1px 4px;">${d.bestCourse === 'S' ? 'SC' : 'LC'}</span>
                  <span style="color:var(--gold);font-variant-numeric:tabular-nums;font-size:0.68rem;">${secToTime(d.bestPB)}</span>
