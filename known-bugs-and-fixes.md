@@ -70,6 +70,21 @@ at max-width 500px, matching Schedule and Targets pattern.
 Items flow left-to-right (flex, flex-wrap:wrap, no justify-content:space-between).
 No flex:1 on event name — all items naturally left-aligned.
 
+### v27 QT tab — Stat card mobile centring override
+Mobile CSS applies align-items:center to the whole stat card (for icon/number/label).
+This centred the event list div too. Fixed with align-self:stretch on the event list
+container, and margin-left:0 !important on .qt-gap-chip to prevent delta right-drift.
+
+### v27 QT tab — Stat card mobile stroke abbreviations
+abbrevEvent() helper inside buildQtStatCards() maps: Free→FR, Back→BK, Breast→BR,
+Fly→FL, IM unchanged. Applied via col-full/col-abbr pattern inside evList rows.
+Scoped to stat card event list only — event names elsewhere are unaffected.
+
+### v27 QT tab — Stat card scroll-to-cards on mobile
+Clicking a stat card on ≤500px screens triggers scrollIntoView({behavior:'smooth'})
+on the card grid element after 150ms (DOM settle). cardGridId derived from prefix
+(qtCardGrid for County, rqCardGrid for Regional). Desktop clicks are unaffected.
+
 ---
 
 ## WATCH-OUT AREAS

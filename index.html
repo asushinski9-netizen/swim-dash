@@ -540,9 +540,10 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 
   #tab-qualifying .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
   #tab-qualifying .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  #tab-qualifying .stat-card > div[style*="text-align:left"] { align-self: stretch !important; text-align: left !important; }
   #tab-qualifying .stat-val { font-size: 1.3rem !important; }
-  #tab-qualifying .stat-card div[style*="text-align:left"] { font-size: 0.58rem !important; line-height: 1.35 !important; }
-  #tab-qualifying .stat-card .qt-gap-chip { font-size: 0.58rem !important; }
+  #tab-qualifying .stat-card .qt-gap-chip { font-size: 0.58rem !important; margin-left: 0 !important; }
+  #tab-qualifying .stat-card .qt-gap-chip[style*="margin-left:auto"] { margin-left: 0 !important; }
   #tab-qualifying .stat-card span[style*="font-size:0.68rem"] { font-size: 0.58rem !important; }
   #tab-qualifying .tbl-wrap table { font-size: 0.60rem !important; }
   #tab-qualifying .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
@@ -550,8 +551,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   #tab-qualifying .tbl-wrap .badge { padding: 1px 3px !important; font-size: 0.50rem !important; }
   #tab-regional .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
   #tab-regional .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  #tab-regional .stat-card > div[style*="text-align:left"] { align-self: stretch !important; text-align: left !important; }
   #tab-regional .stat-val { font-size: 1.3rem !important; }
-  #tab-regional .stat-card .qt-gap-chip { font-size: 0.58rem !important; }
+  #tab-regional .stat-card .qt-gap-chip { font-size: 0.58rem !important; margin-left: 0 !important; }
+  #tab-regional .stat-card .qt-gap-chip[style*="margin-left:auto"] { margin-left: 0 !important; }
+  #tab-regional .stat-card span[style*="font-size:0.68rem"] { font-size: 0.58rem !important; }
   #tab-regional .tbl-wrap table { font-size: 0.60rem !important; }
   #tab-regional .tbl-wrap th { font-size: 0.60rem !important; padding: 5px 3px !important; }
   #tab-regional .tbl-wrap td { font-size: 0.60rem !important; padding: 5px 3px !important; }
@@ -2705,9 +2709,12 @@ function buildQtStatCards(scMatched, lcMatched, statsElId) {
       </div>`
     : '';
 
-  // Clickable stat card: sets status filter and re-renders
+  // Clickable stat card: sets status filter and re-renders, scrolls to cards on mobile
+  const cardGridId  = prefix === 'rq' ? 'rqCardGrid' : 'qtCardGrid';
   const makeCard = (statusVal, icon, count, label, list, color) => {
-    const clickHandler = `document.getElementById('${statusSelectId}').value='${statusVal}';${forceRenderFn}();`;
+    const clickHandler = `document.getElementById('${statusSelectId}').value='${statusVal}';${forceRenderFn}();` +
+      `if(window.innerWidth<=500){var el=document.getElementById('${cardGridId}');` +
+      `if(el){setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'});},150);}}`;
     return `<div class="stat-card" onclick="${clickHandler}" style="cursor:pointer;"
         title="Click to filter by ${label}">
       <div class="stat-icon">${icon}</div>

@@ -162,6 +162,18 @@ Row classes: qt-tbl-row-sc (plain bg) / qt-tbl-row-lc (subtle teal tint).
 "Course" column header uses col-full/col-abbr pattern (shows "C" on mobile).
 Table respects the status filter (only filtered events appear).
 
+### Stat card mobile helpers (inside buildQtStatCards)
+**abbrevEvent(ev)** — maps stroke words for mobile display:
+  Free→FR, Back→BK, Breast→BR, Fly→FL, IM unchanged.
+  Applied via col-full/col-abbr spans inside evList rows. Scoped to stat cards only.
+
+**Mobile alignment** — event list div uses align-self:stretch to override the mobile
+  stat-card align-items:center. Gap chips use margin-left:0 !important to stay left.
+
+**Scroll on mobile click** — makeCard() includes a scrollIntoView call (150ms delay)
+  targeting the card grid element when window.innerWidth ≤ 500px.
+  cardGridId = prefix === 'rq' ? 'rqCardGrid' : 'qtCardGrid'
+
 ### Bracket note
 Populated by renderQualifying() and renderRegionalQualifying() into #qtNote / #rqNote.
 Format: "Qualifying times shown for {gender} · age group {age} · {Championship} {year}."

@@ -51,6 +51,12 @@ Reset functions updated to also clear Status filter.
 - Consistent 0.68rem font on desktop; 0.58rem on mobile for event rows
 - No PB events show event name only (no badge/time rendered when bestPB null)
 - "— No PB" → "No PB" (dash removed from badge text throughout)
+- Mobile stroke abbreviations: Free→FR, Back→BK, Breast→BR, Fly→FL, IM unchanged.
+  abbrevEvent() helper inside buildQtStatCards(); col-full/col-abbr pattern applied.
+- Mobile alignment fix: align-self:stretch on event list div overrides stat-card
+  align-items:center; margin-left:0 !important on gap chips prevents delta right-drift.
+- Scroll-to-cards on mobile: clicking a stat card on ≤500px smoothly scrolls to the
+  Qualification Status card grid after 150ms DOM-settle delay; cardGridId derived from prefix.
 
 ### Course block fixes
 - Status chip removed; left border colour conveys status
