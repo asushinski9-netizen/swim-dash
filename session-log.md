@@ -55,8 +55,12 @@ Reset functions updated to also clear Status filter.
   abbrevEvent() helper inside buildQtStatCards(); col-full/col-abbr pattern applied.
 - Mobile alignment fix: align-self:stretch on event list div overrides stat-card
   align-items:center; margin-left:0 !important on gap chips prevents delta right-drift.
-- Scroll-to-cards on mobile: clicking a stat card on ≤500px smoothly scrolls to the
-  Qualification Status card grid after 150ms DOM-settle delay; cardGridId derived from prefix.
+- Scroll-to-cards (all screen sizes): clicking a stat card scrolls to the
+  Qualification Status — SC & LC section. Uses window.scrollTo with a
+  getBoundingClientRect() offset to account for the sticky header height (+ 8px buffer).
+  cardSectionId derived from prefix (qtCardSection / rqCardSection).
+- "inside" hidden on mobile in Qualified gap text: wrapped in col-full span so desktop
+  shows "▼ 0.52s inside QT" and mobile shows "▼ 0.52s QT".
 
 ### Course block fixes
 - Status chip removed; left border colour conveys status

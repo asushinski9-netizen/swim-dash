@@ -170,9 +170,15 @@ Table respects the status filter (only filtered events appear).
 **Mobile alignment** — event list div uses align-self:stretch to override the mobile
   stat-card align-items:center. Gap chips use margin-left:0 !important to stay left.
 
-**Scroll on mobile click** — makeCard() includes a scrollIntoView call (150ms delay)
-  targeting the card grid element when window.innerWidth ≤ 500px.
-  cardGridId = prefix === 'rq' ? 'rqCardGrid' : 'qtCardGrid'
+**Scroll on click (all screen sizes)** — makeCard() uses window.scrollTo() with a
+  getBoundingClientRect() offset to scroll to the Qualification Status section,
+  clearing the sticky header (header height + 8px buffer). 150ms delay for DOM settle.
+  cardSectionId = prefix === 'rq' ? 'rqCardSection' : 'qtCardSection'
+  Uses the .card wrapper element (includes section title), not the grid element.
+  scrollIntoView not used — it ignores sticky header height.
+
+**Qualified gap chip mobile** — "inside" in "▼ Xs inside QT" wrapped in col-full span;
+  hidden on mobile so chip reads "▼ Xs QT" and does not wrap.
 
 ### Bracket note
 Populated by renderQualifying() and renderRegionalQualifying() into #qtNote / #rqNote.

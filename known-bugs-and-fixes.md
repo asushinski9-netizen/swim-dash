@@ -80,10 +80,16 @@ abbrevEvent() helper inside buildQtStatCards() maps: Free→FR, Back→BK, Breas
 Fly→FL, IM unchanged. Applied via col-full/col-abbr pattern inside evList rows.
 Scoped to stat card event list only — event names elsewhere are unaffected.
 
-### v27 QT tab — Stat card scroll-to-cards on mobile
-Clicking a stat card on ≤500px screens triggers scrollIntoView({behavior:'smooth'})
-on the card grid element after 150ms (DOM settle). cardGridId derived from prefix
-(qtCardGrid for County, rqCardGrid for Regional). Desktop clicks are unaffected.
+### v27 QT tab — Stat card scroll to Qualification Status section
+Clicking any stat card scrolls to the Qualification Status — SC & LC section on all
+screen sizes. Uses window.scrollTo() with a live getBoundingClientRect() offset to
+clear the sticky header (header height + 8px). Targets qtCardSection / rqCardSection
+(the .card wrapper containing the section title), NOT the grid element itself.
+scrollIntoView avoided because it does not account for sticky header height.
+
+### v27 QT tab — Qualified gap chip "inside" hidden on mobile
+"inside" in "▼ Xs inside QT" wrapped in <span class="col-full"> so it is hidden
+at max-width 500px, showing "▼ Xs QT" instead to prevent wrapping.
 
 ---
 
