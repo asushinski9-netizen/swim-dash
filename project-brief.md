@@ -68,8 +68,7 @@ Status filter logic:
 - No PB: no PB on either course
 
 ### Chart
-6 datasets: SC PB bars + LC PB bars + SC QT/CT lines + LC QT/CT lines.
-SC/LC checkbox-style toggle buttons above chart; no re-render on toggle.
+Removed. The bar chart was confusing due to SC/LC bar overlap issues.
 
 ### Event-by-event table
 One row per event+course. SC/LC row toggles. "Course"→"C" on mobile.

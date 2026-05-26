@@ -80,6 +80,14 @@ abbrevEvent() helper inside buildQtStatCards() maps: Free→FR, Back→BK, Breas
 Fly→FL, IM unchanged. Applied via col-full/col-abbr pattern inside evList rows.
 Scoped to stat card event list only — event names elsewhere are unaffected.
 
+### v27 QT tab — Chart removed from County and Regional tabs
+"PB vs Qualifying & Consideration Times" bar chart removed from both QT tabs.
+Root cause: SC and LC bars were overlapping (not grouped side-by-side), causing the
+LC "no PB" grey bars to cover correctly-coloured SC bars. Decision taken to remove
+the chart entirely rather than continue debugging visual confusion.
+renderQTCards() signature simplified to 6 args (chartId, legendId removed).
+toggleQTChart() function removed. qtToggleState retained for row toggles.
+
 ### v27 QT tab — Stat card scroll to Qualification Status section
 Clicking any stat card scrolls to the Qualification Status — SC & LC section on all
 screen sizes. Uses window.scrollTo() with a live getBoundingClientRect() offset to

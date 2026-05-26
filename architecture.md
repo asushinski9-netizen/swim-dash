@@ -137,23 +137,16 @@ Gap text NOT included in bar output — rendered once only in the stats row abov
 Card border colour = best status across both courses.
 Card header badge = best status label (no dash prefix for No PB/No Data).
 
-### Chart — renderQTCards() chart section
-6 datasets:
-- [0] SC PB bars (blue tones, status-coloured)
-- [1] SC QT line (dashed dark blue #1a56c4)
-- [2] SC CT line (dotted light blue #60a5fa)
-- [3] LC PB bars (teal tones, status-coloured)
-- [4] LC QT line (dashed teal #0ea5d4)
-- [5] LC CT line (dotted light teal #67e8f9)
+### Chart — REMOVED
+The "PB vs Qualifying & Consideration Times" chart was removed from both QT tabs.
+toggleQTChart() is removed. No chart is rendered in renderQTCards().
 
-### qtToggleState — SC/LC visibility state
+### qtToggleState — SC/LC row visibility state only
 ```js
 const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
 ```
-- toggleQTChart(prefix, course) — toggles datasets [0,1,2] (SC) or [3,4,5] (LC) via chart.data.datasets[i].hidden
-- toggleQTRows(prefix, course) — toggles .qt-tbl-row-sc or .qt-tbl-row-lc visibility via .hidden class
-Both update the corresponding toggle button active class.
-No re-render needed — purely DOM/Chart.js mutation.
+- toggleQTRows(prefix, course) — toggles .qt-tbl-row-sc or .qt-tbl-row-lc via .hidden class
+Updates corresponding toggle button active class. No re-render needed.
 
 ### Event-by-event table
 One row per event+course combination.

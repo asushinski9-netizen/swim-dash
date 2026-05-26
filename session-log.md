@@ -8,6 +8,16 @@ Both QT tabs previously showed only one course at a time (filtered by a Course s
 v27 removes the Course filter entirely and always shows SC and LC simultaneously,
 addressing the UX issue where a swimmer had to switch courses to see their full status.
 
+### Chart removed from both QT tabs (post-v27 iteration)
+The "PB vs Qualifying & Consideration Times" bar chart was removed from both County
+and Regional QT tabs due to confusion over bar colours and SC/LC overlap.
+- Chart HTML card divs removed from both tabs
+- toggleQTChart() function removed
+- Chart-building block (~90 lines) removed from renderQTCards()
+- renderQTCards() signature simplified: chartId and legendId params removed (now 6 args)
+- destroyChart calls removed from no-data guards
+- qtToggleState retained — still used by SC/LC row toggles on the event table
+
 ### New rendering pipeline (replaces renderQTChartAndTable + old buildQtStatCards)
 
 **buildQtStatCards(scMatched, lcMatched, statsElId)**

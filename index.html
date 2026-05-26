@@ -920,16 +920,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       </p>
       <div class="qt-card-grid" id="qtCardGrid"></div>
     </div>
-    <!-- Chart -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="card-title">📊 PB vs County Qualifying &amp; Consideration Times</div>
-      <div class="qt-chart-toggles" id="qtChartToggles">
-        <button class="qt-toggle-btn active-sc" id="qtToggleSC" onclick="toggleQTChart('qt','SC')">● SC</button>
-        <button class="qt-toggle-btn active-lc" id="qtToggleLC" onclick="toggleQTChart('qt','LC')">● LC</button>
-      </div>
-      <div style="height:380px;position:relative"><canvas id="qtBarChart"></canvas></div>
-      <div class="chart-legend" id="qtLegend" style="margin-top:12px"></div>
-    </div>
     <!-- Event-by-Event Table -->
     <div class="card">
       <div class="card-title">📋 Event-by-Event Status</div>
@@ -1017,16 +1007,6 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         <span style="color:var(--green);font-weight:600;">●</span> QT markers shown above bar.
       </p>
       <div class="qt-card-grid" id="rqCardGrid"></div>
-    </div>
-    <!-- Chart -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="card-title">📊 PB vs SE London Regional Qualifying &amp; Consideration Times</div>
-      <div class="qt-chart-toggles" id="rqChartToggles">
-        <button class="qt-toggle-btn active-sc" id="rqToggleSC" onclick="toggleQTChart('rq','SC')">● SC</button>
-        <button class="qt-toggle-btn active-lc" id="rqToggleLC" onclick="toggleQTChart('rq','LC')">● LC</button>
-      </div>
-      <div style="height:380px;position:relative"><canvas id="rqBarChart"></canvas></div>
-      <div class="chart-legend" id="rqLegend" style="margin-top:12px"></div>
     </div>
     <!-- Event-by-Event Table -->
     <div class="card">
@@ -2809,27 +2789,6 @@ function applyStatusFilter(allEventNames, scMatched, lcMatched, statusFilter) {
 // State for chart/row toggles (shared between qt and rq)
 const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
 
-function toggleQTChart(prefix, course) {
-  qtToggleState[prefix][course] = !qtToggleState[prefix][course];
-  const btnId = `${prefix}Toggle${course}`;
-  const btn = document.getElementById(btnId);
-  if (btn) {
-    btn.classList.toggle(`active-${course.toLowerCase()}`, qtToggleState[prefix][course]);
-  }
-  const chartId = `${prefix}BarChart`;
-  if (charts[chartId]) {
-    // Datasets: 0=SC PB, 1=SC QT line, 2=SC CT line, 3=LC PB, 4=LC QT line, 5=LC CT line
-    const scIdxs = [0, 1, 2];
-    const lcIdxs = [3, 4, 5];
-    const idxs = course === 'SC' ? scIdxs : lcIdxs;
-    idxs.forEach(i => {
-      if (charts[chartId].data.datasets[i]) {
-        charts[chartId].data.datasets[i].hidden = !qtToggleState[prefix][course];
-      }
-    });
-    charts[chartId].update();
-  }
-}
 
 function toggleQTRows(prefix, course) {
   qtToggleState[prefix][course] = !qtToggleState[prefix][course];
@@ -2848,8 +2807,7 @@ function toggleQTRows(prefix, course) {
   }
 }
 
-function renderQTCards(scMatched, lcMatched, cardGridId, chartId, legendId, tableBodyId, prefix, statusFilter) {
-  const CC = getCC(); const PALETTE = getPalette();
+function renderQTCards(scMatched, lcMatched, cardGridId, tableBodyId, prefix, statusFilter) {
   const statusRank = s => ({'Qualified':0,'Consideration':1,'Outside':2,'No PB':3,'No Data':4}[s] ?? 5);
   const strokeOrder = ['Free','Back','Breast','Fly','IM','Other'];
 
@@ -2870,8 +2828,6 @@ function renderQTCards(scMatched, lcMatched, cardGridId, chartId, legendId, tabl
   if (filteredEvents.length === 0) {
     document.getElementById(cardGridId).innerHTML =
       '<div class="empty" style="grid-column:1/-1"><p>No events match the current filters.</p></div>';
-    destroyChart(chartId);
-    if (legendId) document.getElementById(legendId).innerHTML = '';
     if (tableBodyId) document.getElementById(tableBodyId).innerHTML =
       '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No events match the current filters.</td></tr>';
     return;
@@ -2957,100 +2913,6 @@ function renderQTCards(scMatched, lcMatched, cardGridId, chartId, legendId, tabl
   });
   document.getElementById(cardGridId).innerHTML = cardsHTML;
 
-  // ── CHART (6 datasets: SC PB, SC QT line, SC CT line, LC PB, LC QT line, LC CT line) ──
-  const scColor  = 'rgba(26,86,196,0.82)';
-  const lcColor  = 'rgba(14,165,212,0.75)';
-
-  const statusBarColor = (r, defaultColor) => {
-    if (!r || r.pbSec === null) return 'rgba(100,116,139,0.35)';
-    return {
-      'Qualified':     defaultColor.replace(/[\d.]+\)$/, '0.85)'),
-      'Consideration': 'rgba(245,158,11,0.82)',
-      'Outside':       'rgba(239,68,68,0.82)'
-    }[r.status] || 'rgba(100,116,139,0.35)';
-  };
-
-  const labels  = filteredEvents;
-  const scPBs   = labels.map(ev => { const r = scMatched.find(x => x.event === ev); return r?.pbSec ?? null; });
-  const lcPBs   = labels.map(ev => { const r = lcMatched.find(x => x.event === ev); return r?.pbSec ?? null; });
-  const scQTs   = labels.map(ev => { const r = scMatched.find(x => x.event === ev); return r?.qualify  ?? null; });
-  const scCTs   = labels.map(ev => { const r = scMatched.find(x => x.event === ev); return r?.consider ?? null; });
-  const lcQTs   = labels.map(ev => { const r = lcMatched.find(x => x.event === ev); return r?.qualify  ?? null; });
-  const lcCTs   = labels.map(ev => { const r = lcMatched.find(x => x.event === ev); return r?.consider ?? null; });
-
-  const scBarColors = labels.map(ev => statusBarColor(scMatched.find(x => x.event === ev), scColor));
-  const lcBarColors = labels.map(ev => statusBarColor(lcMatched.find(x => x.event === ev), lcColor));
-
-  destroyChart(chartId);
-  charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        // Dataset 0: SC PB bars
-        { label: 'SC PB', data: scPBs, backgroundColor: scBarColors,
-          borderColor: scBarColors.map(c => c.replace(/[\d.]+\)$/, '1)')),
-          borderWidth: 1, borderRadius: 4, order: 2,
-          hidden: !qtToggleState[prefix].SC },
-        // Dataset 1: SC QT line
-        { label: 'SC Qualify', data: scQTs, type: 'line',
-          borderColor: '#1a56c4', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [6,3], pointRadius: 3,
-          pointBackgroundColor: '#1a56c4', order: 0, tension: 0,
-          hidden: !qtToggleState[prefix].SC },
-        // Dataset 2: SC CT line
-        { label: 'SC Consider', data: scCTs, type: 'line',
-          borderColor: '#60a5fa', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [4,4], pointRadius: 3,
-          pointBackgroundColor: '#60a5fa', order: 0, tension: 0,
-          hidden: !qtToggleState[prefix].SC },
-        // Dataset 3: LC PB bars
-        { label: 'LC PB', data: lcPBs, backgroundColor: lcBarColors,
-          borderColor: lcBarColors.map(c => c.replace(/[\d.]+\)$/, '1)')),
-          borderWidth: 1, borderRadius: 4, order: 2,
-          hidden: !qtToggleState[prefix].LC },
-        // Dataset 4: LC QT line
-        { label: 'LC Qualify', data: lcQTs, type: 'line',
-          borderColor: '#0ea5d4', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [6,3], pointRadius: 3,
-          pointBackgroundColor: '#0ea5d4', order: 0, tension: 0,
-          hidden: !qtToggleState[prefix].LC },
-        // Dataset 5: LC CT line
-        { label: 'LC Consider', data: lcCTs, type: 'line',
-          borderColor: '#67e8f9', backgroundColor: 'transparent',
-          borderWidth: 2, borderDash: [4,4], pointRadius: 3,
-          pointBackgroundColor: '#67e8f9', order: 0, tension: 0,
-          hidden: !qtToggleState[prefix].LC },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: item => {
-          const v = item.parsed.y;
-          if (v === null) return null;
-          return ` ${item.dataset.label}: ${secToTime(v)}`;
-        }}}
-      },
-      scales: {
-        x: { ticks: { color: CC.tick, font: { size: 11 } }, grid: { color: CC.grid } },
-        y: { ticks: { color: CC.tick, callback: v => secToTime(v) }, grid: { color: CC.grid } }
-      }
-    }
-  });
-
-  if (legendId) {
-    document.getElementById(legendId).innerHTML = `
-      <div class="cl-item"><div class="cl-dot" style="background:rgba(26,86,196,0.82);border-radius:2px;width:14px;height:10px;"></div> SC PB</div>
-      <div class="cl-item"><div class="cl-dot" style="background:rgba(14,165,212,0.75);border-radius:2px;width:14px;height:10px;"></div> LC PB</div>
-      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dashed #1a56c4;"></div> SC Qualify</div>
-      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dotted #60a5fa;"></div> SC Consider</div>
-      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dashed #0ea5d4;"></div> LC Qualify</div>
-      <div class="cl-item"><div style="width:24px;height:3px;border-top:2px dotted #67e8f9;"></div> LC Consider</div>
-      <div style="font-size:0.65rem;color:var(--text3);margin-top:4px;width:100%;">Bar colour: 🟢 Qualified · 🟡 Consideration · 🔴 Outside · ⬜ No PB. Use SC/LC toggles to show/hide.</div>`;
-  }
-
   // ── EVENT-BY-EVENT TABLE ─────────────────────────────────
   if (!tableBodyId) return;
   const statusColor = s => ({'Qualified':'var(--green)','Consideration':'var(--gold)','Outside':'var(--red)'}[s] || 'var(--text3)');
@@ -3103,8 +2965,6 @@ function renderQualifying() {
 
   if (QT_DATA.length === 0) {
     document.getElementById('qtStats').innerHTML = '';
-    destroyChart('qtBarChart');
-    document.getElementById('qtLegend').innerHTML = '';
     document.getElementById('qtCardGrid').innerHTML =
       `<div class="empty" style="grid-column:1/-1;padding:40px 20px;text-align:center;color:var(--text3)">
         No qualifying time data loaded.<br>
@@ -3148,7 +3008,7 @@ function renderQualifying() {
   const lcMatched = buildCourseMatched('Long Course',  'L');
 
   buildQtStatCards(scMatched, lcMatched, 'qtStats');
-  renderQTCards(scMatched, lcMatched, 'qtCardGrid', 'qtBarChart', 'qtLegend', 'qtTableBody', 'qt', statusFilter);
+  renderQTCards(scMatched, lcMatched, 'qtCardGrid', 'qtTableBody', 'qt', statusFilter);
 
   const qtChamsYear = parseLocalDate(COUNTY_CHAMPS_DATE).getFullYear();
   const qtIsPast    = new Date() > parseLocalDate(COUNTY_CHAMPS_DATE);
@@ -3167,7 +3027,6 @@ function renderRegionalQualifying() {
 
   if (!SE_QT_DATA.length) {
     document.getElementById('rqStats').innerHTML = '';
-    destroyChart('rqBarChart');
     document.getElementById('rqCardGrid').innerHTML =
       `<div class="empty" style="grid-column:1/-1;padding:40px 20px;text-align:center;color:var(--text3)">
         No SE London QT data. Upload se_london_qt.json via ⚙️ Data Manager.
@@ -3214,7 +3073,7 @@ function renderRegionalQualifying() {
   const lcMatched = buildCourseMatched('Long Course',  'L');
 
   buildQtStatCards(scMatched, lcMatched, 'rqStats');
-  renderQTCards(scMatched, lcMatched, 'rqCardGrid', 'rqBarChart', 'rqLegend', 'rqTableBody', 'rq', statusFilter);
+  renderQTCards(scMatched, lcMatched, 'rqCardGrid', 'rqTableBody', 'rq', statusFilter);
 
   const rqChamsYear = parseLocalDate(REGIONAL_CHAMPS_DATE).getFullYear();
   const rqIsPast    = new Date() > parseLocalDate(REGIONAL_CHAMPS_DATE);
