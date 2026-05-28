@@ -8,6 +8,36 @@ Both QT tabs previously showed only one course at a time (filtered by a Course s
 v27 removes the Course filter entirely and always shows SC and LC simultaneously,
 addressing the UX issue where a swimmer had to switch courses to see their full status.
 
+### Code review fixes (post-v27 iteration)
+
+**B1/I5 — Dead CSS removed**
+.qt-chart-toggles, .qt-toggle-btn and active variants removed after chart removal.
+.qt-table-toggles and .qt-row-toggle retained and clarified with comments.
+
+**B3 — Mobile course block + progress bar overrides**
+Added @media (max-width:500px) overrides for .qt-course-block (padding, margin),
+.qt-progress-wrap (height, margin-top), .qt-marker-time (font-size, top).
+Corrected .qt-pb-val mobile font from stale 0.92rem to 0.82rem.
+
+**I2 — Persist renewalMonths across sessions**
+onchange now calls localStorage.setItem('swimDash_renewalMonths', this.value).
+init() restores saved value before first render (fallback to '6' if invalid).
+
+**P2 — Unified empty state messages**
+Both QT table empty states now read "No events match the current filters." consistently.
+
+**I3 — Progress bar track always visible**
+.qt-progress-wrap background: var(--surface) → var(--surface3) + border:1px solid var(--border).
+Track is now visible even when no PB, anchoring the CT/QT markers clearly.
+
+**I6 — qtToggleState renamed to qtRowState**
+All 5 references renamed. 3-line comment added clarifying row-only purpose (chart removed).
+
+**P3 — Duplicate race warning in removeRace()**
+Now counts all matching entries (date+event+course+time) before deleting.
+If >1 match found, confirm dialog warns "⚠️ N identical entries found — only the first
+will be removed." Single match behaviour unchanged.
+
 ### Chart removed from both QT tabs (post-v27 iteration)
 The "PB vs Qualifying & Consideration Times" bar chart was removed from both County
 and Regional QT tabs due to confusion over bar colours and SC/LC overlap.

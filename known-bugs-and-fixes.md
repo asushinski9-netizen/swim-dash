@@ -80,6 +80,33 @@ abbrevEvent() helper inside buildQtStatCards() maps: Free→FR, Back→BK, Breas
 Fly→FL, IM unchanged. Applied via col-full/col-abbr pattern inside evList rows.
 Scoped to stat card event list only — event names elsewhere are unaffected.
 
+### v27 — Dead CSS after chart removal (B1/I5)
+.qt-chart-toggles, .qt-toggle-btn, .qt-toggle-btn.active-sc/.active-lc were defined
+in CSS but no longer referenced after chart removal. Removed. .qt-row-toggle retained.
+
+### v27 — Mobile course block and progress bar missing overrides (B3)
+@media (max-width:500px) had no overrides for .qt-course-block or .qt-progress-wrap,
+causing cramped layout and potential marker overlap on small screens. Fixed.
+
+### v27 — renewalMonths resets to 6 on every reload (I2)
+Threshold preference not persisted. Fixed: localStorage key swimDash_renewalMonths
+saved on change, restored in init() before first render.
+
+### v27 — Empty state messages inconsistent (P2)
+"No events found." vs "No events match the current filters." used in different places.
+Unified to "No events match the current filters." throughout.
+
+### v27 — Progress bar track invisible when no PB (I3)
+background: var(--surface) made the track white/dark (same as card background), so
+CT/QT markers appeared to float. Fixed: background: var(--surface3) + border added.
+
+### v27 — qtToggleState misleading name after chart removal (I6)
+Renamed to qtRowState throughout (5 references). Comment added.
+
+### v27 — removeRace() silent on duplicate entries (P3)
+Two identical entries (same date/event/course/time) — only first deleted, no warning.
+Fixed: counts matches first; confirm dialog warns if >1 found.
+
 ### v27 QT tab — Chart removed from County and Regional tabs
 "PB vs Qualifying & Consideration Times" bar chart removed from both QT tabs.
 Root cause: SC and LC bars were overlapping (not grouped side-by-side), causing the

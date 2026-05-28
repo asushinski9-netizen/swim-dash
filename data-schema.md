@@ -123,6 +123,7 @@ swimDash_RAW      — USER AUTHORITATIVE (never overwritten by GitHub)
 swimDash_QT       — GitHub authoritative (re-fetched if missing)
 swimDash_SE_QT    — GitHub authoritative (re-fetched if missing)
 swimDash_UPCOMING — GitHub authoritative on first load; also mutated locally
-swimDash_theme    — 'light' or 'dark'
-swimDash_DOB      — Swimmer date of birth
-swimDash_GENDER   — Swimmer gender
+swimDash_theme         — 'light' or 'dark'
+swimDash_DOB           — Swimmer date of birth
+swimDash_GENDER        — Swimmer gender
+swimDash_renewalMonths — PB renewal threshold ('3','6','9','12'). Restored in init().

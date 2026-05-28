@@ -141,12 +141,14 @@ Card header badge = best status label (no dash prefix for No PB/No Data).
 The "PB vs Qualifying & Consideration Times" chart was removed from both QT tabs.
 toggleQTChart() is removed. No chart is rendered in renderQTCards().
 
-### qtToggleState — SC/LC row visibility state only
+### qtRowState — SC/LC row visibility state (row toggles only)
 ```js
-const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
+// Drives event-by-event table SC/LC row visibility only. Chart was removed in v27.
+const qtRowState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
 ```
 - toggleQTRows(prefix, course) — toggles .qt-tbl-row-sc or .qt-tbl-row-lc via .hidden class
 Updates corresponding toggle button active class. No re-render needed.
+Do NOT add chart-related keys — use separate state if a chart is re-added.
 
 ### Event-by-event table
 One row per event+course combination.

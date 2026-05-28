@@ -172,8 +172,9 @@ body.dark {
 .qt-progress-wrap {
   position: relative;
   height: 7px;
-  background: var(--surface);
+  background: var(--surface3);
   border-radius: 4px;
+  border: 1px solid var(--border);
   overflow: visible;
   margin-top: 18px;
   margin-bottom: 4px;
@@ -215,15 +216,16 @@ body.dark {
 .qt-marker-time.qt { color: var(--green); }
 
 /* Chart & table toggle buttons */
-.qt-chart-toggles, .qt-table-toggles {
+/* Table toggle buttons — SC/LC row visibility */
+.qt-table-toggles {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  margin-bottom: 10px;
 }
-.qt-chart-toggles { margin-bottom: 12px; }
-.qt-table-toggles { margin-bottom: 10px; }
 
-.qt-toggle-btn, .qt-row-toggle {
+/* qt-row-toggle: SC/LC row toggle buttons */
+.qt-row-toggle {
   padding: 5px 14px;
   border-radius: 20px;
   font-size: 0.72rem;
@@ -234,12 +236,12 @@ body.dark {
   color: var(--text2);
   transition: all 0.15s;
 }
-.qt-toggle-btn.active-sc, .qt-row-toggle.active-sc {
+.qt-row-toggle.active-sc {
   border-color: var(--accent);
   background: rgba(26,86,196,0.12);
   color: var(--accent);
 }
-.qt-toggle-btn.active-lc, .qt-row-toggle.active-lc {
+.qt-row-toggle.active-lc {
   border-color: var(--accent2);
   background: rgba(14,165,212,0.12);
   color: var(--accent2);
@@ -534,9 +536,13 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   /* QT card grid mobile */
   .qt-event-card { padding: 12px 12px 10px !important; }
   .qt-card-event-name { font-size: 0.9rem !important; }
-  .qt-pb-time { font-size: 0.92rem !important; }
+  .qt-pb-time { font-size: 0.82rem !important; }
+  .qt-pb-val { font-size: 0.82rem !important; }
   .qt-status-chip { font-size: 0.62rem !important; padding: 2px 6px !important; }
   .qt-card-best-badge { font-size: 0.6rem !important; }
+  .qt-course-block { padding: 5px 6px 8px !important; margin-bottom: 4px !important; }
+  .qt-progress-wrap { height: 6px !important; margin-top: 14px !important; }
+  .qt-marker-time { font-size: 0.46rem !important; top: -13px !important; }
 
   #tab-qualifying .grid4 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
   #tab-qualifying .stat-card { padding: 10px 6px !important; text-align: center; display: flex; flex-direction: column; align-items: center; }
@@ -1073,9 +1079,9 @@ tr:hover td { background: var(--surface2); color: var(--text); }
         <div class="card-title" style="margin-bottom:0">⏰ PBs Due for Renewal</div>
         <div class="fg">
           <span class="fl">Flag PBs older than</span>
-          <select id="renewalMonths" onchange="renderTargets(); renderedTabs.delete('overview'); renderOverview();">
+          <select id="renewalMonths" onchange="localStorage.setItem('swimDash_renewalMonths',this.value);renderTargets(); renderedTabs.delete('overview'); renderOverview();">
             <option value="3">3 months</option>
-            <option value="6" selected>6 months</option>
+            <option value="6">6 months</option>
             <option value="9">9 months</option>
             <option value="12">12 months</option>
           </select>
@@ -2787,22 +2793,24 @@ function applyStatusFilter(allEventNames, scMatched, lcMatched, statusFilter) {
 // ============================================================
 
 // State for chart/row toggles (shared between qt and rq)
-const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
+// qtRowState — tracks SC/LC row visibility for event-by-event tables (row toggles only;
+// chart was removed in v27). SC/LC keys used by toggleQTRows() and buildCourseBlock().
+const qtRowState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
 
 
 function toggleQTRows(prefix, course) {
-  qtToggleState[prefix][course] = !qtToggleState[prefix][course];
+  qtRowState[prefix][course] = !qtRowState[prefix][course];
   const btnId = `${prefix}RowToggle${course}`;
   const btn = document.getElementById(btnId);
   if (btn) {
-    btn.classList.toggle(`active-${course.toLowerCase()}`, qtToggleState[prefix][course]);
+    btn.classList.toggle(`active-${course.toLowerCase()}`, qtRowState[prefix][course]);
   }
   const bodyId = `${prefix}TableBody`;
   const tbody = document.getElementById(bodyId);
   if (tbody) {
     const cls = course === 'SC' ? 'qt-tbl-row-sc' : 'qt-tbl-row-lc';
     tbody.querySelectorAll(`.${cls}`).forEach(row => {
-      row.classList.toggle('hidden', !qtToggleState[prefix][course]);
+      row.classList.toggle('hidden', !qtRowState[prefix][course]);
     });
   }
 }
@@ -2934,7 +2942,7 @@ function renderQTCards(scMatched, lcMatched, cardGridId, tableBodyId, prefix, st
       const gapCStr = r.gapC !== null
         ? `<span class="${r.gapC <= 0 ? 'dpos' : 'dneg'}">${r.gapC <= 0 ? '▼' : '▲'}${Math.abs(r.gapC).toFixed(2)}s</span>`
         : '<span style="color:var(--text3)">—</span>';
-      const hidden = !qtToggleState[prefix][courseCode === 'S' ? 'SC' : 'LC'] ? ' hidden' : '';
+      const hidden = !qtRowState[prefix][courseCode === 'S' ? 'SC' : 'LC'] ? ' hidden' : '';
 
       rowsHTML += `<tr class="${rowClass}${hidden}">
         <td style="font-weight:600;color:var(--text)">${event}</td>
@@ -2950,7 +2958,7 @@ function renderQTCards(scMatched, lcMatched, cardGridId, tableBodyId, prefix, st
     });
   });
   document.getElementById(tableBodyId).innerHTML = rowsHTML ||
-    '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No events found.</td></tr>';
+    '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No events match the current filters.</td></tr>';
 }
 
 // ============================================================
@@ -3394,6 +3402,14 @@ async function init() {
     }
   }
 
+  // Restore persisted renewalMonths preference
+  const savedRenewal = localStorage.getItem('swimDash_renewalMonths');
+  const renewalEl = document.getElementById('renewalMonths');
+  if (savedRenewal && renewalEl) {
+    renewalEl.value = savedRenewal;
+    if (!renewalEl.value) renewalEl.value = '6'; // fallback if stored value is invalid
+  }
+
   resetQualifyingFilters();
   resetRegionalFilters();
 
@@ -3538,7 +3554,11 @@ function saveNewRace() {
 // REMOVE RACE
 // ============================================================
 function removeRace(date, event, course, time) {
-  if (!confirm(`Remove ${event} (${course}) ${time} on ${fmtDate(date)}?\n\nThis cannot be undone.`)) return;
+  const matches = RAW.filter(r => r.date === date && r.event === event && r.course === course && r.time === time);
+  const dupNote = matches.length > 1
+    ? `\n\n⚠️ ${matches.length} identical entries found — only the first will be removed.`
+    : '';
+  if (!confirm(`Remove ${event} (${course}) ${time} on ${fmtDate(date)}?\n\nThis cannot be undone.${dupNote}`)) return;
   const idx = RAW.findIndex(r => r.date === date && r.event === event && r.course === course && r.time === time);
   if (idx === -1) { alert('Race not found — it may have already been removed.'); return; }
   RAW.splice(idx, 1);
