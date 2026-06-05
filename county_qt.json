@@ -320,7 +320,7 @@
   {"gender":"Girls","course":"Short Course","event":"200 IM","age":"14","qualify":152.30,"consider":165.10},
   {"gender":"Girls","course":"Short Course","event":"200 IM","age":"15","qualify":152.00,"consider":160.40},
   {"gender":"Girls","course":"Short Course","event":"200 IM","age":"16","qualify":150.80,"consider":159.40},
-  {"gender":"Girls","course":"Short Course","event":"200 IM","age":"17+","qualify":175.90,"consider":153.30},
+  {"gender":"Girls","course":"Short Course","event":"200 IM","age":"17+","qualify":153.30,"consider":175.90},
   {"gender":"Girls","course":"Short Course","event":"200 Breast","age":"10+11","qualify":222.10,"consider":249.10},
   {"gender":"Girls","course":"Short Course","event":"200 Breast","age":"12","qualify":205.90,"consider":219.60},
   {"gender":"Girls","course":"Short Course","event":"200 Breast","age":"13","qualify":190.80,"consider":202.10},
@@ -473,6 +473,6 @@
   {"gender":"Girls","course":"Long Course","event":"1500 Free","age":"13","qualify":1186.90,"consider":1194.40},
   {"gender":"Girls","course":"Long Course","event":"1500 Free","age":"14","qualify":1137.90,"consider":1193.00},
   {"gender":"Girls","course":"Long Course","event":"1500 Free","age":"15","qualify":1124.00,"consider":1190.20},
-  {"gender":"Girls","course":"Long Course","event":"1500 Free","age":"16","qualify":1117.00,"consider":1116.10},
+  {"gender":"Girls","course":"Long Course","event":"1500 Free","age":"16","qualify":1116.10,"consider":1117.00},
   {"gender":"Girls","course":"Long Course","event":"1500 Free","age":"17+","qualify":1089.40,"consider":1148.00}
 ]
