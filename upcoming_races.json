@@ -15,7 +15,6 @@
         "venue": "Uxbridge",
         "course": "S",
         "events": [
-        { "event": "100 Back" },
         { "event": "50 Breast" },
         { "event": "100 Free" }
         ]
@@ -29,6 +28,28 @@
         { "event": "100 Free" },
         { "event": "100 IM" },
         { "event": "200 Back" }
+        ]
+    },
+    {
+        "date": "2026-07-11",
+        "competition": "PBSC Club Championships 2026",
+        "venue": "Elstree",
+        "course": "S",
+        "events": [
+        { "event": "50 Free" },
+        { "event": "200 Back" },
+        { "event": "50 FL" },
+        { "event": "50 Back" },
+        { "event": "200 Free" }
+        ]
+    },
+    {
+        "date": "2026-07-12",
+        "competition": "PBSC Club Championships 2026",
+        "venue": "Elstree",
+        "course": "S",
+        "events": [
+        { "event": "100 Back" }
         ]
     }
 ]

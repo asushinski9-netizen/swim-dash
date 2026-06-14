@@ -41,5 +41,6 @@
   {"course":"L","event":"50 Back","date":"2026-05-02","competition":"SE London Summer Championships 2026","venue":"London","time":"0:37.53","splits":[]},
   {"course":"S","event":"100 IM","date":"2026-05-16","competition":"The Claire Houchin Skills Development Meet 2026","venue":"Watford","time":"1:23.08","splits":[38.77,44.31]},  
   {"course":"S","event":"100 Breast","date":"2026-05-16","competition":"The Claire Houchin Skills Development Meet 2026","venue":"Watford","time":"1:39.52","splits":[47.83,51.69]},
-  {"course":"S","event":"50 Breast","date":"2026-06-14","competition":"Hillingdon SC Summer Spectacular Meet 2026","venue":"Uxbridge","time":"0:45.83","splits":[]},
+  {"course":"S","event":"50 Breast","date":"2026-06-14","competition":"Hillingdon Swimming Club Summer Spectacular Meet 2026","venue":"Uxbridge","time":"0:45.83","splits":[]},
+  {"course":"S","event":"100 Free","date":"2026-06-14","competition":"Hillingdon Swimming Club Summer Spectacular Meet 2026","venue":"Uxbridge","time":"1:13.82","splits":[36.68,37.14]}
   ]
