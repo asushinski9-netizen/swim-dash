@@ -1,6 +1,87 @@
 # Session Log
 
-## v27 (latest)
+## v28.1 (latest)
+Replaces an initial standalone-editor-tabs attempt with an inline edit mode
+within the existing County QT and Regional QT tabs, plus a round of UX fixes.
+
+### Inline QT editor (replaces standalone tabs)
+An early implementation added separate "Edit County QT" / "Edit Regional QT"
+tabs. This was superseded by an inline edit mode toggled from within the
+existing County QT / Regional QT tabs themselves, avoiding duplicate tab
+chrome and keeping editing contextually tied to the data being edited.
+
+- Meta banner (`.qt-meta-banner`) added above both QT tabs, always visible,
+  showing championship title + date range and a desktop-only
+  "✏️ Edit Details & Times" button
+- `.qt-view-mode` / `.qt-edit-mode` blocks coexist in the DOM; visibility
+  controlled by toggling `.qt-tab-in-edit-mode` on the parent `.panel`
+- `openQTEditor(viewPrefix)` / `closeQTEditor(viewPrefix)` — open deep-clones
+  live QT_DATA/SE_QT_DATA + meta into a session-scoped `qtEditorStore`; close
+  commits the store back to live data via `commitEditorStoreToLive(prefix)`
+- Editor uses a distinct element-ID prefix (`cqt`/`rqt`) from the view tab
+  (`qt`/`rq`) via `editorPrefixFor()`, avoiding ID collisions
+- `renderQTBanner(viewPrefix)` populates the banner; called from `showTab()`
+  on entering either QT tab, and once from `init()`
+- Editor table (`renderEditorTable()`) filtered by Age Group (required),
+  Gender, Stroke, Course; supports add/delete row, inline time editing,
+  meta panel edit (title + date range), and JSON download in the v28
+  `{meta,times}` schema
+- Desktop-only: edit button and editor hidden below 769px viewport width
+
+### Six UX fixes (addressed together within the v28.1 editor pass)
+- Time input format unified and validated (`isValidTimeInput()`); empty input
+  represents "not offered" rather than an error state
+- Duplicate Gender+Course+Event+Age rows flagged across the whole dataset via
+  `findDuplicateIndices()`, not just the currently filtered view
+- "Not offered" rows (qualify and consider both null) now visually greyed out
+  with disabled inputs and an explanatory note instead of looking broken
+- Editor filter dropdowns use full stroke names (Freestyle, Backstroke, …)
+  to match the view-mode filters, instead of an inconsistent abbreviated set
+- Meta banner's "no dates set" hint is responsive: desktop references the
+  edit button by name; mobile says to switch to desktop (since the button
+  itself is hidden there)
+- "← Back" button now both commits the editor store and returns to view mode
+  in a single action, rather than requiring a separate save step first
+
+### Banner copy consistency fix
+The desktop "no dates set" hint was tightened to quote the edit button's exact
+visible label ("Edit Details & Times") instead of a loose paraphrase, so users
+can find the right control without guessing.
+
+---
+
+## v28
+JSON error handling, QT schema migration, and a data file rename — laying the
+groundwork for the v28.1 inline editor.
+
+### JSON load error handling
+Every `JSON.parse()` call site in `init()` (8 total: my_swims.json,
+county_qt.json, regional_qt.json, upcoming_races.json, each in both their
+fresh-fetch and localStorage-cache code paths) wrapped in try/catch. Failures
+call `showJsonLoadError(filename, message)`, which renders a persistent,
+stackable warning banner at the top of the Overview tab rather than failing
+silently or leaving stale/empty data with no explanation.
+
+### se_london_qt.json renamed to regional_qt.json
+`SE_QT_DATA_URL` updated to the new filename; Data Manager upload label updated
+to match. Internal variable and function names (`SE_QT_DATA`, `SE_QT_META`,
+`renderRegionalQualifying()`, etc.) intentionally left unchanged — this was a
+file/label rename only, not a variable rename, to minimise the diff.
+
+### QT JSON schema migrated to `{meta, times}`
+`county_qt.json` and `regional_qt.json` now carry a `meta` object (`title`,
+`dateFrom`, `dateTo`) alongside the existing `times` array, to support the
+upcoming championship banner and inline editor.
+- New `unwrapQT(raw)` helper normalises either the old bare-array format or
+  the new wrapped format to `{meta, times}` — fully backward compatible
+- New `QT_META` / `SE_QT_META` globals hold the unwrapped meta object
+- `QT_DATA` / `SE_QT_DATA` remain flat arrays (the unwrapped `.times`), so
+  every existing consumer (`renderQualifying`, `renderRegionalQualifying`,
+  `getQTStatusForEvent`, `renderTargets`) needed zero changes
+
+---
+
+## v27
 Major redesign of County QT and Regional QT tabs.
 
 ### Core change: dual-course unified view
