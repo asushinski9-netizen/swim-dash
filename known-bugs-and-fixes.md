@@ -126,6 +126,63 @@ scrollIntoView avoided because it does not account for sticky header height.
 "inside" in "▼ Xs inside QT" wrapped in <span class="col-full"> so it is hidden
 at max-width 500px, showing "▼ Xs QT" instead to prevent wrapping.
 
+### v28 — Silent failure on malformed JSON data files
+Previously, a syntax error in any of the four data files (e.g. a trailing comma)
+either threw uncaught or silently fell back to an empty dataset with no
+indication to the user. Fixed: every JSON.parse() call site in init() (8 total,
+covering fetch + localStorage paths for all four files) is wrapped in try/catch
+and reports failures via showJsonLoadError(filename, message), which renders a
+persistent, stackable banner at the top of the Overview tab.
+
+### v28 — se_london_qt.json renamed to regional_qt.json
+SE_QT_DATA_URL updated to the new filename. Internal variable/function names
+(SE_QT_DATA, SE_QT_META, renderRegionalQualifying, etc.) deliberately left
+unchanged — only the GitHub filename and user-facing labels changed. The Data
+Manager modal's upload label was updated to reference regional_qt.json.
+
+### v28 — QT JSON schema migrated to {meta, times} wrapper
+county_qt.json and regional_qt.json now carry a meta object (title, dateFrom,
+dateTo) alongside the existing times array, to support the new championship
+banner and inline editor (see v28.1). Backward compatible: unwrapQT() accepts
+either the old bare-array format or the new wrapped format and always returns
+{meta, times}. QT_DATA/SE_QT_DATA remain flat arrays after unwrapping, so no
+downstream rendering code needed to change.
+
+### v28.1 — Inline QT editor replaces earlier standalone-tab approach
+An initial attempt at separate, dedicated "Edit County QT" / "Edit Regional QT"
+tabs was superseded by an inline edit mode within the existing County QT /
+Regional QT tabs (toggled via an "✏️ Edit Details & Times" button in a
+persistent meta banner). Avoids duplicating tab chrome and keeps the editor
+contextually tied to the data it's editing. Desktop-only (hidden below 769px)
+since the editing table layout doesn't fit comfortably on mobile.
+
+### v28.1 — QT editor UX fixes (six items addressed together)
+- Time inputs use a single shared format (`(\d{1,3}:)?\d{1,3}(\.\d{1,2})?`,
+  empty = not-offered) validated via isValidTimeInput() — previously time entry
+  had no validation feedback.
+- Duplicate Gender+Course+Event+Age combinations are now detected across the
+  full dataset (findDuplicateIndices()) and flagged with a ⚠ Duplicate badge,
+  rather than silently allowing ambiguous duplicate rows.
+- Rows representing "not offered" age groups (both qualify and consider null)
+  are now visually greyed out with disabled inputs and an explanatory note,
+  instead of showing blank/editable fields that looked broken.
+- Stroke names in the editor's filter dropdowns use full words (Freestyle,
+  Backstroke, etc.) matching the view-mode filters, rather than an inconsistent
+  abbreviated set.
+- The meta banner's "no dates set" message is now mobile-aware: desktop shows
+  a hint referencing the "Edit Details & Times" button; mobile shows a
+  "switch to Desktop mode to edit" message instead, since the edit button
+  itself is hidden on mobile.
+- "← Back to County/Regional QT" button flow clarified: clicking it commits
+  the editor store to live data and returns to view mode in one action,
+  rather than requiring a separate explicit save step.
+
+### v28.1 — Banner copy consistency fix
+The desktop "no dates set" hint originally paraphrased the edit button's label
+loosely ("click Edit to configure"). Fixed so the hint text quotes the button's
+exact visible label ("Edit Details & Times") to avoid user confusion about
+which control to look for.
+
 ---
 
 ## WATCH-OUT AREAS
@@ -145,20 +202,25 @@ at max-width 500px, showing "▼ Xs QT" instead to prevent wrapping.
 | Splits analyzeSwim       | prevPB===null (date filtered)                         |
 
 ### QT tab — two separate rendering pipelines
-1. **QT tab cards/chart/table**: buildQtStatCards() + buildProgressBar() + applyStatusFilter() + renderQTCards()
+1. **QT tab cards/table (view mode)**: buildQtStatCards() + buildProgressBar() +
+   applyStatusFilter() + renderQTCards()
    - Takes scMatched + lcMatched arrays; shows both courses simultaneously
    - Used only by renderQualifying() and renderRegionalQualifying()
 2. **Schedule + Targets**: getQTStatusForEvent() + renderQTCells()
    - Looks up a single course at a time from QT_DATA / SE_QT_DATA
    - KEEP SEPARATE — do not merge these pipelines
+3. **QT editor (v28.1, edit mode)**: renderEditorTable() + editorCell()/editorTimeCell()
+   - Operates on a session-scoped clone (qtEditorStore), not on QT_DATA/SE_QT_DATA directly
+   - Only touches live data via commitEditorStoreToLive() — see caveat below
 
-### qtToggleState — module-level, persists within session
+### qtRowState — module-level, persists within session
 ```js
-const qtToggleState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
+const qtRowState = { qt: {SC: true, LC: true}, rq: {SC: true, LC: true} };
 ```
-toggleQTChart() and toggleQTRows() mutate this object.
-State is NOT reset when filters change or tabs re-render — intentional so user's
-toggle preference is preserved across filter changes within a session.
+toggleQTRows() mutates this object. (Its predecessor, qtToggleState, also drove
+a chart that was removed in v27 — qtRowState is row-toggle-only.)
+State is NOT reset when filters change or tabs re-render — intentional so the
+user's toggle preference is preserved across filter changes within a session.
 Resets to {SC:true, LC:true} on page reload only.
 
 ### applyStatusFilter() — operates on event names, not matched rows
@@ -186,6 +248,23 @@ The Status select ID is then `${prefix}Status` and the force function is
 `forceRegional` or `forceQualifying`. If a new QT tab is added, ensure its
 statsElId starts with a unique prefix.
 
+### View-mode prefix vs editor prefix — do not conflate
+View-mode IDs use `qt`/`rq`. Editor-mode IDs use `cqt`/`rqt`
+(editorPrefixFor('qt') === 'cqt'; anything else maps to 'rqt'). They are
+deliberately different namespaces to avoid element-ID collisions between the
+two modes living in the DOM simultaneously. When adding new editor elements,
+always use the `cqt`/`rqt` prefix, never `qt`/`rq`.
+
+### QT editor — unsaved edits lost on navigate-away (known caveat, unresolved)
+qtEditorStore is committed to the live QT_DATA/SE_QT_DATA globals only when
+closeQTEditor() runs (i.e. clicking "← Back"), or immediately for meta-panel
+edits via saveMetaPanel(). If the user switches to a different top-level tab
+(or otherwise navigates away) while edit mode is open WITHOUT clicking
+"← Back" first, any row-level edits made since the store was cloned are lost —
+they were never committed and the store itself is not persisted. This is a
+known limitation, not yet addressed. Do not assume editor edits are safe until
+"← Back" has been clicked.
+
 ### renderedTabs Set — three usage patterns
 - `renderedTabs.clear()` — full reset; invalidateCache() and renderAllChartTabs()
 - `renderedTabs.delete('tabname')` — targeted reset; forceX() wrappers, reset/sort fns
@@ -204,6 +283,7 @@ toggleTheme() and saveSettings() call this — they need no other changes.
 - renderSplits() — filter-event driven
 - renderSchedule() — depends on UPCOMING independently
 - renderTargets() — same; also has renewal threshold select
+- renderQTBanner() — cheap; always reflects current QT_META/SE_QT_META
 
 ### updateData() active-tab-only re-render
 updateData() re-renders the active tab + Schedule + Targets. All other tabs render lazily.
@@ -231,11 +311,20 @@ Never at module level. Always declare at top of render function:
 
 ### Mobile col-abbr/col-full pattern
 Used for: QT/CT columns in both QT tabs, "Course"→"C" in QT event tables,
-Competition column in Schedule/Overview. Add to any new table column that
-would overflow on mobile.
+Competition column in Schedule/Overview, and the meta banner's mobile/desktop
+note text (.qt-banner-note-desktop/.qt-banner-note-mobile, toggled at the 769px
+breakpoint used by .btn-edit-qt). Add to any new table column or banner text
+that would overflow or mismatch on mobile.
 
 ### escapeHtml() — required for all user-supplied strings in innerHTML
 competition, venue from RAW. Event and course are dropdown-constrained.
+Also applied to filename/message in showJsonLoadError() (v28).
+
+### unwrapQT() — must be the only place that branches on QT schema shape
+Any new code that reads county_qt.json/regional_qt.json should go through
+QT_DATA/SE_QT_DATA (already-flat arrays) or QT_META/SE_QT_META — never
+re-parse or re-branch on whether the source was wrapped or bare-array. Keep
+that logic centralised in unwrapQT().
 
 ### UPCOMING data authority
 swimDash_UPCOMING is GitHub-authoritative on first load, also mutated locally.
@@ -246,3 +335,7 @@ UPCOMING[i].events is array of { event: string }. Filter uses `e.event !== event
 
 ### Logo — GitHub raw URL
 Loaded via GitHub raw URL. Hidden gracefully offline via onerror.
+
+### regional_qt.json — do not reintroduce the old filename
+SE_QT_DATA_URL must point at regional_qt.json. If a future PR adds a new fetch
+or upload reference to se_london_qt.json, that is a regression of the v28 rename.

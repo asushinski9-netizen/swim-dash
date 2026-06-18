@@ -1,0 +1,3817 @@
+{
+  "meta": {
+    "title": "SE London Summer Championships 2026",
+    "dateFrom": "2026-04-25",
+    "dateTo": "2026-05-04"
+  },
+  "times": [
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "11/12",
+      "qualify": 30.57,
+      "consider": 32.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "13",
+      "qualify": 29.24,
+      "consider": 30.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "14",
+      "qualify": 27.33,
+      "consider": 28.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "15",
+      "qualify": 26.38,
+      "consider": 27.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "16",
+      "qualify": 26,
+      "consider": 27.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "17",
+      "qualify": 25.43,
+      "consider": 26.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "18+",
+      "qualify": 24.19,
+      "consider": 25.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "11/12",
+      "qualify": 68.57,
+      "consider": 72
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "13",
+      "qualify": 62.57,
+      "consider": 65.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "14",
+      "qualify": 60,
+      "consider": 63
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "15",
+      "qualify": 56.86,
+      "consider": 59.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "16",
+      "qualify": 56.67,
+      "consider": 59.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "17",
+      "qualify": 55.43,
+      "consider": 58.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "18+",
+      "qualify": 53.33,
+      "consider": 56
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "11/12",
+      "qualify": 145.71,
+      "consider": 153
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "13",
+      "qualify": 138.1,
+      "consider": 145
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "14",
+      "qualify": 131.43,
+      "consider": 138
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "15",
+      "qualify": 124.76,
+      "consider": 131
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "16",
+      "qualify": 122.86,
+      "consider": 129
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "17",
+      "qualify": 122.48,
+      "consider": 128.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "18+",
+      "qualify": 119.9,
+      "consider": 125.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "11/12",
+      "qualify": 306,
+      "consider": 321.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "13",
+      "qualify": 283.81,
+      "consider": 298
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "14",
+      "qualify": 272.76,
+      "consider": 286.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "15",
+      "qualify": 260,
+      "consider": 273
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "16",
+      "qualify": 258.76,
+      "consider": 271.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "17",
+      "qualify": 256.67,
+      "consider": 269.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "18+",
+      "qualify": 253.62,
+      "consider": 266.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "11/12",
+      "qualify": 632.38,
+      "consider": 664
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "13",
+      "qualify": 582.86,
+      "consider": 612
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "14",
+      "qualify": 562.38,
+      "consider": 590.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "15",
+      "qualify": 553.33,
+      "consider": 581
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "16",
+      "qualify": 545.05,
+      "consider": 572.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "17",
+      "qualify": 545.05,
+      "consider": 572.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "18+",
+      "qualify": 535.52,
+      "consider": 562.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "11/12",
+      "qualify": 1225.05,
+      "consider": 1286.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "13",
+      "qualify": 1111.43,
+      "consider": 1167
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "14",
+      "qualify": 1085.71,
+      "consider": 1140
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "15",
+      "qualify": 1061.9,
+      "consider": 1115
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "16",
+      "qualify": 1047.62,
+      "consider": 1100
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "17",
+      "qualify": 1040.48,
+      "consider": 1092.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "18+",
+      "qualify": 1030.57,
+      "consider": 1082.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "11/12",
+      "qualify": 36.76,
+      "consider": 38.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "13",
+      "qualify": 33.71,
+      "consider": 35.41
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "14",
+      "qualify": 32.38,
+      "consider": 34
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "15",
+      "qualify": 30.86,
+      "consider": 32.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "16",
+      "qualify": 30.57,
+      "consider": 32.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "17",
+      "qualify": 29.9,
+      "consider": 31.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "18+",
+      "qualify": 27.81,
+      "consider": 29.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "11/12",
+      "qualify": 77.67,
+      "consider": 81.55
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "13",
+      "qualify": 72,
+      "consider": 75.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "14",
+      "qualify": 68.76,
+      "consider": 72.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "15",
+      "qualify": 65.71,
+      "consider": 69
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "16",
+      "qualify": 64.76,
+      "consider": 68
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "17",
+      "qualify": 63.81,
+      "consider": 67
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "18+",
+      "qualify": 61.33,
+      "consider": 64.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "11/12",
+      "qualify": 163.43,
+      "consider": 171.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "13",
+      "qualify": 154.57,
+      "consider": 162.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "14",
+      "qualify": 147.33,
+      "consider": 154.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "15",
+      "qualify": 141.81,
+      "consider": 148.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "16",
+      "qualify": 140.38,
+      "consider": 147.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "17",
+      "qualify": 138.48,
+      "consider": 145.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "18+",
+      "qualify": 134.48,
+      "consider": 141.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "11/12",
+      "qualify": 40.57,
+      "consider": 42.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "13",
+      "qualify": 36.19,
+      "consider": 38
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "14",
+      "qualify": 35.62,
+      "consider": 37.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "15",
+      "qualify": 33.52,
+      "consider": 35.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "16",
+      "qualify": 32.95,
+      "consider": 34.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "17",
+      "qualify": 32.95,
+      "consider": 34.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "18+",
+      "qualify": 30,
+      "consider": 31.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "11/12",
+      "qualify": 88.57,
+      "consider": 93
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "13",
+      "qualify": 81.52,
+      "consider": 85.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "14",
+      "qualify": 76.76,
+      "consider": 80.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "15",
+      "qualify": 73.33,
+      "consider": 77
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "16",
+      "qualify": 72.95,
+      "consider": 76.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "17",
+      "qualify": 71.52,
+      "consider": 75.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "18+",
+      "qualify": 69.24,
+      "consider": 72.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "11/12",
+      "qualify": 190.48,
+      "consider": 200
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "13",
+      "qualify": 177.14,
+      "consider": 186
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "14",
+      "qualify": 168,
+      "consider": 176.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "15",
+      "qualify": 161.9,
+      "consider": 170
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "16",
+      "qualify": 160.38,
+      "consider": 168.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "17",
+      "qualify": 156.48,
+      "consider": 164.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "18+",
+      "qualify": 154.38,
+      "consider": 162.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "11/12",
+      "qualify": 33.9,
+      "consider": 35.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "13",
+      "qualify": 31.81,
+      "consider": 33.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "14",
+      "qualify": 30.1,
+      "consider": 31.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "15",
+      "qualify": 28.48,
+      "consider": 29.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "16",
+      "qualify": 27.9,
+      "consider": 29.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "17",
+      "qualify": 26.1,
+      "consider": 27.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "18+",
+      "qualify": 26.48,
+      "consider": 27.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "11/12",
+      "qualify": 78.1,
+      "consider": 82
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "13",
+      "qualify": 72.57,
+      "consider": 76.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "14",
+      "qualify": 67.71,
+      "consider": 71.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "15",
+      "qualify": 62.95,
+      "consider": 66.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "16",
+      "qualify": 61.52,
+      "consider": 64.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "17",
+      "qualify": 60,
+      "consider": 63
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "18+",
+      "qualify": 58.57,
+      "consider": 61.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "11/12",
+      "qualify": 178.67,
+      "consider": 187.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "13",
+      "qualify": 169.52,
+      "consider": 178
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "14",
+      "qualify": 151.05,
+      "consider": 158.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "15",
+      "qualify": 142.67,
+      "consider": 149.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "16",
+      "qualify": 141.43,
+      "consider": 148.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "17",
+      "qualify": 137.71,
+      "consider": 144.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "18+",
+      "qualify": 134.48,
+      "consider": 141.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "11/12",
+      "qualify": 162.86,
+      "consider": 171
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "13",
+      "qualify": 154.29,
+      "consider": 162
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "14",
+      "qualify": 148.95,
+      "consider": 156.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "15",
+      "qualify": 142.86,
+      "consider": 150
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "16",
+      "qualify": 140.95,
+      "consider": 148
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "17",
+      "qualify": 137.52,
+      "consider": 144.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "18+",
+      "qualify": 132,
+      "consider": 138.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "11/12",
+      "qualify": 348.57,
+      "consider": 366
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "13",
+      "qualify": 332.57,
+      "consider": 349.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "14",
+      "qualify": 314.76,
+      "consider": 330.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "15",
+      "qualify": 304.76,
+      "consider": 320
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "16",
+      "qualify": 301.24,
+      "consider": 316.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "17",
+      "qualify": 300.86,
+      "consider": 315.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "18+",
+      "qualify": 284.19,
+      "consider": 298.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "11/12",
+      "qualify": 30.57,
+      "consider": 32.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "13",
+      "qualify": 29.62,
+      "consider": 31.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "14",
+      "qualify": 29.14,
+      "consider": 30.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "15",
+      "qualify": 28.67,
+      "consider": 30.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "16",
+      "qualify": 28.57,
+      "consider": 30
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "17",
+      "qualify": 28.29,
+      "consider": 29.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Free",
+      "age": "18+",
+      "qualify": 28.1,
+      "consider": 29.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "11/12",
+      "qualify": 67.62,
+      "consider": 71
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "13",
+      "qualify": 63.81,
+      "consider": 67
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "14",
+      "qualify": 62.86,
+      "consider": 66
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "15",
+      "qualify": 61.9,
+      "consider": 65
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "16",
+      "qualify": 60.95,
+      "consider": 64
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "17",
+      "qualify": 60.57,
+      "consider": 63.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Free",
+      "age": "18+",
+      "qualify": 60.19,
+      "consider": 63.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "11/12",
+      "qualify": 144.29,
+      "consider": 151.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "13",
+      "qualify": 137.81,
+      "consider": 144.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "14",
+      "qualify": 134.38,
+      "consider": 141.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "15",
+      "qualify": 133.33,
+      "consider": 140
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "16",
+      "qualify": 132.38,
+      "consider": 139
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "17",
+      "qualify": 132.1,
+      "consider": 138.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Free",
+      "age": "18+",
+      "qualify": 130.57,
+      "consider": 137.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "11/12",
+      "qualify": 305.9,
+      "consider": 321.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "13",
+      "qualify": 288.57,
+      "consider": 303
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "14",
+      "qualify": 280.95,
+      "consider": 295
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "15",
+      "qualify": 276.48,
+      "consider": 290.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "16",
+      "qualify": 274.48,
+      "consider": 288.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "17",
+      "qualify": 272.38,
+      "consider": 286
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 Free",
+      "age": "18+",
+      "qualify": 267.71,
+      "consider": 281.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "11/12",
+      "qualify": 617.14,
+      "consider": 648
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "13",
+      "qualify": 594.29,
+      "consider": 624
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "14",
+      "qualify": 592.38,
+      "consider": 622
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "15",
+      "qualify": 588.95,
+      "consider": 618.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "16",
+      "qualify": 585.52,
+      "consider": 614.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "17",
+      "qualify": 582.19,
+      "consider": 611.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "800 Free",
+      "age": "18+",
+      "qualify": 581.14,
+      "consider": 610.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "11/12",
+      "qualify": 1200,
+      "consider": 1260
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "13",
+      "qualify": 1180.95,
+      "consider": 1240
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "14",
+      "qualify": 1127.33,
+      "consider": 1183.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "15",
+      "qualify": 1090.1,
+      "consider": 1144.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "16",
+      "qualify": 1084.19,
+      "consider": 1138.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "17",
+      "qualify": 1074.86,
+      "consider": 1128.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "1500 Free",
+      "age": "18+",
+      "qualify": 1064.29,
+      "consider": 1117.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "11/12",
+      "qualify": 35.81,
+      "consider": 37.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "13",
+      "qualify": 33.9,
+      "consider": 35.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "14",
+      "qualify": 33.52,
+      "consider": 35.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "15",
+      "qualify": 33.43,
+      "consider": 35.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "16",
+      "qualify": 33.24,
+      "consider": 34.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "17",
+      "qualify": 32.95,
+      "consider": 34.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Back",
+      "age": "18+",
+      "qualify": 32.38,
+      "consider": 34
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "11/12",
+      "qualify": 77.14,
+      "consider": 81
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "13",
+      "qualify": 73.14,
+      "consider": 76.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "14",
+      "qualify": 70.95,
+      "consider": 74.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "15",
+      "qualify": 70.1,
+      "consider": 73.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "16",
+      "qualify": 68.67,
+      "consider": 72.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "17",
+      "qualify": 67.43,
+      "consider": 70.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Back",
+      "age": "18+",
+      "qualify": 67.14,
+      "consider": 70.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "11/12",
+      "qualify": 163.24,
+      "consider": 171.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "13",
+      "qualify": 156.95,
+      "consider": 164.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "14",
+      "qualify": 152.86,
+      "consider": 160.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "15",
+      "qualify": 151.14,
+      "consider": 158.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "16",
+      "qualify": 148.38,
+      "consider": 155.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "17",
+      "qualify": 147.05,
+      "consider": 154.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Back",
+      "age": "18+",
+      "qualify": 145.33,
+      "consider": 152.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "11/12",
+      "qualify": 40.38,
+      "consider": 42.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "13",
+      "qualify": 38.19,
+      "consider": 40.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "14",
+      "qualify": 37.14,
+      "consider": 39
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "15",
+      "qualify": 36.67,
+      "consider": 38.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "16",
+      "qualify": 36.19,
+      "consider": 38
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "17",
+      "qualify": 36.1,
+      "consider": 37.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Breast",
+      "age": "18+",
+      "qualify": 35.71,
+      "consider": 37.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "11/12",
+      "qualify": 89.81,
+      "consider": 94.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "13",
+      "qualify": 83.9,
+      "consider": 88.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "14",
+      "qualify": 80.57,
+      "consider": 84.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "15",
+      "qualify": 80.29,
+      "consider": 84.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "16",
+      "qualify": 80.1,
+      "consider": 84.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "17",
+      "qualify": 79.52,
+      "consider": 83.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Breast",
+      "age": "18+",
+      "qualify": 78.19,
+      "consider": 82.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "11/12",
+      "qualify": 191.81,
+      "consider": 201.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "13",
+      "qualify": 178.57,
+      "consider": 187.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "14",
+      "qualify": 175.24,
+      "consider": 184
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "15",
+      "qualify": 173.33,
+      "consider": 182
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "16",
+      "qualify": 172.38,
+      "consider": 181
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "17",
+      "qualify": 172.38,
+      "consider": 181
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Breast",
+      "age": "18+",
+      "qualify": 172.1,
+      "consider": 180.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "11/12",
+      "qualify": 34.1,
+      "consider": 35.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "13",
+      "qualify": 32.38,
+      "consider": 34
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "14",
+      "qualify": 31.52,
+      "consider": 33.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "15",
+      "qualify": 30.95,
+      "consider": 32.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "16",
+      "qualify": 30.1,
+      "consider": 31.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "17",
+      "qualify": 29.81,
+      "consider": 31.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "50 Fly",
+      "age": "18+",
+      "qualify": 29.71,
+      "consider": 31.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "11/12",
+      "qualify": 78.38,
+      "consider": 82.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "13",
+      "qualify": 72.38,
+      "consider": 76
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "14",
+      "qualify": 71.52,
+      "consider": 75.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "15",
+      "qualify": 70.57,
+      "consider": 74.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "16",
+      "qualify": 69.38,
+      "consider": 72.85
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "17",
+      "qualify": 68.48,
+      "consider": 71.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "100 Fly",
+      "age": "18+",
+      "qualify": 67.14,
+      "consider": 70.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "11/12",
+      "qualify": 183.14,
+      "consider": 192.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "13",
+      "qualify": 165.71,
+      "consider": 174
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "14",
+      "qualify": 161.33,
+      "consider": 169.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "15",
+      "qualify": 158.19,
+      "consider": 166.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "16",
+      "qualify": 156.1,
+      "consider": 163.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "17",
+      "qualify": 154.86,
+      "consider": 162.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 Fly",
+      "age": "18+",
+      "qualify": 154.1,
+      "consider": 161.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "11/12",
+      "qualify": 164.76,
+      "consider": 173
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "13",
+      "qualify": 156.19,
+      "consider": 164
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "14",
+      "qualify": 153.33,
+      "consider": 161
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "15",
+      "qualify": 152.38,
+      "consider": 160
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "16",
+      "qualify": 151.43,
+      "consider": 159
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "17",
+      "qualify": 149.05,
+      "consider": 156.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "200 IM",
+      "age": "18+",
+      "qualify": 146.67,
+      "consider": 154
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "11/12",
+      "qualify": 351.52,
+      "consider": 369.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "13",
+      "qualify": 331.24,
+      "consider": 347.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "14",
+      "qualify": 327.33,
+      "consider": 343.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "15",
+      "qualify": 326,
+      "consider": 342.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "16",
+      "qualify": 315.52,
+      "consider": 331.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "17",
+      "qualify": 315.52,
+      "consider": 331.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Long Course",
+      "event": "400 IM",
+      "age": "18+",
+      "qualify": 313.62,
+      "consider": 329.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "11/12",
+      "qualify": 29.9,
+      "consider": 31.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "13",
+      "qualify": 28.5,
+      "consider": 30
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "14",
+      "qualify": 26.6,
+      "consider": 28
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "15",
+      "qualify": 25.6,
+      "consider": 26.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "16",
+      "qualify": 25.2,
+      "consider": 26.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "17",
+      "qualify": 24.6,
+      "consider": 25.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "18+",
+      "qualify": 23.3,
+      "consider": 24.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "11/12",
+      "qualify": 67.3,
+      "consider": 70.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "13",
+      "qualify": 61.2,
+      "consider": 64.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "14",
+      "qualify": 58.6,
+      "consider": 61.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "15",
+      "qualify": 55.4,
+      "consider": 58.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "16",
+      "qualify": 55.2,
+      "consider": 58.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "17",
+      "qualify": 53.9,
+      "consider": 56.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "18+",
+      "qualify": 51.7,
+      "consider": 54.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "11/12",
+      "qualify": 143.3,
+      "consider": 150.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "13",
+      "qualify": 135.6,
+      "consider": 142.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "14",
+      "qualify": 128.8,
+      "consider": 135.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "15",
+      "qualify": 122,
+      "consider": 128.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "16",
+      "qualify": 120,
+      "consider": 126.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "17",
+      "qualify": 119.6,
+      "consider": 125.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "18+",
+      "qualify": 117,
+      "consider": 123.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "11/12",
+      "qualify": 301.4,
+      "consider": 316.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "13",
+      "qualify": 278.8,
+      "consider": 293.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "14",
+      "qualify": 267.6,
+      "consider": 281.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "15",
+      "qualify": 254.6,
+      "consider": 267.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "16",
+      "qualify": 253.3,
+      "consider": 266.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "17",
+      "qualify": 251.2,
+      "consider": 264.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "18+",
+      "qualify": 248,
+      "consider": 261
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "11/12",
+      "qualify": 623.2,
+      "consider": 655.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "13",
+      "qualify": 572.9,
+      "consider": 602.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "14",
+      "qualify": 552,
+      "consider": 580.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "15",
+      "qualify": 542.8,
+      "consider": 571
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "16",
+      "qualify": 534.4,
+      "consider": 562.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "17",
+      "qualify": 534.4,
+      "consider": 562.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "18+",
+      "qualify": 524.6,
+      "consider": 551.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "11/12",
+      "qualify": 1208.1,
+      "consider": 1270.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "13",
+      "qualify": 1092.7,
+      "consider": 1149.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "14",
+      "qualify": 1066.6,
+      "consider": 1121.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "15",
+      "qualify": 1042.3,
+      "consider": 1096.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "16",
+      "qualify": 1027.8,
+      "consider": 1081.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "17",
+      "qualify": 1020.5,
+      "consider": 1073.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "18+",
+      "qualify": 1010.4,
+      "consider": 1062.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "11/12",
+      "qualify": 36.2,
+      "consider": 38.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "13",
+      "qualify": 33.1,
+      "consider": 34.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "14",
+      "qualify": 31.8,
+      "consider": 33.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "15",
+      "qualify": 30.2,
+      "consider": 31.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "16",
+      "qualify": 29.9,
+      "consider": 31.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "17",
+      "qualify": 29.2,
+      "consider": 30.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "18+",
+      "qualify": 27.1,
+      "consider": 28.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "11/12",
+      "qualify": 76.6,
+      "consider": 80.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "13",
+      "qualify": 70.9,
+      "consider": 74.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "14",
+      "qualify": 67.6,
+      "consider": 71.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "15",
+      "qualify": 64.5,
+      "consider": 67.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "16",
+      "qualify": 63.5,
+      "consider": 66.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "17",
+      "qualify": 62.5,
+      "consider": 65.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "18+",
+      "qualify": 60,
+      "consider": 63.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "11/12",
+      "qualify": 161.4,
+      "consider": 169.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "13",
+      "qualify": 152.4,
+      "consider": 160.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "14",
+      "qualify": 145.1,
+      "consider": 152.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "15",
+      "qualify": 139.4,
+      "consider": 146.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "16",
+      "qualify": 138,
+      "consider": 145.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "17",
+      "qualify": 136.1,
+      "consider": 143.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "18+",
+      "qualify": 132,
+      "consider": 138.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "11/12",
+      "qualify": 39.8,
+      "consider": 41.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "13",
+      "qualify": 35.3,
+      "consider": 37.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "14",
+      "qualify": 34.7,
+      "consider": 36.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "15",
+      "qualify": 32.6,
+      "consider": 34.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "16",
+      "qualify": 32,
+      "consider": 33.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "17",
+      "qualify": 32,
+      "consider": 33.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "18+",
+      "qualify": 28.9,
+      "consider": 30.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "11/12",
+      "qualify": 87.1,
+      "consider": 91.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "13",
+      "qualify": 80,
+      "consider": 84.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "14",
+      "qualify": 75.1,
+      "consider": 79
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "15",
+      "qualify": 71.6,
+      "consider": 75.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "16",
+      "qualify": 71.2,
+      "consider": 74.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "17",
+      "qualify": 69.7,
+      "consider": 73.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "18+",
+      "qualify": 67.4,
+      "consider": 70.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "11/12",
+      "qualify": 187.7,
+      "consider": 197.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "13",
+      "qualify": 174.1,
+      "consider": 183.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "14",
+      "qualify": 164.8,
+      "consider": 173.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "15",
+      "qualify": 158.6,
+      "consider": 166.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "16",
+      "qualify": 157.1,
+      "consider": 165.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "17",
+      "qualify": 153.1,
+      "consider": 161.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "18+",
+      "qualify": 150.9,
+      "consider": 158.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "11/12",
+      "qualify": 33.3,
+      "consider": 35.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "13",
+      "qualify": 31.2,
+      "consider": 32.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "14",
+      "qualify": 29.5,
+      "consider": 31
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "15",
+      "qualify": 27.8,
+      "consider": 29.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "16",
+      "qualify": 27.2,
+      "consider": 28.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "17",
+      "qualify": 25.4,
+      "consider": 26.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "18+",
+      "qualify": 25.8,
+      "consider": 27.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "11/12",
+      "qualify": 77.1,
+      "consider": 81.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "13",
+      "qualify": 71.5,
+      "consider": 75.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "14",
+      "qualify": 66.6,
+      "consider": 70
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "15",
+      "qualify": 61.7,
+      "consider": 64.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "16",
+      "qualify": 60.3,
+      "consider": 63.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "17",
+      "qualify": 58.7,
+      "consider": 61.8
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "18+",
+      "qualify": 57.3,
+      "consider": 60.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "11/12",
+      "qualify": 176.9,
+      "consider": 185.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "13",
+      "qualify": 167.6,
+      "consider": 176.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "14",
+      "qualify": 148.9,
+      "consider": 156.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "15",
+      "qualify": 140.4,
+      "consider": 147.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "16",
+      "qualify": 139.2,
+      "consider": 146.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "17",
+      "qualify": 135.4,
+      "consider": 142.4
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "18+",
+      "qualify": 132.1,
+      "consider": 138.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "11/12",
+      "qualify": 160.4,
+      "consider": 168.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "13",
+      "qualify": 151.7,
+      "consider": 159.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "14",
+      "qualify": 146.3,
+      "consider": 153.9
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "15",
+      "qualify": 140.1,
+      "consider": 147.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "16",
+      "qualify": 138.1,
+      "consider": 145.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "17",
+      "qualify": 134.6,
+      "consider": 141.6
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "18+",
+      "qualify": 129,
+      "consider": 135.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "11/12",
+      "qualify": 343.5,
+      "consider": 361.2
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "13",
+      "qualify": 327.2,
+      "consider": 344.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "14",
+      "qualify": 309.1,
+      "consider": 325.1
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "15",
+      "qualify": 298.9,
+      "consider": 314.5
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "16",
+      "qualify": 295.4,
+      "consider": 310.7
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "17",
+      "qualify": 295,
+      "consider": 310.3
+    },
+    {
+      "gender": "Boys",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "18+",
+      "qualify": 278,
+      "consider": 292.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "11/12",
+      "qualify": 29.9,
+      "consider": 31.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "13",
+      "qualify": 28.9,
+      "consider": 30.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "14",
+      "qualify": 28.4,
+      "consider": 29.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "15",
+      "qualify": 27.9,
+      "consider": 29.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "16",
+      "qualify": 27.8,
+      "consider": 29.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "17",
+      "qualify": 27.5,
+      "consider": 29
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Free",
+      "age": "18+",
+      "qualify": 27.3,
+      "consider": 28.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "11/12",
+      "qualify": 66.4,
+      "consider": 69.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "13",
+      "qualify": 62.5,
+      "consider": 65.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "14",
+      "qualify": 61.5,
+      "consider": 64.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "15",
+      "qualify": 60.5,
+      "consider": 63.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "16",
+      "qualify": 59.6,
+      "consider": 62.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "17",
+      "qualify": 59.2,
+      "consider": 62.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Free",
+      "age": "18+",
+      "qualify": 58.8,
+      "consider": 61.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "11/12",
+      "qualify": 141.9,
+      "consider": 149.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "13",
+      "qualify": 135.3,
+      "consider": 142.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "14",
+      "qualify": 131.8,
+      "consider": 138.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "15",
+      "qualify": 130.7,
+      "consider": 137.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "16",
+      "qualify": 129.7,
+      "consider": 136.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "17",
+      "qualify": 129.4,
+      "consider": 136.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Free",
+      "age": "18+",
+      "qualify": 127.9,
+      "consider": 134.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "11/12",
+      "qualify": 301.3,
+      "consider": 316.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "13",
+      "qualify": 283.7,
+      "consider": 298.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "14",
+      "qualify": 275.9,
+      "consider": 290.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "15",
+      "qualify": 271.4,
+      "consider": 285.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "16",
+      "qualify": 269.3,
+      "consider": 283.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "17",
+      "qualify": 267.2,
+      "consider": 281.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 Free",
+      "age": "18+",
+      "qualify": 262.4,
+      "consider": 276.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "11/12",
+      "qualify": 607.7,
+      "consider": 639
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "13",
+      "qualify": 584.5,
+      "consider": 614.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "14",
+      "qualify": 582.5,
+      "consider": 612.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "15",
+      "qualify": 579.1,
+      "consider": 609
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "16",
+      "qualify": 575.6,
+      "consider": 605.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "17",
+      "qualify": 572.2,
+      "consider": 601.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "800 Free",
+      "age": "18+",
+      "qualify": 571.1,
+      "consider": 600.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "11/12",
+      "qualify": 1182.7,
+      "consider": 1243.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "13",
+      "qualify": 1163.3,
+      "consider": 1223.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "14",
+      "qualify": 1108.9,
+      "consider": 1166.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "15",
+      "qualify": 1071,
+      "consider": 1126.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "16",
+      "qualify": 1065,
+      "consider": 1120.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "17",
+      "qualify": 1055.5,
+      "consider": 1110.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "1500 Free",
+      "age": "18+",
+      "qualify": 1044.7,
+      "consider": 1098.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "11/12",
+      "qualify": 35.2,
+      "consider": 37.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "13",
+      "qualify": 33.3,
+      "consider": 35
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "14",
+      "qualify": 32.9,
+      "consider": 34.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "15",
+      "qualify": 32.8,
+      "consider": 34.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "16",
+      "qualify": 32.6,
+      "consider": 34.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "17",
+      "qualify": 32.3,
+      "consider": 34
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Back",
+      "age": "18+",
+      "qualify": 31.8,
+      "consider": 33.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "11/12",
+      "qualify": 76.1,
+      "consider": 80
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "13",
+      "qualify": 72,
+      "consider": 75.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "14",
+      "qualify": 69.8,
+      "consider": 73.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "15",
+      "qualify": 68.9,
+      "consider": 72.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "16",
+      "qualify": 67.5,
+      "consider": 71
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "17",
+      "qualify": 66.2,
+      "consider": 69.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Back",
+      "age": "18+",
+      "qualify": 65.9,
+      "consider": 69.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "11/12",
+      "qualify": 161.2,
+      "consider": 169.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "13",
+      "qualify": 154.8,
+      "consider": 162.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "14",
+      "qualify": 150.7,
+      "consider": 158.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "15",
+      "qualify": 148.9,
+      "consider": 156.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "16",
+      "qualify": 146.1,
+      "consider": 153.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "17",
+      "qualify": 144.8,
+      "consider": 152.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Back",
+      "age": "18+",
+      "qualify": 143,
+      "consider": 150.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "11/12",
+      "qualify": 39.6,
+      "consider": 41.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "13",
+      "qualify": 37.4,
+      "consider": 39.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "14",
+      "qualify": 36.3,
+      "consider": 38.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "15",
+      "qualify": 35.8,
+      "consider": 37.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "16",
+      "qualify": 35.3,
+      "consider": 37.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "17",
+      "qualify": 35.2,
+      "consider": 37.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Breast",
+      "age": "18+",
+      "qualify": 34.8,
+      "consider": 36.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "11/12",
+      "qualify": 88.4,
+      "consider": 93
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "13",
+      "qualify": 82.4,
+      "consider": 86.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "14",
+      "qualify": 79,
+      "consider": 83.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "15",
+      "qualify": 78.7,
+      "consider": 82.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "16",
+      "qualify": 78.5,
+      "consider": 82.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "17",
+      "qualify": 77.9,
+      "consider": 82
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Breast",
+      "age": "18+",
+      "qualify": 76.6,
+      "consider": 80.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "11/12",
+      "qualify": 189,
+      "consider": 198.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "13",
+      "qualify": 175.6,
+      "consider": 184.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "14",
+      "qualify": 172.2,
+      "consider": 181.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "15",
+      "qualify": 170.3,
+      "consider": 179.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "16",
+      "qualify": 169.3,
+      "consider": 178.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "17",
+      "qualify": 169.3,
+      "consider": 178.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Breast",
+      "age": "18+",
+      "qualify": 169,
+      "consider": 177.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "11/12",
+      "qualify": 33.5,
+      "consider": 35.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "13",
+      "qualify": 31.8,
+      "consider": 33.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "14",
+      "qualify": 30.9,
+      "consider": 32.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "15",
+      "qualify": 30.3,
+      "consider": 31.9
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "16",
+      "qualify": 29.5,
+      "consider": 31
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "17",
+      "qualify": 29.2,
+      "consider": 30.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "50 Fly",
+      "age": "18+",
+      "qualify": 29.1,
+      "consider": 30.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "11/12",
+      "qualify": 77.4,
+      "consider": 81.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "13",
+      "qualify": 71.3,
+      "consider": 75
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "14",
+      "qualify": 70.4,
+      "consider": 74.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "15",
+      "qualify": 69.5,
+      "consider": 73.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "16",
+      "qualify": 68.3,
+      "consider": 71.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "17",
+      "qualify": 67.4,
+      "consider": 70.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "100 Fly",
+      "age": "18+",
+      "qualify": 66,
+      "consider": 69.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "11/12",
+      "qualify": 181.4,
+      "consider": 190.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "13",
+      "qualify": 163.8,
+      "consider": 172.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "14",
+      "qualify": 159.4,
+      "consider": 167.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "15",
+      "qualify": 156.2,
+      "consider": 164.2
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "16",
+      "qualify": 154.1,
+      "consider": 162
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "17",
+      "qualify": 152.8,
+      "consider": 160.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 Fly",
+      "age": "18+",
+      "qualify": 152,
+      "consider": 159.8
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "11/12",
+      "qualify": 162.3,
+      "consider": 170.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "13",
+      "qualify": 153.6,
+      "consider": 161.6
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "14",
+      "qualify": 150.7,
+      "consider": 158.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "15",
+      "qualify": 149.8,
+      "consider": 157.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "16",
+      "qualify": 148.8,
+      "consider": 156.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "17",
+      "qualify": 146.4,
+      "consider": 154
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "200 IM",
+      "age": "18+",
+      "qualify": 144,
+      "consider": 151.4
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "11/12",
+      "qualify": 346.5,
+      "consider": 364.3
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "13",
+      "qualify": 325.9,
+      "consider": 342.7
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "14",
+      "qualify": 321.9,
+      "consider": 338.5
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "15",
+      "qualify": 320.6,
+      "consider": 337.1
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "16",
+      "qualify": 309.9,
+      "consider": 326
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "17",
+      "qualify": 309.9,
+      "consider": 326
+    },
+    {
+      "gender": "Girls",
+      "course": "Short Course",
+      "event": "400 IM",
+      "age": "18+",
+      "qualify": 308,
+      "consider": 323.9
+    }
+  ]
+}

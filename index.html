@@ -498,6 +498,11 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   .hstat-val { font-size: 1.1rem !important; }
   .hstat-label { font-size: 0.65rem !important; }
 
+  /* QT meta banner — show title/dates, no edit button (handled by display:none default) */
+  .qt-meta-banner { padding: 9px 12px !important; margin-bottom: 12px !important; }
+  .qt-meta-banner-text h3 { font-size: 0.82rem !important; }
+  .qt-meta-banner-text p { font-size: 0.68rem !important; }
+
   .tabs { flex-wrap: wrap !important; background: transparent !important; }
   .tab {
     flex: 1 1 45% !important;
@@ -594,6 +599,170 @@ tr:hover td { background: var(--surface2); color: var(--text); }
   .comp-short { display: inline !important; }
   .comp-full  { display: none !important; }
 }
+
+/* ── QT Meta Banner (shown at top of County QT + Regional QT tabs) ─────── */
+.qt-meta-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 18px; margin-bottom: 16px;
+}
+.qt-meta-banner-text h3 {
+  margin: 0 0 2px; font-size: 0.95rem; font-weight: 700; color: var(--text);
+}
+.qt-meta-banner-text p {
+  margin: 0; font-size: 0.78rem; color: var(--text3);
+}
+/* Edit Details button — desktop only */
+.btn-edit-qt {
+  display: none;
+  padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text2);
+  font-size: 0.82rem; cursor: pointer; font-weight: 500; white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-edit-qt:hover { background: var(--surface3); border-color: var(--accent); color: var(--accent); }
+@media (min-width: 769px) { .btn-edit-qt { display: inline-flex; align-items: center; gap: 5px; } }
+
+/* No-dates-set note: desktop variant references the Edit button label;
+   mobile variant (no button available) points to switching to desktop instead. */
+.qt-banner-note-desktop { display: none; }
+.qt-banner-note-mobile  { display: inline; }
+@media (min-width: 769px) {
+  .qt-banner-note-desktop { display: inline; }
+  .qt-banner-note-mobile  { display: none; }
+}
+
+/* ── QT Inline Editor Mode ──────────────────────────────────────────────── */
+/* The editor slides in *inside* the existing QT tab panel */
+.qt-view-mode  { display: block; }
+.qt-edit-mode  { display: none;  }
+.qt-tab-in-edit-mode .qt-view-mode { display: none; }
+.qt-tab-in-edit-mode .qt-edit-mode { display: block; }
+
+/* Editor top bar */
+.qt-editor-topbar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 16px; padding-bottom: 14px;
+  border-bottom: 2px solid var(--border);
+}
+.qt-editor-topbar h3 {
+  margin: 0; font-size: 1rem; font-weight: 700; color: var(--text); flex: 1;
+}
+.btn-ed-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text2);
+  font-size: 0.82rem; cursor: pointer; font-weight: 600;
+}
+.btn-ed-back:hover { background: var(--surface3); color: var(--text); }
+
+/* Meta edit panel inside editor */
+.qt-meta-edit-panel {
+  display: none; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+  grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end;
+}
+.qt-meta-edit-panel.open { display: grid; }
+.qt-meta-edit-panel label {
+  display: block; font-size: 0.68rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); margin-bottom: 4px;
+}
+.qt-meta-edit-panel input {
+  width: 100%; padding: 6px 9px; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--surface3);
+  color: var(--text); font-size: 0.84rem; box-sizing: border-box;
+}
+.btn-meta-save {
+  padding: 7px 16px; border-radius: 7px; border: none;
+  background: var(--accent); color: #fff; font-size: 0.84rem;
+  font-weight: 600; cursor: pointer;
+}
+.btn-meta-save:hover { opacity: 0.88; }
+
+/* Editor filters */
+.qt-editor-filters {
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 12px; align-items: end; margin-bottom: 14px;
+  background: var(--surface2); border-radius: 10px;
+  padding: 12px 16px; border: 1px solid var(--border);
+}
+.qt-editor-filters .fl .req { color: var(--red); margin-left: 2px; }
+@media (max-width: 768px) {
+  .qt-editor-filters { grid-template-columns: 1fr 1fr; }
+}
+
+/* Editor actions row */
+.qt-editor-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.btn-ed {
+  padding: 6px 14px; border-radius: 8px; font-size: 0.82rem;
+  font-weight: 600; cursor: pointer; white-space: nowrap; border: none;
+}
+.btn-ed.sec {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
+}
+.btn-ed.sec:hover { background: var(--surface3); }
+.btn-ed.pri {
+  background: var(--accent); color: #fff;
+}
+.btn-ed.pri:hover { opacity: 0.88; }
+
+/* Editor table */
+.qt-editor-tbl-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+.qt-editor-tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.qt-editor-tbl thead { background: var(--surface2); }
+.qt-editor-tbl th {
+  padding: 9px 10px; text-align: left; font-size: 0.69rem;
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3);
+  font-weight: 600; white-space: nowrap;
+}
+.qt-editor-tbl td { padding: 4px 6px; border-top: 1px solid var(--border); vertical-align: middle; }
+.qt-editor-tbl tr:hover td { background: var(--surface2); }
+.qt-editor-tbl select,
+.qt-editor-tbl input[type="text"] {
+  width: 100%; padding: 5px 7px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); font-size: 0.82rem; box-sizing: border-box;
+  -webkit-appearance: none; appearance: none;
+}
+.qt-editor-tbl input[type="text"].time-input { max-width: 90px; font-variant-numeric: tabular-nums; }
+.qt-editor-tbl td.del-col { width: 36px; text-align: center; }
+.btn-row-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--red); font-size: 1rem; padding: 2px 5px; opacity: 0.65;
+}
+.btn-row-del:hover { opacity: 1; }
+
+/* Not-offered rows */
+.qt-editor-tbl tr.not-offered td { opacity: 0.45; }
+.qt-editor-tbl tr.not-offered td:first-child { opacity: 1; }
+.qt-editor-tbl tr.not-offered select,
+.qt-editor-tbl tr.not-offered input { pointer-events: none; background: var(--surface3); }
+.qt-editor-tbl tr.not-offered .btn-row-del { pointer-events: none; opacity: 0.2; }
+.not-offered-note {
+  font-size: 0.72rem; color: var(--text3); font-style: italic; white-space: nowrap;
+}
+
+/* Duplicate warning row */
+.qt-editor-tbl tr.has-duplicate td { background: rgba(217,119,6,0.07) !important; }
+.qt-editor-tbl tr.has-duplicate select,
+.qt-editor-tbl tr.has-duplicate input { border-color: var(--gold) !important; }
+.dup-badge {
+  display: inline-block; font-size: 0.64rem; font-weight: 700;
+  background: rgba(217,119,6,0.18); color: var(--gold);
+  border-radius: 8px; padding: 1px 6px; margin-left: 4px; white-space: nowrap;
+}
+
+/* Time input invalid state */
+.qt-editor-tbl input.time-input.invalid { border-color: var(--red) !important; background: rgba(220,38,38,0.06) !important; }
+
+.qt-editor-empty {
+  padding: 48px 20px; text-align: center; color: var(--text3); font-size: 0.88rem;
+}
+.qt-editor-empty .ei { font-size: 2.2rem; display: block; margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -628,7 +797,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
       <input type="file" id="uploadQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
     </div>
     <div style="margin-bottom: 15px;">
-      <label class="fl" for="uploadSEQT">3. Upload Regional QT Data (se_london_qt.json)</label>
+      <label class="fl" for="uploadSEQT">3. Upload Regional QT Data (regional_qt.json)</label>
       <input type="file" id="uploadSEQT" accept=".json" style="width:100%; margin-top:5px; color:var(--text2)">
     </div>
     <div style="margin-bottom: 25px;">
@@ -867,180 +1036,334 @@ tr:hover td { background: var(--surface2); color: var(--text); }
     <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="resCount"></div>
   </div>
 
-  <!-- COUNTY QUALIFYING TAB (v27.1) -->
+  <!-- COUNTY QUALIFYING TAB (v28.1) -->
   <div class="panel" id="tab-qualifying">
-    <div class="filter-bar">
-      <div class="fg">
-        <span class="fl">Gender</span>
-        <select id="qtGender" onchange="forceQualifying()">
-          <option value="Boys" selected>Boys</option>
-          <option value="Girls">Girls</option>
-        </select>
+    <!-- Meta banner — always visible, edit button desktop only -->
+    <div class="qt-meta-banner">
+      <div class="qt-meta-banner-text">
+        <h3 id="cqtBannerTitle">County Championships</h3>
+        <p id="cqtBannerDates">Loading…</p>
       </div>
-      <div class="fg">
-        <span class="fl">Age Group</span>
-        <select id="qtAge" onchange="forceQualifying()">
-          <option value="10+11">10+11</option>
-          <option value="12" selected>12</option>
-          <option value="13">13</option>
-          <option value="14">14</option>
-          <option value="15">15</option>
-          <option value="16">16</option>
-          <option value="17+">17+</option>
-        </select>
-      </div>
-      <div class="fg">
-        <span class="fl">Stroke</span>
-        <select id="qtStroke" onchange="forceQualifying()">
-          <option value="">All Strokes</option>
-          <option value="Free">Freestyle</option>
-          <option value="Back">Backstroke</option>
-          <option value="Breast">Breaststroke</option>
-          <option value="Fly">Butterfly</option>
-          <option value="IM">Individual Medley</option>
-        </select>
-      </div>
-      <div class="fg">
-        <span class="fl">Status</span>
-        <select id="qtStatus" onchange="forceQualifying()">
-          <option value="">All Statuses</option>
-          <option value="Qualified">✅ Qualified</option>
-          <option value="Consideration">🔶 Consideration</option>
-          <option value="Outside">❌ Outside</option>
-          <option value="No PB">— No PB</option>
-        </select>
-      </div>
-      <div class="fg" style="align-self: flex-end;">
-        <button class="btn sec" onclick="resetQualifyingFilters()">Reset Filters</button>
-      </div>
+      <button class="btn-edit-qt" onclick="openQTEditor('qt')">✏️ Edit Details &amp; Times</button>
     </div>
-    <!-- Summary stat cards — best status across SC+LC -->
-    <div class="grid4" id="qtStats" style="margin-bottom:20px"></div>
-    <!-- Event cards (SC + LC blocks per card, 4-per-row on desktop) -->
-    <div class="card" id="qtCardSection" style="margin-bottom:20px;">
-      <div class="card-title">🎯 Qualification Status — SC &amp; LC</div>
-      <p style="font-size:0.78rem;color:var(--text3);margin-bottom:16px;">
-        Each card shows Short Course and Long Course status. Card border = best status across either course.
-        Progress bars are per-event scaled: <span style="color:var(--gold);font-weight:600;">●</span> CT &nbsp;
-        <span style="color:var(--green);font-weight:600;">●</span> QT markers shown above bar.
-      </p>
-      <div class="qt-card-grid" id="qtCardGrid"></div>
-    </div>
-    <!-- Event-by-Event Table -->
-    <div class="card">
-      <div class="card-title">📋 Event-by-Event Status</div>
-      <div class="qt-table-toggles">
-        <button class="qt-row-toggle active-sc" id="qtRowToggleSC" onclick="toggleQTRows('qt','SC')">● Show SC</button>
-        <button class="qt-row-toggle active-lc" id="qtRowToggleLC" onclick="toggleQTRows('qt','LC')">● Show LC</button>
+
+    <!-- VIEW MODE -->
+    <div class="qt-view-mode" id="qtViewMode">
+      <div class="filter-bar">
+        <div class="fg">
+          <span class="fl">Gender</span>
+          <select id="qtGender" onchange="forceQualifying()">
+            <option value="Boys" selected>Boys</option>
+            <option value="Girls">Girls</option>
+          </select>
+        </div>
+        <div class="fg">
+          <span class="fl">Age Group</span>
+          <select id="qtAge" onchange="forceQualifying()">
+            <option value="10+11">10+11</option>
+            <option value="12" selected>12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17+">17+</option>
+          </select>
+        </div>
+        <div class="fg">
+          <span class="fl">Stroke</span>
+          <select id="qtStroke" onchange="forceQualifying()">
+            <option value="">All Strokes</option>
+            <option value="Free">Freestyle</option>
+            <option value="Back">Backstroke</option>
+            <option value="Breast">Breaststroke</option>
+            <option value="Fly">Butterfly</option>
+            <option value="IM">Individual Medley</option>
+          </select>
+        </div>
+        <div class="fg">
+          <span class="fl">Status</span>
+          <select id="qtStatus" onchange="forceQualifying()">
+            <option value="">All Statuses</option>
+            <option value="Qualified">✅ Qualified</option>
+            <option value="Consideration">🔶 Consideration</option>
+            <option value="Outside">❌ Outside</option>
+            <option value="No PB">— No PB</option>
+          </select>
+        </div>
+        <div class="fg" style="align-self: flex-end;">
+          <button class="btn sec" onclick="resetQualifyingFilters()">Reset Filters</button>
+        </div>
       </div>
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Event</th>
-              <th><span class="col-full">Course</span><span class="col-abbr">C</span></th>
-              <th>PB</th>
-              <th>PB Date</th>
-              <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
-              <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
-              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap QT</span></th>
-              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap CT</span></th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="qtTableBody"></tbody>
-        </table>
+      <div class="grid4" id="qtStats" style="margin-bottom:20px"></div>
+      <div class="card" id="qtCardSection" style="margin-bottom:20px;">
+        <div class="card-title">🎯 Qualification Status — SC &amp; LC</div>
+        <p style="font-size:0.78rem;color:var(--text3);margin-bottom:16px;">
+          Each card shows Short Course and Long Course status. Card border = best status across either course.
+          Progress bars are per-event scaled: <span style="color:var(--gold);font-weight:600;">●</span> CT &nbsp;
+          <span style="color:var(--green);font-weight:600;">●</span> QT markers shown above bar.
+        </p>
+        <div class="qt-card-grid" id="qtCardGrid"></div>
       </div>
-      <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="qtNote"></div>
-    </div>
+      <div class="card">
+        <div class="card-title">📋 Event-by-Event Status</div>
+        <div class="qt-table-toggles">
+          <button class="qt-row-toggle active-sc" id="qtRowToggleSC" onclick="toggleQTRows('qt','SC')">● Show SC</button>
+          <button class="qt-row-toggle active-lc" id="qtRowToggleLC" onclick="toggleQTRows('qt','LC')">● Show LC</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th><span class="col-full">Course</span><span class="col-abbr">C</span></th>
+                <th>PB</th>
+                <th>PB Date</th>
+                <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
+                <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
+                <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap QT</span></th>
+                <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap CT</span></th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="qtTableBody"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="qtNote"></div>
+      </div>
+    </div><!-- /qt-view-mode -->
+
+    <!-- EDIT MODE (desktop only — toggled by openQTEditor) -->
+    <div class="qt-edit-mode" id="qtEditMode">
+      <div class="card">
+        <div class="qt-editor-topbar">
+          <button class="btn-ed-back" onclick="closeQTEditor('qt')">← Back to County QT</button>
+          <h3 id="cqtEditorHeading">County QT Editor</h3>
+          <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;">
+            <button class="btn-ed sec" onclick="addEditorRow('cqt')">+ Add Row</button>
+            <button class="btn-ed pri" onclick="downloadEditorJSON('cqt')">⬇ Download JSON</button>
+          </div>
+        </div>
+        <!-- Meta edit panel -->
+        <div class="qt-meta-edit-panel" id="cqtMetaPanel">
+          <div><label>Championship Title</label><input type="text" id="cqtMetaTitle" placeholder="e.g. Hertfordshire County Championships 2027"></div>
+          <div><label>Date From</label><input type="date" id="cqtMetaFrom"></div>
+          <div><label>Date To</label><input type="date" id="cqtMetaTo"></div>
+          <button class="btn-meta-save" onclick="saveMetaPanel('cqt')">Save</button>
+        </div>
+        <button class="btn-ed sec" style="margin-bottom:14px;" onclick="toggleMetaPanel('cqt')">✏️ Edit Championship Details</button>
+        <!-- Editor filters -->
+        <div class="qt-editor-filters">
+          <div class="fg">
+            <span class="fl">Age Group <span class="req">*</span></span>
+            <select id="cqtEdAge" onchange="renderEditorTable('cqt')">
+              <option value="">— Select Age Group —</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="fl">Gender</span>
+            <select id="cqtEdGender" onchange="renderEditorTable('cqt')">
+              <option value="">All</option>
+              <option value="Boys">Boys</option>
+              <option value="Girls">Girls</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="fl">Stroke</span>
+            <select id="cqtEdStroke" onchange="renderEditorTable('cqt')">
+              <option value="">All Strokes</option>
+              <option value="Free">Freestyle</option>
+              <option value="Back">Backstroke</option>
+              <option value="Breast">Breaststroke</option>
+              <option value="Fly">Butterfly</option>
+              <option value="IM">Individual Medley</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="fl">Course</span>
+            <select id="cqtEdCourse" onchange="renderEditorTable('cqt')">
+              <option value="">Both</option>
+              <option value="Short Course">Short Course</option>
+              <option value="Long Course">Long Course</option>
+            </select>
+          </div>
+        </div>
+        <div class="qt-editor-tbl-wrap">
+          <table class="qt-editor-tbl">
+            <thead><tr>
+              <th>Gender</th><th>Course</th><th>Event</th><th>Age</th>
+              <th>Qualify Time</th><th>Consideration Time</th><th></th>
+            </tr></thead>
+            <tbody id="cqtEdBody">
+              <tr><td colspan="7"><div class="qt-editor-empty"><span class="ei">👆</span>Select an Age Group above to view and edit qualifying times.</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /qt-edit-mode -->
   </div>
 
-  <!-- REGIONAL QUALIFYING TAB (v27.1) -->
+  <!-- REGIONAL QUALIFYING TAB (v28.1) -->
   <div class="panel" id="tab-regional">
-    <div class="filter-bar">
-      <div class="fg">
-        <span class="fl">Gender</span>
-        <select id="rqGender" onchange="forceRegional()">
-          <option value="Boys" selected>Boys</option>
-          <option value="Girls">Girls</option>
-        </select>
+    <!-- Meta banner -->
+    <div class="qt-meta-banner">
+      <div class="qt-meta-banner-text">
+        <h3 id="rqtBannerTitle">Regional Championships</h3>
+        <p id="rqtBannerDates">Loading…</p>
       </div>
-      <div class="fg">
-        <span class="fl">Age Group</span>
-        <select id="rqAge" onchange="forceRegional()">
-          <option value="11/12" selected>11/12</option>
-          <option value="13">13</option>
-          <option value="14">14</option>
-          <option value="15">15</option>
-          <option value="16">16</option>
-          <option value="17">17</option>
-          <option value="18+">18+</option>
-        </select>
-      </div>
-      <div class="fg">
-        <span class="fl">Stroke</span>
-        <select id="rqStroke" onchange="forceRegional()">
-          <option value="">All Strokes</option>
-          <option value="Free">Freestyle</option>
-          <option value="Back">Backstroke</option>
-          <option value="Breast">Breaststroke</option>
-          <option value="Fly">Butterfly</option>
-          <option value="IM">Individual Medley</option>
-        </select>
-      </div>
-      <div class="fg">
-        <span class="fl">Status</span>
-        <select id="rqStatus" onchange="forceRegional()">
-          <option value="">All Statuses</option>
-          <option value="Qualified">✅ Qualified</option>
-          <option value="Consideration">🔶 Consideration</option>
-          <option value="Outside">❌ Outside</option>
-          <option value="No PB">— No PB</option>
-        </select>
-      </div>
-      <div class="fg" style="align-self: flex-end;">
-        <button class="btn sec" onclick="resetRegionalFilters()">Reset Filters</button>
-      </div>
+      <button class="btn-edit-qt" onclick="openQTEditor('rq')">✏️ Edit Details &amp; Times</button>
     </div>
-    <!-- Summary stat cards -->
-    <div class="grid4" id="rqStats" style="margin-bottom:20px"></div>
-    <!-- Event cards -->
-    <div class="card" id="rqCardSection" style="margin-bottom:20px;">
-      <div class="card-title">🏅 Qualification Status — SC &amp; LC</div>
-      <p style="font-size:0.78rem;color:var(--text3);margin-bottom:16px;">
-        Each card shows Short Course and Long Course status. Card border = best status across either course.
-        Progress bars are per-event scaled: <span style="color:var(--gold);font-weight:600;">●</span> CT &nbsp;
-        <span style="color:var(--green);font-weight:600;">●</span> QT markers shown above bar.
-      </p>
-      <div class="qt-card-grid" id="rqCardGrid"></div>
-    </div>
-    <!-- Event-by-Event Table -->
-    <div class="card">
-      <div class="card-title">📋 Event-by-Event Status</div>
-      <div class="qt-table-toggles">
-        <button class="qt-row-toggle active-sc" id="rqRowToggleSC" onclick="toggleQTRows('rq','SC')">● Show SC</button>
-        <button class="qt-row-toggle active-lc" id="rqRowToggleLC" onclick="toggleQTRows('rq','LC')">● Show LC</button>
+
+    <!-- VIEW MODE -->
+    <div class="qt-view-mode" id="rqViewMode">
+      <div class="filter-bar">
+        <div class="fg">
+          <span class="fl">Gender</span>
+          <select id="rqGender" onchange="forceRegional()">
+            <option value="Boys" selected>Boys</option>
+            <option value="Girls">Girls</option>
+          </select>
+        </div>
+        <div class="fg">
+          <span class="fl">Age Group</span>
+          <select id="rqAge" onchange="forceRegional()">
+            <option value="11/12" selected>11/12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18+">18+</option>
+          </select>
+        </div>
+        <div class="fg">
+          <span class="fl">Stroke</span>
+          <select id="rqStroke" onchange="forceRegional()">
+            <option value="">All Strokes</option>
+            <option value="Free">Freestyle</option>
+            <option value="Back">Backstroke</option>
+            <option value="Breast">Breaststroke</option>
+            <option value="Fly">Butterfly</option>
+            <option value="IM">Individual Medley</option>
+          </select>
+        </div>
+        <div class="fg">
+          <span class="fl">Status</span>
+          <select id="rqStatus" onchange="forceRegional()">
+            <option value="">All Statuses</option>
+            <option value="Qualified">✅ Qualified</option>
+            <option value="Consideration">🔶 Consideration</option>
+            <option value="Outside">❌ Outside</option>
+            <option value="No PB">— No PB</option>
+          </select>
+        </div>
+        <div class="fg" style="align-self: flex-end;">
+          <button class="btn sec" onclick="resetRegionalFilters()">Reset Filters</button>
+        </div>
       </div>
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Event</th>
-              <th><span class="col-full">Course</span><span class="col-abbr">C</span></th>
-              <th>PB</th>
-              <th>PB Date</th>
-              <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
-              <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
-              <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap QT</span></th>
-              <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap CT</span></th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="rqTableBody"></tbody>
-        </table>
+      <div class="grid4" id="rqStats" style="margin-bottom:20px"></div>
+      <div class="card" id="rqCardSection" style="margin-bottom:20px;">
+        <div class="card-title">🏅 Qualification Status — SC &amp; LC</div>
+        <p style="font-size:0.78rem;color:var(--text3);margin-bottom:16px;">
+          Each card shows Short Course and Long Course status. Card border = best status across either course.
+          Progress bars are per-event scaled: <span style="color:var(--gold);font-weight:600;">●</span> CT &nbsp;
+          <span style="color:var(--green);font-weight:600;">●</span> QT markers shown above bar.
+        </p>
+        <div class="qt-card-grid" id="rqCardGrid"></div>
       </div>
-      <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="rqNote"></div>
-    </div>
+      <div class="card">
+        <div class="card-title">📋 Event-by-Event Status</div>
+        <div class="qt-table-toggles">
+          <button class="qt-row-toggle active-sc" id="rqRowToggleSC" onclick="toggleQTRows('rq','SC')">● Show SC</button>
+          <button class="qt-row-toggle active-lc" id="rqRowToggleLC" onclick="toggleQTRows('rq','LC')">● Show LC</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th><span class="col-full">Course</span><span class="col-abbr">C</span></th>
+                <th>PB</th>
+                <th>PB Date</th>
+                <th><span class="col-full">Qualify Time</span><span class="col-abbr">QT</span></th>
+                <th><span class="col-full">Consideration Time</span><span class="col-abbr">CT</span></th>
+                <th><span class="col-full">Gap to Qualify</span><span class="col-abbr">Gap QT</span></th>
+                <th><span class="col-full">Gap to Consider</span><span class="col-abbr">Gap CT</span></th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="rqTableBody"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;font-size:0.75rem;color:var(--text3)" id="rqNote"></div>
+      </div>
+    </div><!-- /qt-view-mode -->
+
+    <!-- EDIT MODE -->
+    <div class="qt-edit-mode" id="rqEditMode">
+      <div class="card">
+        <div class="qt-editor-topbar">
+          <button class="btn-ed-back" onclick="closeQTEditor('rq')">← Back to Regional QT</button>
+          <h3 id="rqtEditorHeading">Regional QT Editor</h3>
+          <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;">
+            <button class="btn-ed sec" onclick="addEditorRow('rqt')">+ Add Row</button>
+            <button class="btn-ed pri" onclick="downloadEditorJSON('rqt')">⬇ Download JSON</button>
+          </div>
+        </div>
+        <div class="qt-meta-edit-panel" id="rqtMetaPanel">
+          <div><label>Championship Title</label><input type="text" id="rqtMetaTitle" placeholder="e.g. SE London Regional Championships 2027"></div>
+          <div><label>Date From</label><input type="date" id="rqtMetaFrom"></div>
+          <div><label>Date To</label><input type="date" id="rqtMetaTo"></div>
+          <button class="btn-meta-save" onclick="saveMetaPanel('rqt')">Save</button>
+        </div>
+        <button class="btn-ed sec" style="margin-bottom:14px;" onclick="toggleMetaPanel('rqt')">✏️ Edit Championship Details</button>
+        <div class="qt-editor-filters">
+          <div class="fg">
+            <span class="fl">Age Group <span class="req">*</span></span>
+            <select id="rqtEdAge" onchange="renderEditorTable('rqt')">
+              <option value="">— Select Age Group —</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="fl">Gender</span>
+            <select id="rqtEdGender" onchange="renderEditorTable('rqt')">
+              <option value="">All</option>
+              <option value="Boys">Boys</option>
+              <option value="Girls">Girls</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="fl">Stroke</span>
+            <select id="rqtEdStroke" onchange="renderEditorTable('rqt')">
+              <option value="">All Strokes</option>
+              <option value="Free">Freestyle</option>
+              <option value="Back">Backstroke</option>
+              <option value="Breast">Breaststroke</option>
+              <option value="Fly">Butterfly</option>
+              <option value="IM">Individual Medley</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="fl">Course</span>
+            <select id="rqtEdCourse" onchange="renderEditorTable('rqt')">
+              <option value="">Both</option>
+              <option value="Short Course">Short Course</option>
+              <option value="Long Course">Long Course</option>
+            </select>
+          </div>
+        </div>
+        <div class="qt-editor-tbl-wrap">
+          <table class="qt-editor-tbl">
+            <thead><tr>
+              <th>Gender</th><th>Course</th><th>Event</th><th>Age</th>
+              <th>Qualify Time</th><th>Consideration Time</th><th></th>
+            </tr></thead>
+            <tbody id="rqtEdBody">
+              <tr><td colspan="7"><div class="qt-editor-empty"><span class="ei">👆</span>Select an Age Group above to view and edit qualifying times.</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /qt-edit-mode -->
   </div>
 
   <!-- SCHEDULE TAB -->
@@ -1277,7 +1600,7 @@ tr:hover td { background: var(--surface2); color: var(--text); }
 // ============================================================
 const RACE_DATA_URL   = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/my_swims.json';
 const QT_DATA_URL     = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/county_qt.json';
-const SE_QT_DATA_URL  = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/se_london_qt.json';
+const SE_QT_DATA_URL  = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/regional_qt.json';
 const UPCOMING_DATA_URL = 'https://raw.githubusercontent.com/asushinski9-netizen/swim-dash/main/upcoming_races.json';
 
 const COUNTY_CHAMPS_DATE   = '2026-02-15';
@@ -1300,10 +1623,25 @@ function getSwimmerGender() { return localStorage.getItem('swimDash_GENDER') || 
 // DATA GLOBALS
 // ============================================================
 let RAW       = JSON.parse(localStorage.getItem('swimDash_RAW'))      || [];
-let QT_DATA   = JSON.parse(localStorage.getItem('swimDash_QT'))       || [];
-let SE_QT_DATA= JSON.parse(localStorage.getItem('swimDash_SE_QT'))    || [];
+// QT data stored as flat arrays (the .times array from the new schema)
+let QT_DATA   = [];
+let SE_QT_DATA= [];
+// Meta objects from the new schema { title, dateFrom, dateTo }
+let QT_META   = {};
+let SE_QT_META= {};
 let UPCOMING  = JSON.parse(localStorage.getItem('swimDash_UPCOMING')) || [];
 let DATA = [];
+
+// Helper: unwrap stored QT JSON (handles both old flat array and new {meta,times} schema)
+function unwrapQT(raw) {
+  if (!raw) return { meta: {}, times: [] };
+  try {
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (Array.isArray(parsed)) return { meta: {}, times: parsed };          // old flat format
+    if (parsed && Array.isArray(parsed.times)) return parsed;                // new schema
+    return { meta: {}, times: [] };
+  } catch { return { meta: {}, times: [] }; }
+}
 
 // ============================================================
 // STATE
@@ -1368,7 +1706,11 @@ function updateData(newRaw) {
 // DATA MANAGER MODAL
 // ============================================================
 function showDataModal() { closeFabDial(); document.getElementById('dataModal').style.display = 'flex'; }
-function hideDataModal()  { document.getElementById('dataModal').style.display = 'none'; }
+function hideDataModal()  {
+  document.getElementById('dataModal').style.display = 'none';
+  const errDiv = document.getElementById('dataModalError');
+  if (errDiv) errDiv.style.display = 'none';
+}
 
 function saveDataToBrowser() {
   const rawFile      = document.getElementById('uploadRaw').files[0];
@@ -1380,15 +1722,21 @@ function saveDataToBrowser() {
   const readFile = (file, storageKey) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = e => {
+      const text = e.target.result;
+      let parsed;
       try {
-        JSON.parse(e.target.result);
-        localStorage.setItem(storageKey, e.target.result);
-        resolve();
-      } catch {
-        reject(`Invalid JSON in ${file.name}`);
+        parsed = JSON.parse(text);
+      } catch (parseErr) {
+        const preview = text.slice(0, 120).replace(/</g, '&lt;');
+        reject(`❌ JSON syntax error in <strong>${escapeHtml(file.name)}</strong>:<br>${escapeHtml(parseErr.message)}<br><code style="font-size:0.78rem;opacity:0.8">${preview}…</code>`);
+        return;
       }
+      // For QT files: accept both old flat array and new {meta,times} schema.
+      // Always store the full object so unwrapQT() can handle it on load.
+      localStorage.setItem(storageKey, JSON.stringify(parsed));
+      resolve();
     };
-    reader.onerror = () => reject(`Failed to read ${file.name}`);
+    reader.onerror = () => reject(`Failed to read ${escapeHtml(file.name)}`);
     reader.readAsText(file);
   });
 
@@ -1400,7 +1748,18 @@ function saveDataToBrowser() {
 
   Promise.all(promises)
     .then(() => { alert('Saved! Reloading…'); window.location.reload(); })
-    .catch(err => alert('Error: ' + err));
+    .catch(err => {
+      // Show rich error inside a div in the modal
+      let errDiv = document.getElementById('dataModalError');
+      if (!errDiv) {
+        errDiv = document.createElement('div');
+        errDiv.id = 'dataModalError';
+        errDiv.style.cssText = 'margin-top:12px;padding:10px 12px;background:rgba(220,38,38,0.1);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:0.82rem;line-height:1.5;';
+        document.querySelector('#dataModal .card').appendChild(errDiv);
+      }
+      errDiv.innerHTML = '⚠️ ' + err;
+      errDiv.style.display = 'block';
+    });
 }
 
 function resetDashboard() {
@@ -3022,7 +3381,7 @@ function renderQualifying() {
   const qtIsPast    = new Date() > parseLocalDate(COUNTY_CHAMPS_DATE);
   const qtSeason    = qtIsPast ? ` ${qtChamsYear + 1} season standards not yet published — using ${qtChamsYear} times.` : '';
   const qtNoteEl    = document.getElementById('qtNote');
-  if (qtNoteEl) qtNoteEl.textContent = `Qualifying times shown for ${gender} · age group ${age} · County Championships ${qtChamsYear}.${qtSeason}`;
+  if (qtNoteEl) qtNoteEl.textContent = `Qualifying times shown for ${gender} · age group ${age} · ${QT_META.title || 'County Championships'} ${qtChamsYear}.${qtSeason}`;
 
   renderedTabs.add('qualifying');
 }
@@ -3037,7 +3396,7 @@ function renderRegionalQualifying() {
     document.getElementById('rqStats').innerHTML = '';
     document.getElementById('rqCardGrid').innerHTML =
       `<div class="empty" style="grid-column:1/-1;padding:40px 20px;text-align:center;color:var(--text3)">
-        No SE London QT data. Upload se_london_qt.json via ⚙️ Data Manager.
+        No Regional QT data. Upload regional_qt.json via ⚙️ Data Manager.
       </div>`;
     document.getElementById('rqTableBody').innerHTML =
       '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No data loaded.</td></tr>';
@@ -3087,7 +3446,7 @@ function renderRegionalQualifying() {
   const rqIsPast    = new Date() > parseLocalDate(REGIONAL_CHAMPS_DATE);
   const rqSeason    = rqIsPast ? ` ${rqChamsYear + 1} season standards not yet published — using ${rqChamsYear} times.` : '';
   const rqNoteEl    = document.getElementById('rqNote');
-  if (rqNoteEl) rqNoteEl.textContent = `Qualifying times shown for ${gender} · age group ${age} · SE London Regional Championships ${rqChamsYear}.${rqSeason}`;
+  if (rqNoteEl) rqNoteEl.textContent = `Qualifying times shown for ${gender} · age group ${age} · ${SE_QT_META.title || 'Regional Championships'} ${rqChamsYear}.${rqSeason}`;
 
   renderedTabs.add('regional');
 }
@@ -3234,7 +3593,7 @@ function renderTargets() {
   if (QT_DATA.length === 0 && SE_QT_DATA.length === 0) {
     document.getElementById('renewalBody').innerHTML =
       `<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--text3)">
-        No qualifying time data loaded. Upload county_qt.json and se_london_qt.json
+        No qualifying time data loaded. Upload county_qt.json and regional_qt.json
         via ⚙️ Data Manager to see renewal targets.
       </td></tr>`;
   } else {
@@ -3342,10 +3701,34 @@ function showTab(name, target) {
   else if (name === 'pbs')         renderPBs();
   else if (name === 'splits')      renderSplits();
   else if (name === 'results')     renderResults();
-  else if (name === 'qualifying')  renderQualifying();
-  else if (name === 'regional')    renderRegionalQualifying();
+  else if (name === 'qualifying')  { renderQTBanner('qt'); renderQualifying(); }
+  else if (name === 'regional')    { renderQTBanner('rq'); renderRegionalQualifying(); }
   else if (name === 'schedule')    renderSchedule();
   else if (name === 'targets')     renderTargets();
+}
+
+// ============================================================
+// JSON LOAD ERROR DISPLAY
+// ============================================================
+function showJsonLoadError(filename, message) {
+  console.error(`JSON error in ${filename}:`, message);
+  // Create or find persistent banner at top of overview panel
+  let banner = document.getElementById('jsonLoadErrorBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'jsonLoadErrorBanner';
+    banner.style.cssText = [
+      'margin:0 0 16px;padding:12px 16px;border-radius:10px;',
+      'background:rgba(220,38,38,0.08);border:1px solid var(--red);',
+      'color:var(--red);font-size:0.84rem;line-height:1.6;'
+    ].join('');
+    const ov = document.getElementById('tab-overview');
+    if (ov) ov.insertBefore(banner, ov.firstChild);
+  }
+  const entry = document.createElement('div');
+  entry.innerHTML = `<strong>⚠ Failed to load <code>${escapeHtml(filename)}</code></strong> — ${escapeHtml(message)}<br>
+    <span style="font-size:0.78rem;opacity:0.8">Check the file for trailing commas or syntax errors, then re-upload via ⚙️ Data Manager.</span>`;
+  banner.appendChild(entry);
 }
 
 // ============================================================
@@ -3365,34 +3748,80 @@ async function init() {
   const localSeQt     = localStorage.getItem('swimDash_SE_QT');
   const localUpcoming = localStorage.getItem('swimDash_UPCOMING');
 
-  if (localRaw) RAW = JSON.parse(localRaw);
+  if (localRaw) {
+    try { RAW = JSON.parse(localRaw); }
+    catch (e) { showJsonLoadError('my_swims.json (localStorage)', e.message); RAW = []; }
+  }
 
   if (!localQt || !localSeQt || !localUpcoming) {
     try {
       const fetches = [];
-      if (!localQt)       fetches.push(fetch(QT_DATA_URL).then(r => r.ok ? r.json() : null));
-      if (!localSeQt)     fetches.push(fetch(SE_QT_DATA_URL).then(r => r.ok ? r.json() : null));
-      if (!localUpcoming) fetches.push(fetch(UPCOMING_DATA_URL).then(r => r.ok ? r.json() : null));
+      if (!localQt)       fetches.push(fetch(QT_DATA_URL).then(r => r.ok ? r.text() : null));
+      if (!localSeQt)     fetches.push(fetch(SE_QT_DATA_URL).then(r => r.ok ? r.text() : null));
+      if (!localUpcoming) fetches.push(fetch(UPCOMING_DATA_URL).then(r => r.ok ? r.text() : null));
       const results = await Promise.all(fetches);
       let ri = 0;
-      if (!localQt)       { QT_DATA    = results[ri++] || []; localStorage.setItem('swimDash_QT',       JSON.stringify(QT_DATA)); }
-      if (!localSeQt)     { SE_QT_DATA = results[ri++] || []; localStorage.setItem('swimDash_SE_QT',    JSON.stringify(SE_QT_DATA)); }
-      if (!localUpcoming) { UPCOMING   = results[ri++] || []; localStorage.setItem('swimDash_UPCOMING', JSON.stringify(UPCOMING)); }
+      if (!localQt) {
+        const raw = results[ri++];
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            const unwrapped = unwrapQT(parsed);
+            QT_DATA  = unwrapped.times;
+            QT_META  = unwrapped.meta || {};
+            localStorage.setItem('swimDash_QT', JSON.stringify(parsed));
+          } catch(e) { showJsonLoadError('county_qt.json', e.message); }
+        }
+      }
+      if (!localSeQt) {
+        const raw = results[ri++];
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            const unwrapped = unwrapQT(parsed);
+            SE_QT_DATA = unwrapped.times;
+            SE_QT_META = unwrapped.meta || {};
+            localStorage.setItem('swimDash_SE_QT', JSON.stringify(parsed));
+          } catch(e) { showJsonLoadError('regional_qt.json', e.message); }
+        }
+      }
+      if (!localUpcoming) {
+        const raw = results[ri++];
+        if (raw) {
+          try {
+            UPCOMING = JSON.parse(raw);
+            localStorage.setItem('swimDash_UPCOMING', JSON.stringify(UPCOMING));
+          } catch(e) { showJsonLoadError('upcoming_races.json', e.message); }
+        }
+      }
     } catch (err) {
       console.warn('Remote fetch failed:', err);
     }
   } else {
-    QT_DATA    = JSON.parse(localQt);
-    SE_QT_DATA = JSON.parse(localSeQt);
-    UPCOMING   = JSON.parse(localUpcoming);
+    try {
+      const cqt = unwrapQT(localQt);
+      QT_DATA = cqt.times; QT_META = cqt.meta || {};
+    } catch(e) { showJsonLoadError('county_qt.json (localStorage)', e.message); }
+    try {
+      const rqt = unwrapQT(localSeQt);
+      SE_QT_DATA = rqt.times; SE_QT_META = rqt.meta || {};
+    } catch(e) { showJsonLoadError('regional_qt.json (localStorage)', e.message); }
+    try { UPCOMING = JSON.parse(localUpcoming); }
+    catch(e) { showJsonLoadError('upcoming_races.json (localStorage)', e.message); UPCOMING = []; }
   }
 
   if (!localRaw) {
     try {
       const raceRes = await fetch(RACE_DATA_URL);
       if (!raceRes.ok) throw new Error('Fetch failed');
-      RAW = await raceRes.json();
-      localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+      const raceText = await raceRes.text();
+      try {
+        RAW = JSON.parse(raceText);
+        localStorage.setItem('swimDash_RAW', JSON.stringify(RAW));
+      } catch(parseErr) {
+        showJsonLoadError('my_swims.json', parseErr.message);
+        if (RAW.length === 0) { document.getElementById('dataModal').style.display = 'flex'; return; }
+      }
     } catch (err) {
       console.warn('Remote RAW fetch failed:', err);
       if (RAW.length === 0) {
@@ -3420,6 +3849,8 @@ async function init() {
   renderProgression();
   renderPBs();
   renderResults();
+  renderQTBanner('qt');
+  renderQTBanner('rq');
   renderQualifying();
   renderRegionalQualifying();
   renderSchedule();
@@ -3717,6 +4148,356 @@ function saveNewUpcoming() {
     fabChild.style.color = 'white';
     setTimeout(() => { fabChild.textContent = '📅'; fabChild.style.background = ''; fabChild.style.color = ''; }, 2000);
   }
+}
+
+
+// ============================================================
+// QT EDITOR — County + Regional (v28.1)
+// Inline editor lives inside the County QT / Regional QT tabs
+// themselves (qt-view-mode <-> qt-edit-mode toggle), not as
+// separate tabs. 'qt'/'rq' = view-tab prefixes used by the rest
+// of the dashboard; 'cqt'/'rqt' = editor-specific element prefixes
+// (kept distinct so editor IDs never collide with view-tab IDs).
+// ============================================================
+
+// In-memory working copies. Loaded once per session when editor first opened.
+// Stored as full {meta, times} objects matching the qt_schema.md schema.
+const qtEditorStore = { cqt: null, rqt: null };
+
+// Map editor prefix → live source data + filenames + element ids
+function qtEditorSource(prefix) {
+  return prefix === 'cqt'
+    ? { data: () => ({ meta: QT_META,    times: QT_DATA    }), filename: 'county_qt.json',
+        ageSel: 'cqtEdAge', genderSel: 'cqtEdGender', strokeSel: 'cqtEdStroke', courseSel: 'cqtEdCourse',
+        bodyId: 'cqtEdBody' }
+    : { data: () => ({ meta: SE_QT_META, times: SE_QT_DATA }), filename: 'regional_qt.json',
+        ageSel: 'rqtEdAge', genderSel: 'rqtEdGender', strokeSel: 'rqtEdStroke', courseSel: 'rqtEdCourse',
+        bodyId: 'rqtEdBody' };
+}
+
+// Map view-tab prefix ('qt'/'rq') <-> editor prefix ('cqt'/'rqt')
+function editorPrefixFor(viewPrefix) { return viewPrefix === 'qt' ? 'cqt' : 'rqt'; }
+
+// All known events (superset of both files) — used to populate Event dropdown
+const EDITOR_EVENTS = [
+  '50 Free','100 Free','200 Free','400 Free','800 Free','1500 Free',
+  '50 Back','100 Back','200 Back',
+  '50 Breast','100 Breast','200 Breast',
+  '50 Fly','100 Fly','200 Fly',
+  '200 IM','400 IM'
+];
+const EDITOR_GENDERS = ['Boys','Girls'];
+const EDITOR_COURSES = ['Short Course','Long Course'];
+
+// ── Open / Close editor mode within the QT tab ──────────────────────────────
+function openQTEditor(viewPrefix) {
+  const prefix = editorPrefixFor(viewPrefix);
+  const tabPanel = document.getElementById(viewPrefix === 'qt' ? 'tab-qualifying' : 'tab-regional');
+  if (tabPanel) tabPanel.classList.add('qt-tab-in-edit-mode');
+
+  // Deep-clone source data into editor store on first visit this session
+  if (!qtEditorStore[prefix]) {
+    const src = qtEditorSource(prefix).data();
+    qtEditorStore[prefix] = JSON.parse(JSON.stringify(src));
+    populateEditorAgeSelect(prefix);
+  }
+  renderEditorTable(prefix);
+}
+
+function closeQTEditor(viewPrefix) {
+  const prefix = editorPrefixFor(viewPrefix);
+  const tabPanel = document.getElementById(viewPrefix === 'qt' ? 'tab-qualifying' : 'tab-regional');
+  if (tabPanel) tabPanel.classList.remove('qt-tab-in-edit-mode');
+
+  // Commit editor store back into the live QT_DATA / SE_QT_DATA / *_META globals
+  // so the view tab (and Schedule/Targets) reflect edits without needing a reload.
+  commitEditorStoreToLive(prefix);
+
+  // Refresh the banner + re-render the view tab with fresh data
+  renderQTBanner(viewPrefix);
+  if (viewPrefix === 'qt') { renderedTabs.delete('qualifying'); renderQualifying(); }
+  else                     { renderedTabs.delete('regional');   renderRegionalQualifying(); }
+}
+
+function commitEditorStoreToLive(prefix) {
+  const store = qtEditorStore[prefix];
+  if (!store) return;
+  if (prefix === 'cqt') {
+    QT_DATA = store.times;
+    QT_META = store.meta || {};
+  } else {
+    SE_QT_DATA = store.times;
+    SE_QT_META = store.meta || {};
+  }
+}
+
+// ── Meta banner (shown at top of view tab, always visible) ─────────────────
+function renderQTBanner(viewPrefix) {
+  const isCounty = viewPrefix === 'qt';
+  const meta = isCounty ? QT_META : SE_QT_META;
+  const titleEl = document.getElementById(isCounty ? 'cqtBannerTitle' : 'rqtBannerTitle');
+  const datesEl = document.getElementById(isCounty ? 'cqtBannerDates' : 'rqtBannerDates');
+  if (titleEl) titleEl.textContent = meta?.title || (isCounty ? 'County Championships' : 'Regional Championships');
+  if (datesEl) {
+    if (meta?.dateFrom && meta?.dateTo) {
+      const fmt = s => parseLocalDate(s).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+      datesEl.textContent = `${fmt(meta.dateFrom)} – ${fmt(meta.dateTo)}`;
+    } else {
+      // Desktop note matches the "Edit Details & Times" button label exactly.
+      // Mobile has no edit button (editor is desktop-only), so it points there instead.
+      datesEl.innerHTML =
+        '<span class="qt-banner-note-desktop">No dates set — click "Edit Details &amp; Times" to configure</span>' +
+        '<span class="qt-banner-note-mobile">No dates set — switch to Desktop mode to edit</span>';
+    }
+  }
+}
+
+// ── Age dropdown population ─────────────────────────────────────────────────
+function populateEditorAgeSelect(prefix) {
+  const src   = qtEditorSource(prefix);
+  const store = qtEditorStore[prefix];
+  if (!store) return;
+  const ages = [...new Set(store.times.map(t => t.age))].sort((a, b) => {
+    const na = parseFloat(a), nb = parseFloat(b);
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return String(a).localeCompare(String(b));
+  });
+  const sel = document.getElementById(src.ageSel);
+  if (!sel) return;
+  while (sel.options.length > 1) sel.remove(1);
+  ages.forEach(age => {
+    const opt = document.createElement('option');
+    opt.value = age; opt.textContent = `Age ${age}`;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Time <-> seconds conversion for editor inputs ───────────────────────────
+// Reuses the dashboard's timeToSec()/secToTime() helpers (already defined above)
+// for format consistency with the rest of the app (mm:ss.hh or ss.hh).
+function secToTimeInput(sec) {
+  if (sec === null || sec === undefined || sec === '') return '';
+  return secToTime(sec); // dashboard helper, e.g. 164.76 -> "2:44.76"
+}
+const TIME_INPUT_RE = /^(\d{1,3}:)?\d{1,3}(\.\d{1,2})?$/;
+function isValidTimeInput(str) {
+  if (str === '' || str === null || str === undefined) return true; // empty = not offered, allowed
+  return TIME_INPUT_RE.test(str.trim());
+}
+function timeInputToSec(str) {
+  if (str === '' || str === null || str === undefined) return null;
+  const sec = timeToSec(str.trim());
+  return isFinite(sec) ? sec : null;
+}
+
+// ── Duplicate detection: same Gender + Course + Event + Age ─────────────────
+function findDuplicateIndices(times) {
+  const seen = new Map(); // key -> [indices]
+  times.forEach((t, i) => {
+    const key = `${t.gender}|${t.course}|${t.event}|${t.age}`;
+    if (!seen.has(key)) seen.set(key, []);
+    seen.get(key).push(i);
+  });
+  const dupIdx = new Set();
+  seen.forEach(idxArr => { if (idxArr.length > 1) idxArr.forEach(i => dupIdx.add(i)); });
+  return dupIdx;
+}
+
+// ── Render the editable table ────────────────────────────────────────────────
+function renderEditorTable(prefix) {
+  const src   = qtEditorSource(prefix);
+  const store = qtEditorStore[prefix];
+  const tbody = document.getElementById(src.bodyId);
+  if (!tbody) return;
+
+  const age    = document.getElementById(src.ageSel)?.value    || '';
+  const gender = document.getElementById(src.genderSel)?.value || '';
+  const stroke = document.getElementById(src.strokeSel)?.value || '';
+  const course = document.getElementById(src.courseSel)?.value || '';
+
+  if (!age || !store) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="qt-editor-empty"><span class="ei">👆</span>Select an Age Group above to view and edit qualifying times.</div></td></tr>`;
+    return;
+  }
+
+  const filtered = store.times
+    .map((t, i) => ({ ...t, _idx: i }))
+    .filter(t => {
+      if (t.age !== age) return false;
+      if (gender && t.gender !== gender) return false;
+      if (course && t.course !== course) return false;
+      if (stroke && !t.event.includes(stroke)) return false;
+      return true;
+    });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="qt-editor-empty">No events match the current filters.</div></td></tr>`;
+    return;
+  }
+
+  // Duplicate check runs against the FULL dataset (not just the filtered view)
+  // so duplicates hiding behind a different filter are still flagged.
+  const dupIdx = findDuplicateIndices(store.times);
+
+  tbody.innerHTML = filtered.map(t => {
+    const qStr = secToTimeInput(t.qualify);
+    const cStr = secToTimeInput(t.consider);
+    // "Not offered" = both qualify and consider are null/empty for this row
+    const notOffered = (t.qualify === null || t.qualify === undefined) &&
+                        (t.consider === null || t.consider === undefined);
+    const isDup = dupIdx.has(t._idx);
+
+    const gSel = EDITOR_GENDERS.map(o => `<option${o===t.gender?' selected':''}>${escapeHtml(o)}</option>`).join('');
+    const cSel = EDITOR_COURSES.map(o => `<option${o===t.course?' selected':''}>${escapeHtml(o)}</option>`).join('');
+    const eSel = EDITOR_EVENTS.map(o => `<option${o===t.event?' selected':''}>${escapeHtml(o)}</option>`).join('');
+
+    const rowClasses = [notOffered ? 'not-offered' : '', isDup ? 'has-duplicate' : ''].filter(Boolean).join(' ');
+    const dupBadge = isDup ? `<span class="dup-badge" title="Another row has the same Gender, Course, Event and Age">⚠ Duplicate</span>` : '';
+    const disabledAttr = notOffered ? ' disabled' : '';
+    const notOfferedNote = notOffered
+      ? `<span class="not-offered-note">Not offered at this age — leave blank, or enter a time to make it available</span>`
+      : '';
+
+    return `<tr data-idx="${t._idx}" class="${rowClasses}">
+      <td><select${disabledAttr} onchange="editorCell('${prefix}',${t._idx},'gender',this.value)">${gSel}</select></td>
+      <td><select${disabledAttr} onchange="editorCell('${prefix}',${t._idx},'course',this.value)">${cSel}</select></td>
+      <td><select${disabledAttr} onchange="editorCell('${prefix}',${t._idx},'event',this.value)">${eSel}${dupBadge}</select></td>
+      <td><input type="text"${disabledAttr} value="${escapeHtml(String(t.age))}" style="max-width:72px" onchange="editorCell('${prefix}',${t._idx},'age',this.value)"></td>
+      <td>
+        <input type="text" class="time-input" value="${escapeHtml(qStr)}" placeholder="mm:ss.hh"
+          onchange="editorTimeCell('${prefix}',${t._idx},'qualify',this)" oninput="this.classList.remove('invalid')">
+      </td>
+      <td>
+        <input type="text" class="time-input" value="${escapeHtml(cStr)}" placeholder="mm:ss.hh"
+          onchange="editorTimeCell('${prefix}',${t._idx},'consider',this)" oninput="this.classList.remove('invalid')">
+        ${notOfferedNote}
+      </td>
+      <td class="del-col"><button class="btn-row-del" title="Delete row" onclick="deleteEditorRow('${prefix}',${t._idx})">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Cell edit handlers ───────────────────────────────────────────────────────
+function editorCell(prefix, idx, field, value) {
+  const store = qtEditorStore[prefix];
+  if (!store) return;
+  const row = store.times[idx];
+  if (!row) return;
+  row[field] = value;
+  renderEditorTable(prefix); // re-render: dup/not-offered/age-list may have changed
+}
+
+function editorTimeCell(prefix, idx, field, inputEl) {
+  const store = qtEditorStore[prefix];
+  if (!store) return;
+  const row = store.times[idx];
+  if (!row) return;
+  const raw = inputEl.value.trim();
+
+  if (!isValidTimeInput(raw)) {
+    inputEl.classList.add('invalid');
+    inputEl.title = 'Enter a time as mm:ss.hh (e.g. 2:44.68) or ss.hh (e.g. 41.88), or leave blank';
+    return;
+  }
+  inputEl.classList.remove('invalid');
+  inputEl.title = '';
+  row[field] = timeInputToSec(raw);
+  renderEditorTable(prefix); // re-render to refresh not-offered styling
+}
+
+function deleteEditorRow(prefix, idx) {
+  const store = qtEditorStore[prefix];
+  if (!store) return;
+  if (!confirm('Delete this qualifying time row?')) return;
+  store.times.splice(idx, 1);
+  renderEditorTable(prefix);
+}
+
+function addEditorRow(prefix) {
+  const store = qtEditorStore[prefix];
+  if (!store) { alert('Load data first by selecting an Age Group.'); return; }
+  const src    = qtEditorSource(prefix);
+  const age    = document.getElementById(src.ageSel)?.value    || '';
+  const gender = document.getElementById(src.genderSel)?.value || 'Boys';
+  const course = document.getElementById(src.courseSel)?.value || 'Short Course';
+  store.times.push({
+    gender: gender || 'Boys',
+    course: course || 'Short Course',
+    event:  '50 Free',
+    age:    age || '',
+    qualify:  null,
+    consider: null,
+  });
+  renderEditorTable(prefix);
+  const tbody = document.getElementById(src.bodyId);
+  if (tbody?.lastElementChild) tbody.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetEditorFilters(prefix) {
+  const src = qtEditorSource(prefix);
+  [src.ageSel, src.genderSel, src.strokeSel, src.courseSel].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  renderEditorTable(prefix);
+}
+
+// ── Championship details (title + dates) edit panel ─────────────────────────
+function toggleMetaPanel(prefix) {
+  const panelId = prefix === 'cqt' ? 'cqtMetaPanel' : 'rqtMetaPanel';
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  if (isOpen) {
+    const store = qtEditorStore[prefix];
+    const meta  = store?.meta || {};
+    const tId   = prefix === 'cqt' ? 'cqtMetaTitle' : 'rqtMetaTitle';
+    const fId   = prefix === 'cqt' ? 'cqtMetaFrom'  : 'rqtMetaFrom';
+    const toId  = prefix === 'cqt' ? 'cqtMetaTo'    : 'rqtMetaTo';
+    const tEl = document.getElementById(tId);  if (tEl)  tEl.value  = meta.title    || '';
+    const fEl = document.getElementById(fId);  if (fEl)  fEl.value  = meta.dateFrom || '';
+    const toEl= document.getElementById(toId); if (toEl) toEl.value = meta.dateTo   || '';
+  }
+}
+
+function saveMetaPanel(prefix) {
+  const store = qtEditorStore[prefix];
+  if (!store) return;
+  if (!store.meta) store.meta = {};
+  const tId  = prefix === 'cqt' ? 'cqtMetaTitle' : 'rqtMetaTitle';
+  const fId  = prefix === 'cqt' ? 'cqtMetaFrom'  : 'rqtMetaFrom';
+  const toId = prefix === 'cqt' ? 'cqtMetaTo'    : 'rqtMetaTo';
+  const tEl  = document.getElementById(tId);  if (tEl)  store.meta.title    = tEl.value.trim();
+  const fEl  = document.getElementById(fId);  if (fEl)  store.meta.dateFrom = fEl.value;
+  const toEl = document.getElementById(toId); if (toEl) store.meta.dateTo   = toEl.value;
+
+  // Reflect title/date changes immediately on the live banner too (even before "Back" is clicked)
+  const viewPrefix = prefix === 'cqt' ? 'qt' : 'rq';
+  commitEditorStoreToLive(prefix);
+  renderQTBanner(viewPrefix);
+
+  const panelId = prefix === 'cqt' ? 'cqtMetaPanel' : 'rqtMetaPanel';
+  document.getElementById(panelId)?.classList.remove('open');
+}
+
+// ── Download edited JSON (matches qt_schema.md: {meta, times[]}) ────────────
+function downloadEditorJSON(prefix) {
+  const store = qtEditorStore[prefix];
+  if (!store) { alert('No data loaded yet. Select an Age Group first.'); return; }
+
+  const bad = store.times.filter(t => !t.event || t.age === '' || t.age === null || t.age === undefined);
+  if (bad.length > 0 && !confirm(`${bad.length} row(s) are missing Event or Age. Download anyway?`)) return;
+
+  const dupIdx = findDuplicateIndices(store.times);
+  if (dupIdx.size > 0 && !confirm(`${dupIdx.size} row(s) have duplicate Gender + Course + Event + Age combinations. Download anyway?`)) return;
+
+  const json = JSON.stringify(store, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = qtEditorSource(prefix).filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
 // Apply theme immediately to avoid flash
