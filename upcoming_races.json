@@ -49,7 +49,32 @@
         "venue": "Elstree",
         "course": "S",
         "events": [
-        { "event": "100 Back" }
+        { "event": "100 Back" },
+        { "event": "50 Breast" }            
+        ]
+    },
+    {
+        "date": "2026-10-04",
+        "competition": "Hatfield  Regional Qualifier October 2026",
+        "venue": "Hatfield",
+        "course": "S",
+        "events": [
+        { "event": "400 Free" },
+        { "event": "50 Back" },
+        { "event": "100 Free" },
+        { "event": "200 Back" }            
+        ]
+    },
+    {
+        "date": "2026-11-28",
+        "competition": "Harrow Christmas Cracker 2026",
+        "venue": "Hendon",
+        "course": "S",
+        "events": [
+        { "event": "200 Free" },
+        { "event": "100 Back" },
+        { "event": "200 IM" },
+        { "event": "50 Free" }            
         ]
     }
 ]
