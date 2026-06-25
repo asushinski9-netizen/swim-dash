@@ -41,7 +41,7 @@ Serve `index.html` from any web server (Apache, Nginx, Node.js, etc.)
 ### Quick Actions (Speed Dial FAB)
 - **⏱️ Add Race** — Log new swim result with event, time, splits, venue, competition name (multi-event)
 - **📅 Add Upcoming Race** — Schedule a future race entry
-- **⚙️ Data Manager** — Upload/download JSON data, reset dashboard
+- **⚙️ Data Manager** — Upload/download JSON data, refresh from GitHub, reset dashboard
 - **🌙 Theme Toggle** — Switch between light and dark modes
 - **👤 Swimmer Settings** — Set date of birth and gender for auto age-bracket selection
 
@@ -49,9 +49,9 @@ Serve `index.html` from any web server (Apache, Nginx, Node.js, etc.)
 
 ## 📱 Device Support
 
-- **Desktop:** Full-featured experience, QT cards in 4-column grid
+- **Desktop:** Full-featured experience, QT cards in 4-column grid, inline QT editor available
 - **Tablet:** 2-column adaptive layout
-- **Mobile:** Optimised for 500px+ screens; QT cards 1-per-row; tables scaled to 0.60rem; abbreviated column headers
+- **Mobile:** Optimised for 500px+ screens; QT cards 1-per-row; tables scaled to 0.60rem; QT editor hidden (desktop only)
 
 ---
 
@@ -63,7 +63,7 @@ All data files are JSON-based and fetched from GitHub on startup. Offline fallba
 |------|---------|
 | **my_swims.json** | Race entries (date, event, time, splits, venue, competition) |
 | **county_qt.json** | Middlesex County 2026 qualifying times by age/gender/stroke/course |
-| **se_london_qt.json** | SE London Regional qualifying times by age/gender/stroke/course |
+| **regional_qt.json** | SE London Regional qualifying times by age/gender/stroke/course |
 | **upcoming_races.json** | Scheduled future races (date, competition, venue, course, events) |
 
 ### Data Flow
@@ -72,9 +72,12 @@ All data files are JSON-based and fetched from GitHub on startup. Offline fallba
 3. New races entered via **⏱️ Add Race** are stored locally only
 4. To save new races permanently: **⚙️ Data Manager** → **⬇️ Download my_swims.json** → push to GitHub
 
+### Refreshing GitHub Data
+Use **⚙️ Data Manager** → **🔄 Refresh Data from GitHub** to pull the latest `county_qt.json`, `regional_qt.json`, and `upcoming_races.json` without a full cache clear. The last-refreshed timestamp is shown in the modal. `my_swims.json` is never overwritten by this action (it is user-authoritative).
+
 ---
 
-## 🎯 County QT & Regional QT Tabs (v27 redesign)
+## 🎯 County QT & Regional QT Tabs (v27 redesign, v28.1 editor)
 
 ### Stat Cards (top)
 Four clickable summary cards — Qualified / Consideration / Outside / No PB — based on best status across both SC and LC for each event. Each card lists events with the course type (SC/LC badge), best PB, and gap to QT or CT. Clicking a card applies the Status filter instantly.
@@ -86,23 +89,16 @@ One card per event, displayed in a 4-column grid (desktop) / 1-column (mobile). 
 - **Card border colour** — reflects best status across both courses (green / amber / red / grey)
 - **Course block left border** — reflects that course's own status
 
-### Filters
-Gender · Age Group · Stroke · **Status** (Qualified / Consideration / Outside / No PB)
+### Inline QT Editor (desktop only)
+Click **✏️ Edit Details & Times** in the championship banner to enter edit mode. The button hides while editing to prevent double-entry.
 
-Status filter logic:
-- **Qualified** — at least one course PB is Qualified
-- **Consideration** — best status is Consideration (neither course Qualified)
-- **Outside** — all course PBs are Outside (none Qualified or Consideration)
-- **No PB** — no PB recorded on either course
-
-### Chart
-Six datasets: SC PB bars, LC PB bars, SC QT line, SC CT line, LC QT line, LC CT line. **SC / LC toggle buttons** above the chart show/hide each course's datasets without re-rendering.
-
-### Event-by-Event Table
-One row per event+course. **SC / LC row toggle buttons** above the table show/hide course rows. "Course" column abbreviated to "C" on mobile.
-
-### Bracket Note
-A note below the table confirms the gender, age group, and championship year used for qualifying times, including a notice when next-season standards are not yet published.
+- **💾 Save Changes** — commits edits to live data immediately without closing the editor; shows "✅ Saved" flash
+- **← Back** — commits and closes, returning to the view tab
+- **Navigate-away protection** — switching tabs or closing the browser warns if there are unsaved changes
+- **Not-offered rows** — greyed metadata (Gender/Course/Event/Age disabled) but time inputs remain active; entering a time activates the row
+- **New rows** — fully editable immediately; never treated as "not offered" regardless of initial null times
+- **Add Row** — disabled (greyed) until an Age Group is selected in the editor filters
+- **⬇ Download JSON** — exports edited data in `{meta, times}` schema ready to commit to GitHub
 
 ---
 
@@ -158,6 +154,7 @@ A note below the table confirms the gender, age group, and championship year use
 ## 🐛 Known Limitations
 
 - Splits input only accepts numeric lap times (no interval notation like "1:23.45")
+- QT inline editor is desktop-only (hidden below 769px viewport width)
 - Charts require ~1 second to render on first load (Chart.js DOM painting)
 - Safari mobile may show reduced chart interactivity due to canvas rendering
 - localStorage has a ~5-10MB limit per domain
@@ -181,5 +178,5 @@ Public domain (no restrictions). Feel free to fork, modify, and redistribute.
 
 ---
 
-**Last Updated:** May 2026  
-**Version:** 27 (dual-course QT redesign with event cards, progress bars, status filter, SC/LC toggles)
+**Last Updated:** June 2026  
+**Version:** 29.2 (Data Manager refresh · QT editor save flow · navigate-away protection · editor UX fixes)
