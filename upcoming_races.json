@@ -54,8 +54,20 @@
         ]
     },
     {
+        "date": "2026-09-26",
+        "competition": "Enfield Season Opener 2026",
+        "venue": "Enfield",
+        "course": "S",
+        "events": [
+        { "event": "100 Back" },
+        { "event": "50 Free" },
+        { "event": "50 Back" },
+        { "event": "100 Free" }            
+        ]
+    }, 
+    {
         "date": "2026-10-04",
-        "competition": "Hatfield  Regional Qualifier October 2026",
+        "competition": "Hatfield Regional Qualifier October 2026",
         "venue": "Hatfield",
         "course": "S",
         "events": [
