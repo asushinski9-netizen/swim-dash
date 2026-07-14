@@ -45,5 +45,12 @@
   {"course":"S","event":"100 Free","date":"2026-06-14","competition":"Hillingdon Swimming Club Summer Spectacular Meet 2026","venue":"Uxbridge","time":"1:13.82","splits":[36.68,37.14]},
   {"course":"S","event":"100 Free","date":"2026-07-05","competition":"Putteridge End of Season Summer Open 2026","venue":"Luton","time":"1:10.92","splits":[34.95,35.97]},
   {"course":"S","event":"100 IM","date":"2026-07-05","competition":"Putteridge End of Season Summer Open 2026","venue":"Luton","time":"1:27.41","splits":[]},
-  {"course":"S","event":"200 Back","date":"2026-07-05","competition":"Putteridge End of Season Summer Open 2026","venue":"Luton","time":"2:57.71","splits":[42.27,44.11,39.98,51.35]}
+  {"course":"S","event":"200 Back","date":"2026-07-05","competition":"Putteridge End of Season Summer Open 2026","venue":"Luton","time":"2:57.71","splits":[42.27,44.11,39.98,51.35]},
+  {"course":"S","event":"50 Free","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"33.25","splits":[]},
+  {"course":"S","event":"200 Free","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"2:38.86","splits":[37.05,41.52,41.58,38.71]},
+  {"course":"S","event":"50 Back","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"38.60","splits":[]},
+  {"course":"S","event":"100 Back","date":"2026-07-12","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"1:23.56","splits":[41.48,42.08]},
+  {"course":"S","event":"200 Back","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"2:53.96","splits":[41.49,45.01,45.87,41.59]},
+  {"course":"S","event":"50 Breast","date":"2026-07-12","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"46.15","splits":[]},
+  {"course":"S","event":"50 Fly","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"44.27","splits":[]} 
 ]
