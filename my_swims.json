@@ -52,5 +52,6 @@
   {"course":"S","event":"100 Back","date":"2026-07-12","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"1:23.56","splits":[41.48,42.08]},
   {"course":"S","event":"200 Back","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"2:53.96","splits":[41.49,45.01,45.87,41.59]},
   {"course":"S","event":"50 Breast","date":"2026-07-12","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"46.15","splits":[]},
-  {"course":"S","event":"50 Fly","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"44.27","splits":[]} 
+  {"course":"S","event":"50 Fly","date":"2026-07-11","competition":"PBSC Club Championships 2026","venue":"Elstree","time":"44.27","splits":[]},
+  {"course":"S","event":"400 Free","date":"2026-10-04","competition":"Hatfield Regional Qualifier 2026","venue":"Elstree","time":"5:31.08","splits":[]}
 ]
