@@ -66,24 +66,41 @@
         ]
     },
     {
+        "date": "2026-11-15",
+        "competition": "Barnet Copthall County Qualifier 2",
+        "venue": "Hendon",
+        "course": "S",
+        "events": [
+        { "event": "50 Back" },
+        { "event": "50 Free" }            
+        ]
+    },    
+    {
         "date": "2026-11-28",
         "competition": "Harrow Christmas Cracker 2026",
         "venue": "Hendon",
         "course": "S",
         "events": [
-        { "event": "200 Free" },
         { "event": "100 Back" },
-        { "event": "200 IM" },
-        { "event": "50 Free" }            
+        { "event": "200 IM" }       
         ]
     },
+    {
+        "date": "2026-12-12",
+        "competition": "Teddington Winter County Qualifier 2026",
+        "venue": "Teddington",
+        "course": "S",
+        "events": [
+        { "event": "50 Back" },
+        { "event": "200 Back" }      
+        ]
+    },    
     {
         "date": "2026-12-20",
         "competition": "HSC Fast & Festive Winter Meet 2026",
         "venue": "Hillingdon ",
         "course": "S",
         "events": [
-        { "event": "200 Back" },
         { "event": "200 Free" },
         { "event": "100 Free" }            
         ]
