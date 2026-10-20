@@ -104,5 +104,17 @@
         { "event": "200 Free" },
         { "event": "100 Free" }            
         ]
+    },    
+    {
+        "date": "2027-02-28",
+        "competition": "Stevenage SC Maiden Long Course Sprint Meet",
+        "venue": "Luton ",
+        "course": "L",
+        "events": [
+        { "event": "50 Fly" },
+        { "event": "50 Back" },
+        { "event": "50 Breast" },
+        { "event": "50 Free" }               
+        ]
     }
 ]
