@@ -111,7 +111,6 @@
         "venue": "Luton",
         "course": "L",
         "events": [
-        { "event": "50 Fly" },
         { "event": "50 Back" },
         { "event": "50 Breast" },
         { "event": "50 Free" }               
