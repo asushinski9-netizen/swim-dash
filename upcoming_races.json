@@ -98,7 +98,7 @@
     {
         "date": "2026-12-20",
         "competition": "HSC Fast & Festive Winter Meet 2026",
-        "venue": "Hillingdon ",
+        "venue": "Hillingdon",
         "course": "S",
         "events": [
         { "event": "200 Free" },
@@ -108,13 +108,23 @@
     {
         "date": "2027-02-28",
         "competition": "Stevenage SC Maiden Long Course Sprint Meet",
-        "venue": "Luton ",
+        "venue": "Luton",
         "course": "L",
         "events": [
         { "event": "50 Fly" },
         { "event": "50 Back" },
         { "event": "50 Breast" },
         { "event": "50 Free" }               
+        ]
+    },    
+    {
+        "date": "2027-01-30",
+        "competition": "ESS Non-County Qualifier 2027",
+        "venue": "Enfield",
+        "course": "S",
+        "events": [
+        { "event": "400 Free" },
+        { "event": "100 Breast" }               
         ]
     }
 ]
