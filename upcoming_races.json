@@ -1,81 +1,5 @@
 [
     {
-        "date": "2026-05-16",
-        "competition": "The Claire Houchin Skills Development Meet 2026",
-        "venue": "Watford",
-        "course": "S",
-        "events": [
-        { "event": "100 IM" },
-        { "event": "100 Breast" }
-    ]
-    },
-    {
-        "date": "2026-06-14",
-        "competition": "Hillingdon Swimming Club Summer Spectacular Meet 2026",
-        "venue": "Uxbridge",
-        "course": "S",
-        "events": [
-        { "event": "50 Breast" },
-        { "event": "100 Free" }
-        ]
-    },
-    {
-        "date": "2026-07-05",
-        "competition": "Putteridge End of Season Summer Open 2026",
-        "venue": "Luton",
-        "course": "S",
-        "events": [
-        { "event": "100 Free" },
-        { "event": "100 IM" },
-        { "event": "200 Back" }
-        ]
-    },
-    {
-        "date": "2026-07-11",
-        "competition": "PBSC Club Championships 2026",
-        "venue": "Elstree",
-        "course": "S",
-        "events": [
-        { "event": "50 Free" },
-        { "event": "200 Back" },
-        { "event": "50 Fly" },
-        { "event": "50 Back" },
-        { "event": "200 Free" }
-        ]
-    },
-    {
-        "date": "2026-07-12",
-        "competition": "PBSC Club Championships 2026",
-        "venue": "Elstree",
-        "course": "S",
-        "events": [
-        { "event": "100 Back" },
-        { "event": "50 Breast" }            
-        ]
-    },
-    {
-        "date": "2026-10-04",
-        "competition": "Hatfield Regional Qualifier October 2026",
-        "venue": "Hatfield",
-        "course": "S",
-        "events": [
-        { "event": "400 Free" },
-        { "event": "50 Back" },
-        { "event": "100 Free" },
-        { "event": "200 Back" }            
-        ]
-    },
-    {
-        "date": "2026-11-15",
-        "competition": "Barnet Copthall County Qualifier 2",
-        "venue": "Hendon",
-        "course": "S",
-        "events": [
-        { "event": "50 Back" },
-        { "event": "50 Free" }            
-        ]
-    },    
-    {
         "date": "2026-11-28",
         "competition": "Harrow Christmas Cracker 2026",
         "venue": "Hendon",
@@ -106,6 +30,16 @@
         ]
     },    
     {
+        "date": "2027-01-30",
+        "competition": "ESS Non-County Qualifier 2027",
+        "venue": "Enfield",
+        "course": "S",
+        "events": [
+        { "event": "400 Free" },
+        { "event": "100 Breast" }               
+        ]
+    },    
+    {
         "date": "2027-02-28",
         "competition": "Stevenage SC Maiden Long Course Sprint Meet",
         "venue": "Luton",
@@ -115,15 +49,16 @@
         { "event": "50 Breast" },
         { "event": "50 Free" }               
         ]
-    },    
+    },
     {
-        "date": "2027-01-30",
-        "competition": "ESS Non-County Qualifier 2027",
-        "venue": "Enfield",
+        "date": "2027-03-14",
+        "competition": "Hatfield Spring Regional Qualifier Meet March 2027",
+        "venue": "Hatfield",
         "course": "S",
         "events": [
-        { "event": "400 Free" },
-        { "event": "100 Breast" }               
+        { "event": "200 Free" },
+        { "event": "200 Back" },
+        { "event": "50 Back" }               
         ]
-    }
+    }    
 ]
