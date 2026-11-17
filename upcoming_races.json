@@ -40,6 +40,15 @@
         ]
     },    
     {
+        "date": "2027-01-31",
+        "competition": "ESS Non-County Qualifier 2027",
+        "venue": "Enfield",
+        "course": "S",
+        "events": [
+        { "event": "100 Back" }              
+        ]
+    },    
+    {
         "date": "2027-02-28",
         "competition": "Stevenage SC Maiden Long Course Sprint Meet",
         "venue": "Luton",
